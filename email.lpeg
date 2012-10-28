@@ -60,8 +60,8 @@ headers		<-
 		/  {:comment:  commenthdr  :} -> {}
 		/  {:keywords: keywordshdr :} -> {}
 
-subjecthdr	<- SUBJECT  ':' { unstructured } => cleanup %CRLF
-commenthdr	<- COMMENT  ':' { unstructured } => cleanup %CRLF
+subjecthdr	<- SUBJECT  ':' unstructured => cleanup %CRLF
+commenthdr	<- COMMENT  ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
 
 unstructured	<- FWS? { (FWS? %VCHAR)* } %WSP*
