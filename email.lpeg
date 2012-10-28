@@ -1,0 +1,171 @@
+
+local dump = require "org.conman.table".dump
+local lpeg = require "lpeg"
+local re   = require "re"
+
+local P  = lpeg.P
+local S  = lpeg.S
+local R  = lpeg.R
+local V  = lpeg.V
+local Cf = lpeg.Cf
+local Ct = lpeg.Ct
+
+-- ***********************************************************************
+
+local function doset(t,i)
+
+  local function append(t,l)
+    if type(l) == 'table' and #l > 0 then
+      for i = 1 , #l do
+        t[#t + 1] = l[i]
+      end
+    else
+      t[#t + 1] = l
+    end
+  end
+
+  for name,value in pairs(i) do
+    if t[name] == nil then
+      t[name] = value
+    elseif type(t[name]) == 'table' then
+      append(t[name],value)
+    else
+      local r = { t[name] }
+      append(r,value)
+      t[name] = r
+    end
+  end
+  return t
+end
+
+-- *******************************************************************
+
+VCHAR   = R"!~"
+WSP     = S" \t"
+SP      = P" "
+CRLF    = P"\r"^-1 * P"\n"
+ctext   = R("!'" , "*[" , "]~")
+qtext   = R("!!" , "#[" , "]~")
+dtext	= R("!Z" , "^!")
+
+theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
+
+-- ********************************************************************
+
+G = --[[ lpeg/re ]] [[
+
+email		<- %theheaders
+headers		<- 
+		   {:subject:  subjecthdr  :} -> {}
+		/  {:comment:  commenthdr  :} -> {}
+		/  {:keywords: keywordshdr :} -> {}
+
+subjecthdr	<- SUBJECT  ':' { unstructured } => cleanup %CRLF
+commenthdr	<- COMMENT  ':' { unstructured } => cleanup %CRLF
+keywordshdr	<- KEYWORDS ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
+
+unstructured	<- FWS? { (FWS? %VCHAR)* } %WSP*
+phrase		<- word+
+word		<- atom / quoted_string
+
+quoted_string	<- CFWS? '"' ((FWS? qcontent)* => cleanup) FWS? '"' CFWS?
+qcontent	<- %qtext / quoted_pair
+quoted_pair	<- "\" (%VCHAR / %WSP)
+
+atom		<- CFWS? {atext+} CFWS?
+
+atext		<- [A-Za-z]
+		/  [0-9]
+		/  "!"
+		/  "#"
+		/  "$"
+		/  "%"
+		/  "&"
+		/  "'"
+		/  "*"
+		/  "+"
+		/  "-"
+		/  "/"
+		/  "="
+		/  "?"
+		/  "^"
+		/  "_"
+		/  "`"
+		/  "{"
+		/  "|"
+		/  "}"
+		/  "~"
+
+dot_atom_text	<- atext+ ('.' atext+)*
+dot_atom	<- CFWS? dot_atom_text CFWS?
+FWS		<- (%WSP* %CRLF)? %WSP+
+CFWS		<- (FWS? comment)+ FWS
+		/  FWS
+comment		<- "(" (FWS? ccontent)* FWS? ")"
+ccontent	<- %ctext / quoted_pair / comment
+
+SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
+COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
+KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
+
+]]
+
+R =
+{
+  VCHAR      = VCHAR,
+  WSP        = WSP,
+  SP         = SP,
+  CRLF       = CRLF,
+  ctext      = ctext,
+  qtext      = qtext,
+  dtext      = dtext,
+  theheaders = theheaders,
+
+  value = value,
+  
+  cleanup = function(subject,position,capture)
+    local new = capture:gsub("\n","")
+    new = new:gsub([[\.]],function(x) return x:sub(2,2) end)
+    new = new:gsub("\t"," ")
+    return position,new
+  end,
+
+};
+
+email = re.compile(G,R)
+
+-- **********************************************************************
+
+TEST1 = [[
+Subject: this is a test
+Comment: This is another test
+Keywords: one,two,three,four,five,six
+
+This is the body of the text
+]]
+
+TEST2 = [[
+Subject: This is a
+	test of the subject line
+Comment: Another lone line
+ of text
+Keywords: one , two , three , four , five (this is a comment)
+ , six , seven , eight , "nine , ten\" wow!" , eleven
+
+The body of the text
+]]
+
+TEST3 = [[
+Subject: this is a test
+Subject: this is another test
+Comment: Another one bites the dust
+Comment: and another one bites, and another one bites
+Keywords: one, two, three, four
+Keywords: five, six,seven,eight
+
+Body
+]]
+
+dump("test1",email:match(TEST1))
+dump("test2",email:match(TEST2))
+dump("test3",email:match(TEST3))
