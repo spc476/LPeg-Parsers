@@ -56,15 +56,26 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:date:     datehdr     :} -> {}
-		/  {:subject:  subjecthdr  :} -> {}
-		/  {:comment:  commenthdr  :} -> {}
-		/  {:keywords: keywordshdr :} -> {}
+		   {:date:        datehdr        :} -> {}
+		/  {:subject:     subjecthdr     :} -> {}
+		/  {:comment:     commenthdr     :} -> {}
+		/  {:keywords:    keywordshdr    :} -> {}
+		/  {:message_id:  message_idhdr  :} -> {}
+		/  {:in_reply_to: in_reply_tohdr :} -> {}
+		/  {:references:  referenceshdr  :} -> {}
 
-datehdr		<- DATE     ':' date_time -> {}         %CRLF
-subjecthdr	<- SUBJECT  ':' unstructured => cleanup %CRLF
-commenthdr	<- COMMENT  ':' unstructured => cleanup %CRLF
-keywordshdr	<- KEYWORDS ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
+datehdr		<- DATE        ':' date_time -> {}         %CRLF
+subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
+commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
+keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
+message_idhdr	<- MESSAGE_ID  ':' msg_id        %CRLF
+in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+ -> {} %CRLF
+referenceshdr	<- REFERENCES  ':' msg_id+ -> {} %CRLF
+
+msg_id		<- CFWS? "<" { id_left "@" id_right } ">" CFWS?
+id_left		<- dot_atom_text
+id_right	<- dot_atom_text / no_fold_literal
+no_fold_literal	<- "[" %dtext* "]"
 
 date_time	<- ( {:weekday: day_of_week :} "," )? thedate time CFWS?
 day_of_week	<- FWS { day_name }
@@ -127,9 +138,13 @@ ccontent	<- %ctext / quoted_pair / comment
 
 DATE		<- [Dd][Aa][Tt][Ee]
 SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
+TO		<- [Tt][Oo]
+REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
 COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
-
+MESSAGE_ID	<- [Mm][Ee][Ss][Ss][Aa][Gg][Ee] "-" [Ii][Dd]
+IN_REPLY_TO	<- [Ii][Nn] "-" REPLY_TO
+REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
 ]]
 
 R =
@@ -178,6 +193,12 @@ Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
 Subject: this is a test
 Comment: This is another test
 Keywords: one,(2) two,three (3),four,"five,eight",six
+Message-ID: <001201cdb2f4$7a32db10$72ec7769@cristian7jjm>
+In-Reply-To: <508AC779.4040101@gmail.com>
+References: <508A971B.4010907@gmail.com>
+        <CAFkDaoRmnONOM+Cu1VKhVzzhZ_QtT+TW3Q853n+eeR2WoBg8jQ@mail.gmail.com>
+        <CAAZ=BVb59PrVzJroysr+yWUKeamE5pk9Rjt=NZHdskoDMKgabQ@mail.gmail.com>
+        <508AC779.4040101@gmail.com>
 
 This is the body of the text
 ]]
@@ -185,6 +206,7 @@ This is the body of the text
 TEST2 = [[
 Subject: This is a
 	test of the subject line
+Date: 25 Oct 2012 15:58:07 -0500 (EDT)
 Comment: Another lone line
  of text
 Keywords: one , two , three , four , five (this is a comment)
@@ -195,6 +217,7 @@ The body of the text
 
 TEST3 = [[
 Subject: this is a test
+Date: 25 Oct 2012 15:58:07 -0500
 Subject: this is another test
 Comment: Another one bites the dust
 Comment: and another one bites, and another one bites
@@ -205,5 +228,5 @@ Body
 ]]
 
 dump("test1",email:match(TEST1))
-dump("test2",email:match(TEST2))
-dump("test3",email:match(TEST3))
+--dump("test2",email:match(TEST2))
+--dump("test3",email:match(TEST3))
