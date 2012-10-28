@@ -120,7 +120,7 @@ atext		<- [A-Za-z]
 dot_atom_text	<- atext+ ('.' atext+)*
 dot_atom	<- CFWS? dot_atom_text CFWS?
 FWS		<- (%WSP* %CRLF)? %WSP+
-CFWS		<- (FWS? comment)+ FWS
+CFWS		<- (FWS? comment)? FWS?
 		/  FWS
 comment		<- "(" (FWS? ccontent)* FWS? ")"
 ccontent	<- %ctext / quoted_pair / comment
@@ -170,10 +170,10 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
-Date: Thu, 25 Oct 2012 15:58:07 -0500
+Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
 Subject: this is a test
 Comment: This is another test
-Keywords: one,two,three,four,five,six
+Keywords: one,(2) two,three (3),four,"five,eight",six
 
 This is the body of the text
 ]]
