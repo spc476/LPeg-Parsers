@@ -55,16 +55,16 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:date:        datehdr        :} -> {}	-- RFC-5322
-		/  {:subject:     subjecthdr     :} -> {}	-- RFC-5322
+		   {:subject:     subjecthdr     :} -> {}	-- RFC-5322
+		/  {:date:        datehdr        :} -> {}	-- RFC-5322
 		/  {:comment:     commenthdr     :} -> {}	-- RFC-5322
 		/  {:keywords:    keywordshdr    :} -> {}	-- RFC-5322
 		/  {:message_id:  message_idhdr  :} -> {}	-- RFC-5322
 		/  {:in_reply_to: in_reply_tohdr :} -> {}	-- RFC-5322
 		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
 
-datehdr		<- DATE        ':' date_time -> {}         %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
+datehdr		<- DATE        ':' date_time -> {}         %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
 message_idhdr	<- MESSAGE_ID  ':' msg_id        %CRLF
@@ -135,9 +135,9 @@ CFWS		<- (FWS? comment)? FWS?
 comment		<- "(" (FWS? ccontent)* FWS? ")"
 ccontent	<- %ctext / quoted_pair / comment
 
-DATE		<- [Dd][Aa][Tt][Ee]
-SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
 TO		<- [Tt][Oo]
+SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
+DATE		<- [Dd][Aa][Tt][Ee]
 REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
 COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
