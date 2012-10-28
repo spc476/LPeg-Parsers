@@ -56,13 +56,34 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:subject:  subjecthdr  :} -> {}
+		   {:date:     datehdr     :} -> {}
+		/  {:subject:  subjecthdr  :} -> {}
 		/  {:comment:  commenthdr  :} -> {}
 		/  {:keywords: keywordshdr :} -> {}
 
+datehdr		<- DATE     ':' date_time -> {} %CRLF
 subjecthdr	<- SUBJECT  ':' unstructured => cleanup %CRLF
 commenthdr	<- COMMENT  ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
+
+date_time	<- ( {:weekday: day_of_week :} "," )? thedate time CFWS?
+day_of_week	<- FWS { day_name }
+day_name	<- 'Mon' / 'Tue' / 'Wed' / 'Thu' / 'Fri' / 'Sat' / 'Sun'
+thedate		<- day month year
+day		<- FWS {:day: %d^+1 -> tonumber :} FWS
+month		<- {:month: 
+		   ( 
+			'Jan' / 'Feb' / 'Mar' / 'Apr' 
+		      / 'May' / 'Jun' / 'Jul' / 'Aug' 
+		      / 'Sep' / 'Oct' / 'Nov' / 'Dec'
+		   ) -> monthtrans :}
+year		<- FWS {:year: %d^4 -> tonumber :} FWS
+time		<- time_of_day zone
+time_of_day	<- hour ":" min (":" second)?
+hour		<- {:hour: %d%d -> tonumber :}
+min		<- {:min:  %d%d -> tonumber :}
+second		<- {:sec:  %d%d -> tonumber :}
+zone		<- FWS {:zone: (("+" / "-") %d^4) -> tonumber :}
 
 unstructured	<- FWS? { (FWS? %VCHAR)* } %WSP*
 phrase		<- word+
@@ -104,6 +125,7 @@ CFWS		<- (FWS? comment)+ FWS
 comment		<- "(" (FWS? ccontent)* FWS? ")"
 ccontent	<- %ctext / quoted_pair / comment
 
+DATE		<- [Dd][Aa][Tt][Ee]
 SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
 COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
@@ -121,7 +143,18 @@ R =
   dtext      = dtext,
   theheaders = theheaders,
 
-  value = value,
+  tonumber = tonumber,
+  
+  monthtrans = function(cap)
+    local trans =
+    {
+      Jan = 1 , Feb =  2 , Mar =  3 , Apr =  4 ,
+      May = 5 , Jun =  6 , Jul =  7 , Aug =  8 ,
+      Sep = 9 , Oct = 10 , Nov = 11 , Dec = 12
+    }
+    
+    return trans[cap]
+  end,
   
   cleanup = function(subject,position,capture)
     local new = capture:gsub("\n","")
@@ -137,6 +170,7 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
+Date: Thu, 25 Oct 2012 15:58:07 -0500
 Subject: this is a test
 Comment: This is another test
 Keywords: one,two,three,four,five,six
