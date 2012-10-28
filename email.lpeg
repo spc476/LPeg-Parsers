@@ -40,15 +40,14 @@ end
 
 -- *******************************************************************
 
-VCHAR   = R"!~"
-WSP     = S" \t"
-SP      = P" "
-CRLF    = P"\r"^-1 * P"\n"
-ctext   = R("!'" , "*[" , "]~")
-qtext   = R("!!" , "#[" , "]~")
-dtext	= R("!Z" , "^!")
-
-theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
+local VCHAR      = R"!~"
+local WSP        = S" \t"
+local SP         = P" "
+local CRLF       = P"\r"^-1 * P"\n"
+local ctext      = R("!'" , "*[" , "]~")
+local qtext      = R("!!" , "#[" , "]~")
+local dtext      = R("!Z" , "^!")
+local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
 
 -- ********************************************************************
 
