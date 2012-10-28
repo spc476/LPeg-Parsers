@@ -163,6 +163,10 @@ R =
     return position,new
   end,
 
+  ddt = function(s,p,c)
+    print(">>>",p,c)
+    return p
+  end,
 };
 
 email = re.compile(G,R)
