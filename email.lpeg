@@ -61,7 +61,7 @@ headers		<-
 		/  {:comment:  commenthdr  :} -> {}
 		/  {:keywords: keywordshdr :} -> {}
 
-datehdr		<- DATE     ':' date_time -> {} %CRLF
+datehdr		<- DATE     ':' date_time -> {}         %CRLF
 subjecthdr	<- SUBJECT  ':' unstructured => cleanup %CRLF
 commenthdr	<- COMMENT  ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
