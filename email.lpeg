@@ -55,13 +55,13 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:date:        datehdr        :} -> {}
-		/  {:subject:     subjecthdr     :} -> {}
-		/  {:comment:     commenthdr     :} -> {}
-		/  {:keywords:    keywordshdr    :} -> {}
-		/  {:message_id:  message_idhdr  :} -> {}
-		/  {:in_reply_to: in_reply_tohdr :} -> {}
-		/  {:references:  referenceshdr  :} -> {}
+		   {:date:        datehdr        :} -> {}	-- RFC-5322
+		/  {:subject:     subjecthdr     :} -> {}	-- RFC-5322
+		/  {:comment:     commenthdr     :} -> {}	-- RFC-5322
+		/  {:keywords:    keywordshdr    :} -> {}	-- RFC-5322
+		/  {:message_id:  message_idhdr  :} -> {}	-- RFC-5322
+		/  {:in_reply_to: in_reply_tohdr :} -> {}	-- RFC-5322
+		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
 
 datehdr		<- DATE        ':' date_time -> {}         %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
