@@ -108,9 +108,12 @@ headers		<-
 		/  {:return_path: return_pathhdr :} -> {}
 		/  {:encrypted:   encryptedhdr   :} -> {}
 
-		/  {:mime:        mimehdr              :} -> {}
-		/  {:content_type: content_typehdr     :} -> {}
+		/  {:mime:           mimehdr           :} -> {}
+		/  {:content_type:   content_typehdr   :} -> {}
 		/  {:content_transfer_encoding: ctehdr :} -> {}
+		/  {:content_id:     content_idhdr     :} -> {}
+		/  {:content_description: content_deschdr :} -> {}
+		/  {:content_length: content_lenhdr    :} -> {}
 
 fromhdr		<- FROM         ':' mailbox_list      -> {} %CRLF
 subjecthdr	<- SUBJECT      ':' unstructured => cleanup %CRLF
@@ -129,10 +132,14 @@ receivedhdr	<- RECEIVED     ':' FWS stamp         -> {} %CRLF
 return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path  -> {} %CRLF
 encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup %CRLF
 
-mimehdr		<- MIME_VERSION ':' mimeversion             %CRLF
-content_typehdr	<- CONTENT_TYPE ':' FWS %mimetype           %CRLF
+mimehdr		<- MIME_VERSION   ':' mimeversion             %CRLF
+content_typehdr	<- CONTENT_TYPE   ':' FWS %mimetype           %CRLF
 ctehdr		<- CONTENT_TRANSFER_ENCODING ':' FWS mechanism  %CRLF
+content_idhdr	<- CONTENT_ID     ':' msg_id                  %CRLF
+content_deschdr	<- CONTENT_DESCRIPTION ':' unstructured => cleanup %CRLF
+content_lenhdr	<- CONTENT_LENGTH ':' FWS length              %CRLF
 
+length		<- %d+ -> tonumber
 mechanism	<- BIT7			-> "7bit"
 		/  BIT8			-> "8bit"
 		/  BINARY		-> "binary"
@@ -314,9 +321,15 @@ ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 
 MIME_VERSION	<- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 CONTENT_TYPE	<- CONTENT "-" [Tt][Yy][Pp][Ee]
-CONTENT_TRANSFER_ENCODING <- CONTENT "-" 
+CONTENT_TRANSFER_ENCODING <- 
+		   CONTENT "-" 
 		   [Tt][Rr][Aa][Nn][Ss][Ff][Ee][Rr] "-"
 		   [Ee][Nn][Cc][Oo][Dd][Ii][Nn][Gg]
+CONTENT_ID	<- CONTENT "-" [Ii][Dd]
+CONTENT_DESCRIPTION <-
+		   CONTENT "-"
+		   [Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn] 
+CONTENT_LENGTH	<- CONTENT "-" [Ll][Ee][Nn][Gg][Tt][Hh]
 CONTENT		<- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
 ]]
 
@@ -394,7 +407,12 @@ TEST1 = [[
 MIME-Version: 1.0
 Content-type: text/plain; charset=us-ascii; format=flowed (Plain text)
 Content-Transfer-Encoding: 7BiT
+Content-ID: <508AC779.4040101@gmail.com>
+Content-Description: Message signed with OpenPGP using GPGMail
+Content-Length: 4092
+
 Return-Path: <lua-l-bounces@lists.lua.org>
+
 Received: from flounder.pepperfish.net (flounder.pepperfish.net [89.238.129.35])
         by brevard.conman.org (Postfix) with ESMTP id 5A42B2EA4CD4
         for <sean@conman.org>; Fri, 26 Oct 2012 13:40:09 -0400 (EDT)
