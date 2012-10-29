@@ -108,8 +108,8 @@ headers		<-
 		/  {:return_path: return_pathhdr :} -> {}
 		/  {:encrypted:   encryptedhdr   :} -> {}
 
-		/  {:mime:        mimehdr        :} -> {}
-		/  {:content_type: content_typehdr :} -> {}
+		/  {:mime:        mimehdr              :} -> {}
+		/  {:content_type: content_typehdr     :} -> {}
 		/  {:content_transfer_encoding: ctehdr :} -> {}
 
 fromhdr		<- FROM         ':' mailbox_list      -> {} %CRLF
