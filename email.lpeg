@@ -108,36 +108,36 @@ headers		<-
 		/  {:return_path: return_pathhdr :} -> {}
 		/  {:encrypted:   encryptedhdr   :} -> {}
 
-		/  {:mime:           mimehdr           :} -> {}
-		/  {:content_type:   content_typehdr   :} -> {}
-		/  {:content_transfer_encoding: ctehdr :} -> {}
-		/  {:content_id:     content_idhdr     :} -> {}
-		/  {:content_description: content_deschdr :} -> {}
-		/  {:content_length: content_lenhdr    :} -> {}
+		/  {:mime:                      mimehdr         :} -> {}
+		/  {:content_type:              content_typehdr :} -> {}
+		/  {:content_transfer_encoding: ctehdr          :} -> {}
+		/  {:content_id:                content_idhdr   :} -> {}
+		/  {:content_description:       content_deschdr :} -> {}
+		/  {:content_length:            content_lenhdr  :} -> {}
 
-fromhdr		<- FROM         ':' mailbox_list      -> {} %CRLF
-subjecthdr	<- SUBJECT      ':' unstructured => cleanup %CRLF
-datehdr		<- DATE         ':' date_time         -> {} %CRLF
-tohdr		<- TO           ':' address_list      -> {} %CRLF
-cchdr		<- CC           ':' address_list      -> {} %CRLF
-bcchdr		<- BCC          ':' address_list      -> {} %CRLF
-commenthdr	<- COMMENT      ':' unstructured => cleanup %CRLF
+fromhdr		<- FROM         ':' mailbox_list            -> {} %CRLF
+subjecthdr	<- SUBJECT      ':' unstructured => cleanup       %CRLF
+datehdr		<- DATE         ':' date_time               -> {} %CRLF
+tohdr		<- TO           ':' address_list            -> {} %CRLF
+cchdr		<- CC           ':' address_list            -> {} %CRLF
+bcchdr		<- BCC          ':' address_list            -> {} %CRLF
+commenthdr	<- COMMENT      ':' unstructured => cleanup       %CRLF
 keywordshdr	<- KEYWORDS     ':' (phrase (',' phrase)* ) -> {} %CRLF
-message_idhdr	<- MESSAGE_ID   ':' msg_id                  %CRLF
-in_reply_tohdr	<- IN_REPLY_TO  ':' msg_id+           -> {} %CRLF
-referenceshdr	<- REFERENCES   ':' msg_id+           -> {} %CRLF
-reply_tohdr	<- REPLY_TO     ':' address_list      -> {} %CRLF
-senderhdr	<- SENDER       ':' mailbox           -> {} %CRLF
-receivedhdr	<- RECEIVED     ':' FWS stamp         -> {} %CRLF
-return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path  -> {} %CRLF
-encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup %CRLF
+message_idhdr	<- MESSAGE_ID   ':' msg_id                        %CRLF
+in_reply_tohdr	<- IN_REPLY_TO  ':' msg_id+                 -> {} %CRLF
+referenceshdr	<- REFERENCES   ':' msg_id+                 -> {} %CRLF
+reply_tohdr	<- REPLY_TO     ':' address_list            -> {} %CRLF
+senderhdr	<- SENDER       ':' mailbox                 -> {} %CRLF
+receivedhdr	<- RECEIVED     ':' FWS stamp               -> {} %CRLF
+return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path        -> {} %CRLF
+encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup       %CRLF
 
-mimehdr		<- MIME_VERSION   ':' mimeversion             %CRLF
-content_typehdr	<- CONTENT_TYPE   ':' FWS %mimetype           %CRLF
-ctehdr		<- CONTENT_TRANSFER_ENCODING ':' FWS mechanism  %CRLF
-content_idhdr	<- CONTENT_ID     ':' msg_id                  %CRLF
-content_deschdr	<- CONTENT_DESCRIPTION ':' unstructured => cleanup %CRLF
-content_lenhdr	<- CONTENT_LENGTH ':' FWS length              %CRLF
+mimehdr		<- MIME_VERSION              ':' mimeversion             %CRLF
+content_typehdr	<- CONTENT_TYPE              ':' FWS %mimetype           %CRLF
+ctehdr		<- CONTENT_TRANSFER_ENCODING ':' FWS mechanism           %CRLF
+content_idhdr	<- CONTENT_ID                ':' msg_id                  %CRLF
+content_deschdr	<- CONTENT_DESCRIPTION       ':' unstructured => cleanup %CRLF
+content_lenhdr	<- CONTENT_LENGTH            ':' FWS length              %CRLF
 
 length		<- %d+ -> tonumber
 mechanism	<- BIT7			-> "7bit"
@@ -149,7 +149,8 @@ mechanism	<- BIT7			-> "7bit"
 BIT7		<- "7" BIT
 BIT8		<- "8" BIT
 BINARY		<- [Bb][Ii][Nn][Aa][Rr][Yy]
-QUOTED_PRINTABLE<- [Qq][Uu][Oo][Tt][Ee][Dd] "-" [Pp][Rr][Ii][Nn][Tt][Aa][Bb][Ll][Ee]
+QUOTED_PRINTABLE<- [Qq][Uu][Oo][Tt][Ee][Dd] 
+		   "-" [Pp][Rr][Ii][Nn][Tt][Aa][Bb][Ll][Ee]
 BASE64		<- [Bb][Aa][Ss][Ee] "64"
 BIT		<- [Bb][Ii][Tt]
 
@@ -319,18 +320,14 @@ ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 -- (this is the MIME stuff)
 -- ------------------------------------------------------------
 
-MIME_VERSION	<- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
-CONTENT_TYPE	<- CONTENT "-" [Tt][Yy][Pp][Ee]
-CONTENT_TRANSFER_ENCODING <- 
-		   CONTENT "-" 
-		   [Tt][Rr][Aa][Nn][Ss][Ff][Ee][Rr] "-"
-		   [Ee][Nn][Cc][Oo][Dd][Ii][Nn][Gg]
-CONTENT_ID	<- CONTENT "-" [Ii][Dd]
-CONTENT_DESCRIPTION <-
-		   CONTENT "-"
-		   [Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn] 
-CONTENT_LENGTH	<- CONTENT "-" [Ll][Ee][Nn][Gg][Tt][Hh]
-CONTENT		<- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
+MIME_VERSION	          <- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
+CONTENT_TYPE	          <- CONTENT "-" [Tt][Yy][Pp][Ee]
+CONTENT_TRANSFER_ENCODING <- CONTENT "-" [Tt][Rr][Aa][Nn][Ss][Ff][Ee][Rr] "-" [Ee][Nn][Cc][Oo][Dd][Ii][Nn][Gg]
+CONTENT_ID	          <- CONTENT "-" [Ii][Dd]
+CONTENT_DESCRIPTION       <- CONTENT "-" [Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn] 
+CONTENT_LENGTH	          <- CONTENT "-" [Ll][Ee][Nn][Gg][Tt][Hh]
+CONTENT		          <- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
+
 ]]
 
 R =
