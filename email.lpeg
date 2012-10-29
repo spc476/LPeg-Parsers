@@ -165,7 +165,7 @@ group_list	<- mailbox_list / CFWS
 mailbox_list	<- mailbox ("," mailbox)*
 mailbox		<- (name_addr / addr_spec) -> {}
 name_addr	<- {:name: display_name? :} angle_addr
-display_name	<- (phrase CFWS?)+ -> {} -> merge
+display_name	<- phrase+ -> {} -> merge
 angle_addr	<- CFWS? "<" addr_spec ">" CFWS?
 addr_spec	<- {:address: (local_part "@" domain) -> merge_addr :}
 local_part	<- dot_atom / quoted_string
