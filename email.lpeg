@@ -88,6 +88,7 @@ headers		<-
 		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
 		/  {:reply_to:    reply_tohdr    :} -> {}	-- RFC-5322
 		/  {:sender:      senderhdr      :} -> {}	-- RFC-5322
+		/  {:received:	  receivedhdr    :} -> {}	-- RFC-5322, RFC-5321
 
 fromhdr		<- FROM        ':' mailbox_list -> {}      %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
@@ -102,6 +103,43 @@ in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+      -> {} %CRLF
 referenceshdr	<- REFERENCES  ':' msg_id+      -> {} %CRLF
 reply_tohdr	<- REPLY_TO    ':' address_list -> {} %CRLF
 senderhdr	<- SENDER      ':' mailbox      -> {} %CRLF
+receivedhdr	<- RECEIVED    ':' FWS stamp    -> {} %CRLF
+
+stamp		<- (
+		     from_domain? by_domain opt_info CFWS? 
+		     ";" {:when: date_time -> {} :}
+                   ) -> {}
+from_domain	<- FROM    FWS {:from: extended_domain :}
+by_domain	<- CFWS BY FWS {:by:   extended_domain :}
+extended_domain	<- domain
+		/  domain FWS "(" tcp_info ")"
+		/  address_literal FWS "(" tcp_info ")"
+tcp_info	<- address_literal
+		/  domain FWS address_literal
+opt_info	<- via? with? id? for? arc?
+via		<- CFWS VIA FWS {:link: link :}
+with		<- CFWS WITH FWS {:with: protocol :}
+id		<- CFWS ID FWS {:id: (atom !'.' / msg_id / dot_atom_text) :}
+for		<- CFWS FOR FWS {:for: (path / mailbox) :}
+arc		<- CFWS atom FWS word
+link		<- TCP / addtl_link
+addtl_link	<- atom
+protocol	<- ESMTP !atext
+		/  SMTP  !atext
+		/  attdl_protocol
+attdl_protocol	<- atom
+path		<- "<" adl ":" mailbox ">"
+adl		<- at_domain ("," at_domain)*
+at_domain	<- "@" domain
+
+BY		<- [Bb][Yy]
+VIA		<- [Vv][Ii][Aa]
+WITH		<- [Ww][Ii][Tt][Hh]
+FOR		<- [Ff][Oo][Rr]
+TCP		<- [Tt][Cc][Pp]
+ESMTP		<- [Ee] SMTP
+SMTP		<- [Ss][Mm][Tt][Pp]
+ID		<- [Ii][Dd]
 
 msg_id		<- CFWS? "<" { id_left "@" id_right } ">" CFWS?
 id_left		<- dot_atom_text
@@ -179,6 +217,7 @@ addr_spec	<- {:address: (local_part "@" domain) -> merge_addr :}
 local_part	<- dot_atom / quoted_string
 domain		<- dot_atom / domain_literal
 domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
+address_literal	<- "[" %dtext* "]"
 
 FROM		<- [Ff][Rr][Oo][Mm]
 TO		<- [Tt][Oo]
@@ -193,6 +232,7 @@ MESSAGE_ID	<- [Mm][Ee][Ss][Ss][Aa][Gg][Ee] "-" [Ii][Dd]
 IN_REPLY_TO	<- [Ii][Nn] "-" REPLY_TO
 REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
 SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
+RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
 
 ]]
 
@@ -262,24 +302,36 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
-From: Sean Conner <spc@conman.org>
-To: Sean Conner <spc@pineal.math.fau.edu>
-Subject: This is a test
-Cc: Sean Hoade <sean@hoade.com>,
-	sunday-gamers:
-		Jeff <jeff@gamers.com>,
-		Keith <keith@gamers.com>,
-		Kurt <kurt@gamers.com>,
-		Tom <tom@gamers.com>,
-		Gregory <gregory@gamers.com>,
-		Keven <keven@gamers.com>;
-Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
+Received: from flounder.pepperfish.net (flounder.pepperfish.net [89.238.129.35])
+        by brevard.conman.org (Postfix) with ESMTP id 5A42B2EA4CD4
+        for <sean@conman.org>; Fri, 26 Oct 2012 13:40:09 -0400 (EDT)
+Received: from localhost ([127.0.0.1] helo=octopus.pepperfish.net)
+        by flounder.pepperfish.net with esmtp (Exim 4.71 #1 (Debian))
+        id 1TRnsU-0002zj-JT; Fri, 26 Oct 2012 18:39:26 +0100
+Received: from mail-la0-f44.google.com ([209.85.215.44])
+        by flounder.pepperfish.net with esmtps (Exim 4.71 #1 (Debian))
+        id 1TRnsR-0002yl-Ft
+        for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 18:39:23 +0100
+Received: by mail-la0-f44.google.com with SMTP id b11so2862558lam.31
+        for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 10:40:01 -0700 (PDT)
 
 Body
 ]]
 
 
-xTEST1 = [[
+TEST1 = [[
+Received: from flounder.pepperfish.net (flounder.pepperfish.net [89.238.129.35])
+        by brevard.conman.org (Postfix) with ESMTP id 5A42B2EA4CD4
+        for <sean@conman.org>; Fri, 26 Oct 2012 13:40:09 -0400 (EDT)
+Received: from localhost ([127.0.0.1] helo=octopus.pepperfish.net)
+        by flounder.pepperfish.net with esmtp (Exim 4.71 #1 (Debian))
+        id 1TRnsU-0002zj-JT; Fri, 26 Oct 2012 18:39:26 +0100
+Received: from mail-la0-f44.google.com ([209.85.215.44])
+        by flounder.pepperfish.net with esmtps (Exim 4.71 #1 (Debian))
+        id 1TRnsR-0002yl-Ft
+        for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 18:39:23 +0100
+Received: by mail-la0-f44.google.com with SMTP id b11so2862558lam.31
+        for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 10:40:01 -0700 (PDT)
 From: Sean Conner <spc (I am the greatest) @conman.org>, 
 	Sean Hoade <hoade@gmail.com>,
 	(Fred Smith) fred@example.net
