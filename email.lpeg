@@ -110,7 +110,10 @@ senderhdr	<- SENDER       ':' mailbox           -> {} %CRLF
 receivedhdr	<- RECEIVED     ':' FWS stamp         -> {} %CRLF
 return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path  -> {} %CRLF
 encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup %CRLF
-mimehdr		<- MIME_VERSION ':' FWS '1.0' -> "1.0"      %CRLF
+
+mimehdr		<- MIME_VERSION ':' mimeversion             %CRLF
+
+mimeversion	<- (CFWS? {%d+} CFWS? '.' CFWS? {%d+} CFWS?) -> {} -> vmerge
 
 reverse_path	<- path /  "<>"
 
@@ -296,6 +299,10 @@ R =
     return table.concat(cap," ")
   end,
 
+  vmerge = function(cap)
+    return table.concat(cap,".")
+  end,
+
   tozone = function(cap)
     local hour = tonumber(cap:sub(2,3)) * 3600
     local min  = tonumber(cap:sub(4,5))
@@ -341,6 +348,9 @@ Received: from mail-la0-f44.google.com ([209.85.215.44])
         id 1TRnsR-0002yl-Ft
         for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 18:39:23 +0100
 MIME-Version: 1.0
+MIME-Version: 1.0 (produced by MetaSend Vx.x)
+MIME-Version: (produced by MetaSend Vx.x) 1.0
+MIME-Version: 1.(produced by MetaSend Vx.x)0
 Received: by mail-la0-f44.google.com with SMTP id b11so2862558lam.31
         for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 10:40:01 -0700 (PDT)
 
