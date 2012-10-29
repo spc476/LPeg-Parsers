@@ -84,16 +84,18 @@ headers		<-
 		/  {:in_reply_to: in_reply_tohdr :} -> {}	-- RFC-5322
 		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
 		/  {:reply_to:    reply_tohdr    :} -> {}	-- RFC-5322
+		/  {:sender:      senderhdr      :} -> {}	-- RFC-5322
 
 fromhdr		<- FROM        ':' mailbox_list -> {}      %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
 datehdr		<- DATE        ':' date_time -> {}         %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
-message_idhdr	<- MESSAGE_ID  ':' msg_id        %CRLF
-in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+ -> {} %CRLF
-referenceshdr	<- REFERENCES  ':' msg_id+ -> {} %CRLF
+message_idhdr	<- MESSAGE_ID  ':' msg_id             %CRLF
+in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+      -> {} %CRLF
+referenceshdr	<- REFERENCES  ':' msg_id+      -> {} %CRLF
 reply_tohdr	<- REPLY_TO    ':' address_list -> {} %CRLF
+senderhdr	<- SENDER      ':' mailbox      -> {} %CRLF
 
 msg_id		<- CFWS? "<" { id_left "@" id_right } ">" CFWS?
 id_left		<- dot_atom_text
@@ -182,6 +184,8 @@ KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
 MESSAGE_ID	<- [Mm][Ee][Ss][Ss][Aa][Gg][Ee] "-" [Ii][Dd]
 IN_REPLY_TO	<- [Ii][Nn] "-" REPLY_TO
 REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
+SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
+
 ]]
 
 R =
