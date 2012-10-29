@@ -135,6 +135,8 @@ headers		<-
 		/  {:lines:        lineshdr        :} -> {}
 		/  {:xref:         xrefhdr         :} -> {}
 
+		/  {:archived_at:  archived_athdr  :} -> {}
+
 fromhdr		<- FROM         ':' mailbox_list            -> {} %CRLF
 subjecthdr	<- SUBJECT      ':' unstructured => cleanup       %CRLF
 datehdr		<- DATE         ':' date_time               -> {} %CRLF
@@ -178,6 +180,10 @@ summaryhdr	<- SUMMARY      ':' unstructured => cleanup %CRLF
 approvedhdr	<- APPROVED     ':' unstructured => cleanup %CRLF
 lineshdr	<- LINES        ':' FWS length              %CRLF
 xrefhdr		<- XREF         ':' FWS xref          -> {} %CRLF
+
+archived_athdr	<- ARCHIVED_AT  ':' FWS archive_url         %CRLF
+
+archive_url	<- "<" { [^>]+ } ">"
 
 xref		<- {:host: xrefhost :} FWS xreflist
 xreflist	<- groupmsg -> {} (FWS groupmsg)* -> {}
@@ -442,6 +448,12 @@ APPROVED	<- [Aa][Pp][Pp][Rr][Oo][Vv][Ee][Dd]
 LINES		<- [Ll][Ii][Nn][Ee][Ss]
 XREF		<- [Xx][Rr][Ee][Ff]
 
+-- --------------------------------------------------------------------
+-- field defined by RFC-5064, Archived-At:
+-- -------------------------------------------------------------------
+
+ARCHIVED_AT	<- [Aa][Rr][Cc][Hh][Ii][Vv][Ee][Dd] "-" [Aa][Tt]
+
 ]]
 
 R =
@@ -520,6 +532,9 @@ email = re.compile(G,R)
 
 TEST1 = [[
 MIME-Version: 1.0
+Archived-At: <http://boston.conman.org/>
+Archived-At: <http://www.conman.org/>
+
 Distribution: nj,ny
 Organization: The Amalgamated Laboratories, Inc, NJ division
 Summary: In this part, we learn of the truth behind the conspriacy
