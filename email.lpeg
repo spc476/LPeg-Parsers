@@ -69,6 +69,22 @@ local group =
   )
    * P";" * V"CFWS"^-1
 
+local mimetype = 
+  Cf(
+      Ct(C(V"type" * P"/" * V"subtype"))
+      * ( P";" * V"FWS" 
+          * C(V"attribute") * P"=" * C(V"value") 
+	  / function(a,b)
+              print(">>>",a,b)
+              return { a , b }
+            end
+        )^0 + Cc()
+      , function(a,b)
+          a[b[1]] = b[2]
+          return a
+        end
+    )
+
 -- ********************************************************************
 
 G = --[[ lpeg/re ]] [[
@@ -93,6 +109,7 @@ headers		<-
 		/  {:encrypted:   encryptedhdr   :} -> {}
 
 		/  {:mime:        mimehdr        :} -> {}
+		/  {:content_type: content_typehdr :} -> {}
 
 fromhdr		<- FROM         ':' mailbox_list      -> {} %CRLF
 subjecthdr	<- SUBJECT      ':' unstructured => cleanup %CRLF
@@ -112,6 +129,26 @@ return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path  -> {} %CRLF
 encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup %CRLF
 
 mimehdr		<- MIME_VERSION ':' mimeversion             %CRLF
+content_typehdr	<- CONTENT_TYPE ':' FWS %mimetype           %CRLF
+
+type		<- discrete_type / composite_type
+discrete_type	<- "text"
+		/  "image"
+		/  "audio"
+		/  "video"
+		/  "application"
+		/  extension_token
+composite_type	<- "message"
+		/  "multipart"
+		/  extension_token
+extension_token	<- x_token
+x_token		<- [Xx] "-" ([A-Za-z0-9] / '-')+
+subtype		<- extension_token / iana_token
+iana_token	<- ([A-Za-z0-9] / '-')+
+parameter	<- (attribute '=' value) -> {}
+attribute	<- token
+value		<- (token / quoted_string)
+token		<- [^][()<>@,;:\"/?=%s%c]+
 
 mimeversion	<- (CFWS? {%d+} CFWS? '.' CFWS? {%d+} CFWS?) -> {} -> vmerge
 
@@ -261,9 +298,8 @@ ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 -- ------------------------------------------------------------
 
 MIME_VERSION	<- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
-
-
-
+CONTENT_TYPE	<- CONTENT "-" [Tt][Yy][Pp][Ee]
+CONTENT		<- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
 ]]
 
 R =
@@ -277,6 +313,7 @@ R =
   dtext      = dtext,
   theheaders = theheaders,
   group      = group,
+  mimetype   = mimetype,
 
   tonumber = tonumber,
   
@@ -336,6 +373,9 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
+MIME-Version: 1.0
+Content-type: text/plain; charset=us-ascii; format=flowed
+
 Return-Path: <lua-l-bounces@lists.lua.org>
 Received: from flounder.pepperfish.net (flounder.pepperfish.net [89.238.129.35])
         by brevard.conman.org (Postfix) with ESMTP id 5A42B2EA4CD4
