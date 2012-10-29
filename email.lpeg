@@ -125,7 +125,7 @@ time_of_day	<- hour ":" min (":" second)?
 hour		<- {:hour: %d%d -> tonumber :}
 min		<- {:min:  %d%d -> tonumber :}
 second		<- {:sec:  %d%d -> tonumber :}
-zone		<- FWS {:zone: (("+" / "-") %d^4) -> tonumber :}
+zone		<- FWS {:zone: (("+" / "-") %d^4) -> tozone:}
 
 unstructured	<- FWS? { (FWS? %VCHAR)* } %WSP*
 phrase		<- word+
@@ -227,6 +227,18 @@ R =
   
   merge = function(cap)
     return table.concat(cap," ")
+  end,
+
+  tozone = function(cap)
+    local hour = tonumber(cap:sub(2,3)) * 3600
+    local min  = tonumber(cap:sub(4,5))
+    local sec  = hour + min
+
+    if cap:sub(1,1) == '-' then
+      return -sec
+    else
+      return sec
+    end
   end,
 
   cleanup = function(subject,position,capture)
