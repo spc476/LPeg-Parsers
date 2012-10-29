@@ -54,7 +54,8 @@ local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
 
 local group = 
   Cf(
-       C(V"display_name")
+       V"CFWS"^-1
+     * C(V"display_name")
      * Cf(
            Ct"" * P":" * V"group_list"^-1 + Cc(""),
            function(a,b)
