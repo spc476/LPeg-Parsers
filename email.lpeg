@@ -96,7 +96,7 @@ tohdr		<- TO          ':' address_list -> {} %CRLF
 cchdr		<- CC          ':' address_list -> {} %CRLF
 bcchdr		<- BCC         ':' address_list -> {} %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
-keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
+keywordshdr	<- KEYWORDS    ':' (phrase (',' phrase)* ) -> {} %CRLF
 message_idhdr	<- MESSAGE_ID  ':' msg_id             %CRLF
 in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+      -> {} %CRLF
 referenceshdr	<- REFERENCES  ':' msg_id+      -> {} %CRLF
