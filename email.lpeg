@@ -123,6 +123,18 @@ headers		<-
 		/  {:list_owner:	list_ownerhdr	:} -> {}
 		/  {:list_archive:	list_archivehdr :} -> {}
 
+		/  {:newsgroups:   newsgrouphdr    :} -> {}
+		/  {:path:         pathhdr         :} -> {}
+		/  {:followup_to:  followup_tohdr  :} -> {}
+		/  {:expires:      expireshdr      :} -> {}
+		/  {:control:      controlhdr      :} -> {}
+		/  {:distribution: distributionhdr :} -> {}
+		/  {:organization: organizationhdr :} -> {}
+		/  {:summary:      summaryhdr      :} -> {}
+		/  {:approved:     approvedhdr     :} -> {}
+		/  {:lines:        lineshdr        :} -> {}
+		/  {:xref:         xrefhdr         :} -> {}
+
 fromhdr		<- FROM         ':' mailbox_list            -> {} %CRLF
 subjecthdr	<- SUBJECT      ':' unstructured => cleanup       %CRLF
 datehdr		<- DATE         ':' date_time               -> {} %CRLF
@@ -154,6 +166,55 @@ list_subhdr	<- LIST_SUBSCRIBE   ':' FWS           list_locs  -> {} %CRLF
 list_posthdr	<- LIST_POST        ':' FWS (list_no? list_locs) -> {} %CRLF
 list_ownerhdr	<- LIST_OWNER       ':' FWS           list_locs  -> {} %CRLF
 list_archivehdr	<- LIST_ARCHIVE     ':' FWS           list_locs  -> {} %CRLF
+
+newsgrouphdr	<- NEWSGROUPS   ':' FWS newsgroups    -> {} %CRLF
+pathhdr		<- PATH         ':' FWS newspath?     -> {} %CRLF
+followup_tohdr	<- FOLLOWUP_TO  ':' FWS newsgroups    -> {} %CRLF
+expireshdr	<- EXPIRES      ':' date_time         -> {} %CRLF
+controlhdr	<- CONTROL      ':' FWS control_list  -> {} %CRLF
+distributionhdr	<- DISTRIBUTION ':' FWS dist_list     -> {} %CRLF
+organizationhdr	<- ORGANIZATION ':' unstructured => cleanup %CRLF
+summaryhdr	<- SUMMARY      ':' unstructured => cleanup %CRLF
+approvedhdr	<- APPROVED     ':' unstructured => cleanup %CRLF
+lineshdr	<- LINES        ':' FWS length              %CRLF
+xrefhdr		<- XREF         ':' FWS xref          -> {} %CRLF
+
+xref		<- {:host: xrefhost :} FWS xreflist
+xreflist	<- groupmsg -> {} (FWS groupmsg)* -> {}
+xrefhost	<- [A-Za-z0-9]+
+groupmsg	<- {:newsgroup: dot_atom_text :} ":" {:id: %d+ :}
+dist_list	<- distribution (FWS? "," FWS? distribution)*
+distribution	<- { [A-Za-z]+ }
+newsgroups	<- { dot_atom_text } ( FWS? "," FWS? { dot_atom_text } )*
+newspath	<- newshost (punct+ newshost)*
+newshost	<- { [A-Za-z0-9.]+ }
+punct		<- [][~`!@#$%^&*()-_=+{}|\;':"<>,/?] / FWS
+control_list	<- (
+		        ctrl_cancel
+		     /  ctrl_ihave
+		     /  ctrl_sendme
+		     /  ctrl_newgroup
+		     /  ctrl_rmgroup
+		     /  ctrl_sendsys
+		     /  ctrl_version
+		   ) -> {}
+ctrl_cancel	<- {:cmd: CANCEL   -> "cancel"   :} FWS msg_id
+ctrl_ihave	<- {:cmd: IHAVE    -> "ihave"    :} FWS msg_id+
+ctrl_sendme	<- {:cmd: SENDME   -> "sendme"   :} FWS msg_id+
+ctrl_newgroup	<- {:cmd: NEWGROUP -> "newgroup" :} FWS { dot_atom_text } (FWS moderated)?
+ctrl_rmgroup	<- {:cmd: RMGROUP  -> "rmgroup"  :} FWS { dot_atom_text }
+ctrl_sendsys	<- {:cmd: SENDSYS  -> "sendsys"  :}
+ctrl_version	<- {:cmd: VERSION  -> "version"  :}
+moderated	<- {:moderated: MODERATED :}
+
+CANCEL		<- [Cc][Aa][Nn][Cc][Ee][Ll]
+IHAVE		<- [Ii][Hh][Aa][Vv][Ee]
+SENDME		<- [Ss][Ee][Nn][Dd][Mm][Ee]
+NEWGROUP	<- [Nn][Ee][Ww][Gg][Rr][Oo][Uu][Pp]
+RMGROUP		<- [Rr][Mm][Gg][Rr][Oo][Uu][Pp]
+SENDSYS		<- [Ss][Ee][Nn][Dd][Ss][Yy][Ss]
+VERSION		<- [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
+MODERATED	<- [Mm][Oo][Dd][Ee][Rr][Aa][Tt][Ee][Dd]
 
 list_id		<- {:name: phrase? :} "<" {:id: list_label :} ">"
 list_label	<- dot_atom_text
@@ -364,6 +425,23 @@ LIST_ARCHIVE		<- LIST "-" [Aa][Rr][Cc][Hh][Ii][Vv][Ee]
 LIST			<- [Ll][Ii][Ss][Tt]
 SUBSCRIBE		<- [Ss][Uu][Bb][Ss][Cc][Rr][Ii][Bb][Ee]
 
+-- ------------------------------------------------------------------
+-- fields defined in RFC-1036 (USENET); only the ones not defined
+-- elsewhere are defined here
+-- ------------------------------------------------------------------
+
+NEWSGROUPS	<- [Nn][Ee][Ww][Ss][Gg][Rr][Oo][Uu][Pp][Ss] 
+PATH		<- [Pp][Aa][Tt][Hh]
+FOLLOWUP_TO	<- [Ff][Oo][Ll][Ll][Oo][Ww] "-" [Uu][Pp]
+EXPIRES		<- [Ee][Xx][Pp][Ii][Rr][Ee][Ss]
+CONTROL		<- [Cc][Oo][Nn][Tt][Rr][Oo][Ll]
+DISTRIBUTION	<- [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn]
+ORGANIZATION	<- [Oo][Rr][Gg][Aa][Nn][Ii][Zz][Aa][Tt][Ii][Oo][Nn]
+SUMMARY		<- [Ss][Uu][Mm][Mm][Aa][Rr][Yy]
+APPROVED	<- [Aa][Pp][Pp][Rr][Oo][Vv][Ee][Dd]
+LINES		<- [Ll][Ii][Nn][Ee][Ss]
+XREF		<- [Xx][Rr][Ee][Ff]
+
 ]]
 
 R =
@@ -441,6 +519,17 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
+MIME-Version: 1.0
+Distribution: nj,ny
+Organization: The Amalgamated Laboratories, Inc, NJ division
+Summary: In this part, we learn of the truth behind the conspriacy
+Approved: By NASA no less!
+Lines: 15
+Xref: seismo news.lists:461 news.groups:6378
+Newsgroups: news.announce,news.misc , news.misc,alt.folklore.computers
+Path: cbosgd!mhuxj!mhuxt!eagle!jerry, @cbosgd.ATT.COM,@mhuxj.ATT.COM,@mhuxt.ATT.COM
+
+
 MIME-Version: 1.0
 List-Id: <users.httpd.apache.org>
 List-Help: <ftp://ftp.host.com/list.txt> (FTP),
@@ -538,30 +627,4 @@ References: <508A971B.4010907@gmail.com>
 This is the body of the text
 ]]
 
-TEST2 = [[
-Subject: This is a
-	test of the subject line
-Date: 25 Oct 2012 15:58:07 -0500 (EDT)
-Comment: Another lone line
- of text
-Keywords: one , two , three , four , five (this is a comment)
- , six , seven , eight , "nine , ten\" wow!" , eleven
-
-The body of the text
-]]
-
-TEST3 = [[
-Subject: this is a test
-Date: 25 Oct 2012 15:58:07 -0500
-Subject: this is another test
-Comment: Another one bites the dust
-Comment: and another one bites, and another one bites
-Keywords: one, two, three, four
-Keywords: five, six,seven,eight
-
-Body
-]]
-
 dump("test1",email:match(TEST1))
---dump("test2",email:match(TEST2))
---dump("test3",email:match(TEST3))
