@@ -7,7 +7,10 @@ local P  = lpeg.P
 local S  = lpeg.S
 local R  = lpeg.R
 local V  = lpeg.V
+local C  = lpeg.C
+local Cc = lpeg.Cc
 local Cf = lpeg.Cf
+local Cg = lpeg.Cg
 local Ct = lpeg.Ct
 
 -- ***********************************************************************
@@ -49,20 +52,39 @@ local qtext      = R("!!" , "#[" , "]~")
 local dtext      = R("!Z" , "^!")
 local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
 
+local group = 
+  Cf(
+       C(V"display_name")
+     * Cf(
+           Ct"" * P":" * V"group_list"^-1 + Cc(""),
+           function(a,b)
+             a[#a + 1] = b
+             return a
+           end
+         ),
+     function(a,b)
+       return { [a] = b }
+     end
+  )
+   * P";" * V"CFWS"^-1
+
 -- ********************************************************************
 
 G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:subject:     subjecthdr     :} -> {}	-- RFC-5322
+		   {:from:        fromhdr        :} -> {}	-- RFC-5322
+		/  {:subject:     subjecthdr     :} -> {}	-- RFC-5322
 		/  {:date:        datehdr        :} -> {}	-- RFC-5322
 		/  {:comment:     commenthdr     :} -> {}	-- RFC-5322
 		/  {:keywords:    keywordshdr    :} -> {}	-- RFC-5322
 		/  {:message_id:  message_idhdr  :} -> {}	-- RFC-5322
 		/  {:in_reply_to: in_reply_tohdr :} -> {}	-- RFC-5322
 		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
+		/  {:reply_to:    reply_tohdr    :} -> {}	-- RFC-5322
 
+fromhdr		<- FROM        ':' mailbox_list -> {}      %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
 datehdr		<- DATE        ':' date_time -> {}         %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
@@ -70,6 +92,7 @@ keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
 message_idhdr	<- MESSAGE_ID  ':' msg_id        %CRLF
 in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+ -> {} %CRLF
 referenceshdr	<- REFERENCES  ':' msg_id+ -> {} %CRLF
+reply_tohdr	<- REPLY_TO    ':' address_list -> {} %CRLF
 
 msg_id		<- CFWS? "<" { id_left "@" id_right } ">" CFWS?
 id_left		<- dot_atom_text
@@ -128,13 +151,27 @@ atext		<- [A-Za-z]
 		/  "~"
 
 dot_atom_text	<- atext+ ('.' atext+)*
-dot_atom	<- CFWS? dot_atom_text CFWS?
+dot_atom	<- CFWS? { dot_atom_text } CFWS?
 FWS		<- (%WSP* %CRLF)? %WSP+
 CFWS		<- (FWS? comment)? FWS?
 		/  FWS
 comment		<- "(" (FWS? ccontent)* FWS? ")"
 ccontent	<- %ctext / quoted_pair / comment
 
+address_list	<- address ("," address)*
+address		<- mailbox / %group
+group_list	<- mailbox_list / CFWS
+mailbox_list	<- mailbox ("," mailbox)*
+mailbox		<- (name_addr / addr_spec) -> {}
+name_addr	<- {:name: display_name? :} angle_addr
+display_name	<- (phrase CFWS?)+ -> {} -> merge
+angle_addr	<- CFWS? "<" addr_spec ">" CFWS?
+addr_spec	<- {:address: (local_part "@" domain) -> merge_addr :}
+local_part	<- dot_atom / quoted_string
+domain		<- dot_atom / domain_literal
+domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
+
+FROM		<- [Ff][Rr][Oo][Mm]
 TO		<- [Tt][Oo]
 SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
 DATE		<- [Dd][Aa][Tt][Ee]
@@ -156,9 +193,14 @@ R =
   qtext      = qtext,
   dtext      = dtext,
   theheaders = theheaders,
+  group      = group,
 
   tonumber = tonumber,
   
+  merge_addr = function(l,d)
+    return l .. "@" .. d
+  end,
+
   monthtrans = function(cap)
     local trans =
     {
@@ -170,6 +212,10 @@ R =
     return trans[cap]
   end,
   
+  merge = function(cap)
+    return table.concat(cap," ")
+  end,
+
   cleanup = function(subject,position,capture)
     local new = capture:gsub("\n","")
     new = new:gsub([[\.]],function(x) return x:sub(2,2) end)
@@ -179,6 +225,9 @@ R =
 
   ddt = function(s,p,c)
     print(">>>",p,c)
+    if type(c) == 'table' then
+      dump("c",c)
+    end
     return p
   end,
 };
@@ -188,6 +237,36 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
+Reply-To: Sean Hoade <hoade@gmail.com>,
+	(Fred Smith) fred@example.net,
+	blender-children: 
+		Sean Conner <spc@conman.org>,
+		Bill (Hogweed) Lefler <lefler@lefler.com>,
+		Sean (DemiGod) Williams <sean (I AM GOD) @ seanwillams.com>,
+		Mark (the Bastard) Hamzy <mark@bastard.hamzy.com> ;,
+	sunday-gamers:
+		Tom <tom@tom.com>,
+		Keith <keith@gamers.com>,
+		Jeff <jeff@gamers.com>
+		;,misc@hello.com,
+	undisclosed-recipients:;
+Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
+
+Body
+]]
+
+
+xTEST1 = [[
+From: Sean Conner <spc (I am the greatest) @conman.org>, 
+	Sean Hoade <hoade@gmail.com>,
+	(Fred Smith) fred@example.net
+Reply-To: Sean Hoade <hoade@gmail.com>,
+	(Fred Smith) fred@example.net,
+	blender-children: 
+		Sean Conner <spc@conman.org>,
+		Bill (Hogweed) Lefler <lefler@lefler.com>,
+		Sean (DemiGod) Williams <sean (I AM GOD) @ seanwillams.com>,
+		Mark (the Bastard) Hamzy <mark@bastard.hamzy.com>;
 Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
 Subject: this is a test
 Comment: This is another test
