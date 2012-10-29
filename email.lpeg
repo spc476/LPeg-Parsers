@@ -261,17 +261,24 @@ Body
 ]]
 
 
-xTEST1 = [[
+TEST1 = [[
 From: Sean Conner <spc (I am the greatest) @conman.org>, 
 	Sean Hoade <hoade@gmail.com>,
 	(Fred Smith) fred@example.net
+Sender: Sean Conner <spc@conman.org>
 Reply-To: Sean Hoade <hoade@gmail.com>,
 	(Fred Smith) fred@example.net,
 	blender-children: 
 		Sean Conner <spc@conman.org>,
 		Bill (Hogweed) Lefler <lefler@lefler.com>,
 		Sean (DemiGod) Williams <sean (I AM GOD) @ seanwillams.com>,
-		Mark (the Bastard) Hamzy <mark@bastard.hamzy.com>;
+		Mark (the Bastard) Hamzy <mark@bastard.hamzy.com> ;,
+	sunday-gamers:
+		Tom <tom@tom.com>,
+		Keith <keith@gamers.com>,
+		Jeff <jeff@gamers.com>
+		;,misc@hello.com,
+	undisclosed-recipients:;
 Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
 Subject: this is a test
 Comment: This is another test
