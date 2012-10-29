@@ -75,22 +75,22 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:from:        fromhdr        :} -> {}	-- RFC-5322
-		/  {:to:	  tohdr          :} -> {}	-- RFC-5322
-		/  {:subject:     subjecthdr     :} -> {}	-- RFC-5322
-		/  {:date:        datehdr        :} -> {}	-- RFC-5322
-		/  {:cc:          cchdr          :} -> {}	-- RFC-5322
-		/  {:bcc:         bcchdr         :} -> {}	-- RFC-5322
-		/  {:comment:     commenthdr     :} -> {}	-- RFC-5322
-		/  {:keywords:    keywordshdr    :} -> {}	-- RFC-5322
-		/  {:message_id:  message_idhdr  :} -> {}	-- RFC-5322
-		/  {:in_reply_to: in_reply_tohdr :} -> {}	-- RFC-5322
-		/  {:references:  referenceshdr  :} -> {}	-- RFC-5322
-		/  {:reply_to:    reply_tohdr    :} -> {}	-- RFC-5322
-		/  {:sender:      senderhdr      :} -> {}	-- RFC-5322
-		/  {:received:	  receivedhdr    :} -> {}	-- RFC-5322, RFC-5321
-		/  {:return_path: return_pathhdr :} -> {}	-- RFC-5322, RCC-5321
-		/  {:encrypted:   encryptedhdr   :} -> {}	-- RFC-822
+		   {:from:        fromhdr        :} -> {}
+		/  {:to:	  tohdr          :} -> {}
+		/  {:subject:     subjecthdr     :} -> {}
+		/  {:date:        datehdr        :} -> {}
+		/  {:cc:          cchdr          :} -> {}
+		/  {:bcc:         bcchdr         :} -> {}
+		/  {:comment:     commenthdr     :} -> {}
+		/  {:keywords:    keywordshdr    :} -> {}
+		/  {:message_id:  message_idhdr  :} -> {}
+		/  {:in_reply_to: in_reply_tohdr :} -> {}
+		/  {:references:  referenceshdr  :} -> {}
+		/  {:reply_to:    reply_tohdr    :} -> {}
+		/  {:sender:      senderhdr      :} -> {}
+		/  {:received:	  receivedhdr    :} -> {}
+		/  {:return_path: return_pathhdr :} -> {}
+		/  {:encrypted:   encryptedhdr   :} -> {}
 
 fromhdr		<- FROM        ':' mailbox_list      -> {} %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
@@ -225,21 +225,28 @@ domain		<- dot_atom / domain_literal
 domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
 address_literal	<- "[" %dtext* "]"
 
-FROM		<- [Ff][Rr][Oo][Mm]
-TO		<- [Tt][Oo]
-SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
+-- -------------------------------------------------------------
+-- fields defined in RFC-5322, RFC-2822, RFC-822
+-- see RFC-5321 for more information on Return-Path: and 
+-- Received:
+-- -------------------------------------------------------------
+
+RETURN_PATH	<- [Rr][Ee][Tt][Uu][Rr][Nn] "-" [Pp][Aa][Tt][Hh]
+RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
+-- Resent headers still need to be done
 DATE		<- [Dd][Aa][Tt][Ee]
+FROM		<- [Ff][Rr][Oo][Mm]
+SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
+REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
+TO		<- [Tt][Oo]
 CC		<- [Cc][Cc]
 BCC		<- [Bb][Cc][Cc]
-REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
-COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
-KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
 MESSAGE_ID	<- [Mm][Ee][Ss][Ss][Aa][Gg][Ee] "-" [Ii][Dd]
 IN_REPLY_TO	<- [Ii][Nn] "-" REPLY_TO
 REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
-SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
-RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
-RETURN_PATH	<- [Rr][Ee][Tt][Uu][Rr][Nn] "-" [Pp][Aa][Tt][Hh]
+SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
+COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
+KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
 ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 
 ]]
