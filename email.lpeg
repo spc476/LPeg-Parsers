@@ -90,22 +90,24 @@ headers		<-
 		/  {:sender:      senderhdr      :} -> {}	-- RFC-5322
 		/  {:received:	  receivedhdr    :} -> {}	-- RFC-5322, RFC-5321
 		/  {:return_path: return_pathhdr :} -> {}	-- RFC-5322, RCC-5321
+		/  {:encrypted:   encryptedhdr   :} -> {}	-- RFC-822
 
-fromhdr		<- FROM        ':' mailbox_list -> {}      %CRLF
+fromhdr		<- FROM        ':' mailbox_list      -> {} %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
-datehdr		<- DATE        ':' date_time -> {}         %CRLF
-tohdr		<- TO          ':' address_list -> {} %CRLF
-cchdr		<- CC          ':' address_list -> {} %CRLF
-bcchdr		<- BCC         ':' address_list -> {} %CRLF
+datehdr		<- DATE        ':' date_time         -> {} %CRLF
+tohdr		<- TO          ':' address_list      -> {} %CRLF
+cchdr		<- CC          ':' address_list      -> {} %CRLF
+bcchdr		<- BCC         ':' address_list      -> {} %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS    ':' (phrase (',' phrase)* ) -> {} %CRLF
-message_idhdr	<- MESSAGE_ID  ':' msg_id             %CRLF
-in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+      -> {} %CRLF
-referenceshdr	<- REFERENCES  ':' msg_id+      -> {} %CRLF
-reply_tohdr	<- REPLY_TO    ':' address_list -> {} %CRLF
-senderhdr	<- SENDER      ':' mailbox      -> {} %CRLF
-receivedhdr	<- RECEIVED    ':' FWS stamp    -> {} %CRLF
-return_pathhdr	<- RETURN_PATH ':' FWS reverse_path -> {} %CRLF
+message_idhdr	<- MESSAGE_ID  ':' msg_id                  %CRLF
+in_reply_tohdr	<- IN_REPLY_TO ':' msg_id+           -> {} %CRLF
+referenceshdr	<- REFERENCES  ':' msg_id+           -> {} %CRLF
+reply_tohdr	<- REPLY_TO    ':' address_list      -> {} %CRLF
+senderhdr	<- SENDER      ':' mailbox           -> {} %CRLF
+receivedhdr	<- RECEIVED    ':' FWS stamp         -> {} %CRLF
+return_pathhdr	<- RETURN_PATH ':' FWS reverse_path  -> {} %CRLF
+encryptedhdr	<- ENCRYPTED   ':' unstructured => cleanup %CRLF
 
 reverse_path	<- path /  "<>"
 
@@ -238,6 +240,7 @@ REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
 SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
 RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
 RETURN_PATH	<- [Rr][Ee][Tt][Uu][Rr][Nn] "-" [Pp][Aa][Tt][Hh]
+ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 
 ]]
 
@@ -341,7 +344,9 @@ Received: by mail-la0-f44.google.com with SMTP id b11so2862558lam.31
         for <lua-l@lists.lua.org>; Fri, 26 Oct 2012 10:40:01 -0700 (PDT)
 From: Sean Conner <spc (I am the greatest) @conman.org>, 
 	Sean Hoade <hoade@gmail.com>,
-	(Fred Smith) fred@example.net
+	(Fred Smith) fred@example.net,
+	wilma.spam@examp.net,
+	velma+spam@example.net
 Sender: Sean Conner <spc@conman.org>
 Reply-To: Sean Hoade <hoade@gmail.com>,
 	(Fred Smith) fred@example.net,
@@ -395,5 +400,5 @@ Body
 ]]
 
 dump("test1",email:match(TEST1))
---dump("test2",email:match(TEST2))
---dump("test3",email:match(TEST3))
+dump("test2",email:match(TEST2))
+dump("test3",email:match(TEST3))
