@@ -76,8 +76,11 @@ G = --[[ lpeg/re ]] [[
 email		<- %theheaders
 headers		<- 
 		   {:from:        fromhdr        :} -> {}	-- RFC-5322
+		/  {:to:	  tohdr          :} -> {}	-- RFC-5322
 		/  {:subject:     subjecthdr     :} -> {}	-- RFC-5322
 		/  {:date:        datehdr        :} -> {}	-- RFC-5322
+		/  {:cc:          cchdr          :} -> {}	-- RFC-5322
+		/  {:bcc:         bcchdr         :} -> {}	-- RFC-5322
 		/  {:comment:     commenthdr     :} -> {}	-- RFC-5322
 		/  {:keywords:    keywordshdr    :} -> {}	-- RFC-5322
 		/  {:message_id:  message_idhdr  :} -> {}	-- RFC-5322
@@ -89,6 +92,9 @@ headers		<-
 fromhdr		<- FROM        ':' mailbox_list -> {}      %CRLF
 subjecthdr	<- SUBJECT     ':' unstructured => cleanup %CRLF
 datehdr		<- DATE        ':' date_time -> {}         %CRLF
+tohdr		<- TO          ':' address_list -> {} %CRLF
+cchdr		<- CC          ':' address_list -> {} %CRLF
+bcchdr		<- BCC         ':' address_list -> {} %CRLF
 commenthdr	<- COMMENT     ':' unstructured => cleanup %CRLF
 keywordshdr	<- KEYWORDS    ':' ( (phrase (',' phrase)* ) ) -> {} %CRLF
 message_idhdr	<- MESSAGE_ID  ':' msg_id             %CRLF
@@ -178,6 +184,8 @@ FROM		<- [Ff][Rr][Oo][Mm]
 TO		<- [Tt][Oo]
 SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
 DATE		<- [Dd][Aa][Tt][Ee]
+CC		<- [Cc][Cc]
+BCC		<- [Bb][Cc][Cc]
 REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
 COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
@@ -242,26 +250,24 @@ email = re.compile(G,R)
 -- **********************************************************************
 
 TEST1 = [[
-Reply-To: Sean Hoade <hoade@gmail.com>,
-	(Fred Smith) fred@example.net,
-	blender-children: 
-		Sean Conner <spc@conman.org>,
-		Bill (Hogweed) Lefler <lefler@lefler.com>,
-		Sean (DemiGod) Williams <sean (I AM GOD) @ seanwillams.com>,
-		Mark (the Bastard) Hamzy <mark@bastard.hamzy.com> ;,
+From: Sean Conner <spc@conman.org>
+To: Sean Conner <spc@pineal.math.fau.edu>
+Subject: This is a test
+Cc: Sean Hoade <sean@hoade.com>,
 	sunday-gamers:
-		Tom <tom@tom.com>,
+		Jeff <jeff@gamers.com>,
 		Keith <keith@gamers.com>,
-		Jeff <jeff@gamers.com>
-		;,misc@hello.com,
-	undisclosed-recipients:;
+		Kurt <kurt@gamers.com>,
+		Tom <tom@gamers.com>,
+		Gregory <gregory@gamers.com>,
+		Keven <keven@gamers.com>;
 Date: Thu, 25 Oct 2012 15:58:07 -0500 (EDT)
 
 Body
 ]]
 
 
-TEST1 = [[
+xTEST1 = [[
 From: Sean Conner <spc (I am the greatest) @conman.org>, 
 	Sean Hoade <hoade@gmail.com>,
 	(Fred Smith) fred@example.net
