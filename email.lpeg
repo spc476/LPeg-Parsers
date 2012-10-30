@@ -99,7 +99,7 @@ local mimetype =
       * ( P";" * V"FWS" 
           * C(V"attribute") * P"=" * C(V"value") 
 	  / function(a,b)
-              return { a , b }
+              return { a , b:gsub([["]],"") }
             end
         )^0 + Cc(),
       function(a,b)
