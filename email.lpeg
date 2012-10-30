@@ -27,36 +27,28 @@ local function doset(t,i)
     end
   end
 
-  if i == nil then return t end
-
-  if i._GENERIC then
-    if t.generic == nil then
-      t.generic = {}
-    end
-    i._GENERIC = nil
-    for name,value in pairs(i) do
-      if t.generic[name] == nil then
-        t.generic[name] = value
-      elseif type(t.generic[name]) == 'table' then
-        table.insert(t.generic[name],value)
+  local function addto(t,l)
+    for name,value in pairs(l) do
+      if t[name] == nil then
+        t[name] = value
+      elseif type(t[name]) == 'table' then
+        append(t[name],value)
       else
-        t.generic[name] = { t.generic[name] , value }
+        local r = { t[name] }
+        append(r,value)
+        t[name] = r
       end
     end
-    return t
   end
 
-  for name,value in pairs(i) do
-    if t[name] == nil then
-      t[name] = value
-    elseif type(t[name]) == 'table' then
-      append(t[name],value)
-    else
-      local r = { t[name] }
-      append(r,value)
-      t[name] = r
-    end
+  if i._GENERIC then
+    t.generic = t.generic or {}
+    i._GENERIC = nil
+    addto(t.generic,i)
+  else
+    addto(t,i)
   end
+
   return t
 end
 
@@ -199,10 +191,10 @@ headers		<-
 
 		-- --------------------------------------------------------
 		-- fields that are otherwise undefined accumulate here
+		-- (also, malformed defined headers will end up here)
 		-- --------------------------------------------------------
 
 		/   %generic_header
-		--/  {:OTHERS:                    %generic_header :} -> {}
 
 -- ------------------------------------------------------------------------
 
