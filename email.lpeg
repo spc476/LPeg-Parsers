@@ -53,21 +53,22 @@ local dtext      = R("!Z" , "^!")
 local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
 
 local group = 
-  Cf(
-       V"CFWS"^-1
-     * C(V"display_name")
-     * Cf(
-           Ct"" * P":" * V"group_list"^-1 + Cc(""),
-           function(a,b)
-             a[#a + 1] = b
-             return a
-           end
-         ),
-     function(a,b)
-       return { [a] = b }
-     end
-  )
-   * P";" * V"CFWS"^-1
+  V"CFWS"^-1
+  * Cf(
+        C(V"display_name")
+        * Cf(
+              Ct"" * P":" * V"group_list"^-1 + Cc(),
+              function(a,b)
+                a[#a + 1] = b
+                return a
+              end
+            ),
+        function(a,b)
+          return { [a] = b }
+        end
+      )
+  * P";"
+  * V"CFWS"^-1
 
 local mimetype = 
   Cf(
@@ -77,12 +78,13 @@ local mimetype =
 	  / function(a,b)
               return { a , b }
             end
-        )^0 + Cc()
-      , function(a,b)
-          a[b[1]] = b[2]
-          return a
-        end
-    ) * V"CFWS"^-1
+        )^0 + Cc(),
+      function(a,b)
+        a[b[1]] = b[2]
+        return a
+      end
+    )
+  * V"CFWS"^-1
 
 -- ********************************************************************
 
