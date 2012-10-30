@@ -330,7 +330,7 @@ mimeversion	<- (CFWS? {%d+} CFWS? '.' CFWS? {%d+} CFWS?) -> {} -> vmerge
 reverse_path	<- path / "<>"
 
 stamp		<- (
-		     from_domain? by_domain opt_info CFWS? 
+		     from_domain? by_domain? opt_info? CFWS?
 		     ";" {:when: date_time -> {} :}
                    ) -> {}
 from_domain	<- FROM    FWS {:from: extended_domain :}
