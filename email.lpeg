@@ -27,6 +27,25 @@ local function doset(t,i)
     end
   end
 
+  if i == nil then return t end
+
+  if i._GENERIC then
+    if t.generic == nil then
+      t.generic = {}
+    end
+    i._GENERIC = nil
+    for name,value in pairs(i) do
+      if t.generic[name] == nil then
+        t.generic[name] = value
+      elseif type(t.generic[name]) == 'table' then
+        table.insert(t.generic[name],value)
+      else
+        t.generic[name] = { t.generic[name] , value }
+      end
+    end
+    return t
+  end
+
   for name,value in pairs(i) do
     if t[name] == nil then
       t[name] = value
@@ -51,6 +70,18 @@ local ctext      = R("!'" , "*[" , "]~")
 local qtext      = R("!!" , "#[" , "]~")
 local dtext      = R("!Z" , "^!")
 local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
+
+local eoh        = (CRLF * #CRLF) + (CRLF - (CRLF^-1 * WSP))
+local name       = C((P(1) - (P":" + CRLF + WSP))^1)
+local value      = C((P(1) - eoh)^0) / function(v)
+				         return v:gsub("[%s%c]+"," ")
+                                       end
+
+local generic_header = name * ":" * (WSP * value)^0 * eoh
+	/ function(a,b,c,d)
+            local b = b or ""
+	    return { [a] = b , _GENERIC = true }
+	  end
 
 local group = 
   V"CFWS"^-1
@@ -165,6 +196,13 @@ headers		<-
 		-- --------------------------------------------------------
 
 		/  {:archived_at:		archived_athdr	:} -> {}
+
+		-- --------------------------------------------------------
+		-- fields that are otherwise undefined accumulate here
+		-- --------------------------------------------------------
+
+		/   %generic_header
+		--/  {:OTHERS:                    %generic_header :} -> {}
 
 -- ------------------------------------------------------------------------
 
@@ -478,6 +516,7 @@ R =
   theheaders = theheaders,
   group      = group,
   mimetype   = mimetype,
+  generic_header = generic_header,
 
   tonumber = tonumber,
   
