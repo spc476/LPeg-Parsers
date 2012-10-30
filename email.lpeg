@@ -75,7 +75,6 @@ local mimetype =
       * ( P";" * V"FWS" 
           * C(V"attribute") * P"=" * C(V"value") 
 	  / function(a,b)
-              print(">>>",a,b)
               return { a , b }
             end
         )^0 + Cc()
