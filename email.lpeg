@@ -91,51 +91,81 @@ G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
-		   {:from:        fromhdr        :} -> {}
-		/  {:to:	  tohdr          :} -> {}
-		/  {:subject:     subjecthdr     :} -> {}
-		/  {:date:        datehdr        :} -> {}
-		/  {:cc:          cchdr          :} -> {}
-		/  {:bcc:         bcchdr         :} -> {}
-		/  {:comment:     commenthdr     :} -> {}
-		/  {:keywords:    keywordshdr    :} -> {}
-		/  {:message_id:  message_idhdr  :} -> {}
-		/  {:in_reply_to: in_reply_tohdr :} -> {}
-		/  {:references:  referenceshdr  :} -> {}
-		/  {:reply_to:    reply_tohdr    :} -> {}
-		/  {:sender:      senderhdr      :} -> {}
-		/  {:received:	  receivedhdr    :} -> {}
-		/  {:return_path: return_pathhdr :} -> {}
-		/  {:encrypted:   encryptedhdr   :} -> {}
+		-- -------------------------------------------------------
+		-- Fields defined in RFC-822, RFC-2822 and RFC-5322
+		-- see RFC-5321 for further information about 
+		-- Return-Path: and Received:
+		-- -------------------------------------------------------
 
-		/  {:mime:                      mimehdr         :} -> {}
-		/  {:content_type:              content_typehdr :} -> {}
-		/  {:content_transfer_encoding: ctehdr          :} -> {}
-		/  {:content_id:                content_idhdr   :} -> {}
-		/  {:content_description:       content_deschdr :} -> {}
-		/  {:content_length:            content_lenhdr  :} -> {}
+		   {:from:			fromhdr		:} -> {}
+		/  {:to:			tohdr		:} -> {}
+		/  {:subject:			subjecthdr	:} -> {}
+		/  {:date:			datehdr		:} -> {}
+		/  {:cc:			cchdr		:} -> {}
+		/  {:bcc:			bcchdr		:} -> {}
+		/  {:comment:			commenthdr	:} -> {}
+		/  {:keywords:			keywordshdr	:} -> {}
+		/  {:message_id:		message_idhdr	:} -> {}
+		/  {:in_reply_to:		in_reply_tohdr	:} -> {}
+		/  {:references:		referenceshdr	:} -> {}
+		/  {:reply_to:			reply_tohdr	:} -> {}
+		/  {:sender:			senderhdr	:} -> {}
+		/  {:received:			receivedhdr	:} -> {}
+		/  {:return_path:		return_pathhdr	:} -> {}
+		/  {:encrypted:			encryptedhdr	:} -> {}
 
-		/  {:list_id:		list_idhdr	:} -> {}
-		/  {:list_help:		list_helphdr	:} -> {}
-		/  {:list_unsubscribe:	list_unsubhdr	:} -> {}
-		/  {:list_subscribe:	list_subhdr	:} -> {}
-		/  {:list_post:		list_posthdr	:} -> {}
-		/  {:list_owner:	list_ownerhdr	:} -> {}
-		/  {:list_archive:	list_archivehdr :} -> {}
+		-- --------------------------------------------------------
+		-- fields defined in RFC-2045, RFC-2046, RFC-2047, RFC-2048
+		-- and RFC-2049 (MIME related headers).
+		-- Content-Length: isn't defined, but is in common
+		-- enough use to include it here
+		-- --------------------------------------------------------
 
-		/  {:newsgroups:   newsgrouphdr    :} -> {}
-		/  {:path:         pathhdr         :} -> {}
-		/  {:followup_to:  followup_tohdr  :} -> {}
-		/  {:expires:      expireshdr      :} -> {}
-		/  {:control:      controlhdr      :} -> {}
-		/  {:distribution: distributionhdr :} -> {}
-		/  {:organization: organizationhdr :} -> {}
-		/  {:summary:      summaryhdr      :} -> {}
-		/  {:approved:     approvedhdr     :} -> {}
-		/  {:lines:        lineshdr        :} -> {}
-		/  {:xref:         xrefhdr         :} -> {}
+		/  {:mime:			mimehdr		:} -> {}
+		/  {:content_type:		content_typehdr	:} -> {}
+		/  {:content_transfer_encoding:	ctehdr		:} -> {}
+		/  {:content_id:		content_idhdr	:} -> {}
+		/  {:content_description:	content_deschdr	:} -> {}
+		/  {:content_length:		content_lenhdr	:} -> {}
 
-		/  {:archived_at:  archived_athdr  :} -> {}
+		-- --------------------------------------------------------
+		-- fields defined in RFC-2919 (List-ID:) and RFC-2369
+		-- these fields relate to mailing lists
+		-- --------------------------------------------------------
+
+		/  {:list_id:			list_idhdr	:} -> {}
+		/  {:list_help:			list_helphdr	:} -> {}
+		/  {:list_unsubscribe:		list_unsubhdr	:} -> {}
+		/  {:list_subscribe:		list_subhdr	:} -> {}
+		/  {:list_post:			list_posthdr	:} -> {}
+		/  {:list_owner:		list_ownerhdr	:} -> {}
+		/  {:list_archive:		list_archivehdr	:} -> {}
+
+		-- --------------------------------------------------------
+		-- fields defined in RFC-1036 (Usenet).  There is some
+		-- overlap with RFC-822, so those fields not defined there
+		-- are defined here
+		-- --------------------------------------------------------
+
+		/  {:newsgroups:		newsgrouphdr	:} -> {}
+		/  {:path:			pathhdr		:} -> {}
+		/  {:followup_to:		followup_tohdr	:} -> {}
+		/  {:expires:			expireshdr	:} -> {}
+		/  {:control:			controlhdr	:} -> {}
+		/  {:distribution:		distributionhdr	:} -> {}
+		/  {:organization:		organizationhdr	:} -> {}
+		/  {:summary:			summaryhdr	:} -> {}
+		/  {:approved:			approvedhdr	:} -> {}
+		/  {:lines:			lineshdr	:} -> {}
+		/  {:xref:			xrefhdr		:} -> {}
+
+		-- --------------------------------------------------------
+		-- field defined in RFC-5064
+		-- --------------------------------------------------------
+
+		/  {:archived_at:		archived_athdr	:} -> {}
+
+-- ------------------------------------------------------------------------
 
 fromhdr		<- FROM         ':' mailbox_list            -> {} %CRLF
 subjecthdr	<- SUBJECT      ':' unstructured => cleanup       %CRLF
@@ -167,21 +197,23 @@ list_unsubhdr	<- LIST_UNSUBSCRIBE ':' FWS           list_locs  -> {} %CRLF
 list_subhdr	<- LIST_SUBSCRIBE   ':' FWS           list_locs  -> {} %CRLF
 list_posthdr	<- LIST_POST        ':' FWS (list_no? list_locs) -> {} %CRLF
 list_ownerhdr	<- LIST_OWNER       ':' FWS           list_locs  -> {} %CRLF
-list_archivehdr	<- LIST_ARCHIVE     ':' FWS           list_locs  -> {} %CRLF
+list_archivehdr	<- LIST_ARCHIVE	    ':' FWS           list_locs  -> {} %CRLF
 
-newsgrouphdr	<- NEWSGROUPS   ':' FWS newsgroups    -> {} %CRLF
-pathhdr		<- PATH         ':' FWS newspath?     -> {} %CRLF
-followup_tohdr	<- FOLLOWUP_TO  ':' FWS newsgroups    -> {} %CRLF
-expireshdr	<- EXPIRES      ':' date_time         -> {} %CRLF
-controlhdr	<- CONTROL      ':' FWS control_list  -> {} %CRLF
-distributionhdr	<- DISTRIBUTION ':' FWS dist_list     -> {} %CRLF
-organizationhdr	<- ORGANIZATION ':' unstructured => cleanup %CRLF
-summaryhdr	<- SUMMARY      ':' unstructured => cleanup %CRLF
-approvedhdr	<- APPROVED     ':' unstructured => cleanup %CRLF
-lineshdr	<- LINES        ':' FWS length              %CRLF
-xrefhdr		<- XREF         ':' FWS xref          -> {} %CRLF
+newsgrouphdr	<- NEWSGROUPS	    ':' FWS newsgroups           -> {} %CRLF
+pathhdr		<- PATH             ':' FWS newspath?            -> {} %CRLF
+followup_tohdr	<- FOLLOWUP_TO      ':' FWS newsgroups           -> {} %CRLF
+expireshdr	<- EXPIRES          ':' date_time                -> {} %CRLF
+controlhdr	<- CONTROL          ':' FWS control_list         -> {} %CRLF
+distributionhdr	<- DISTRIBUTION     ':' FWS dist_list            -> {} %CRLF
+organizationhdr	<- ORGANIZATION     ':' unstructured => cleanup        %CRLF
+summaryhdr	<- SUMMARY          ':' unstructured => cleanup        %CRLF
+approvedhdr	<- APPROVED         ':' unstructured => cleanup        %CRLF
+lineshdr	<- LINES            ':' FWS length                     %CRLF
+xrefhdr		<- XREF             ':' FWS xref                 -> {} %CRLF
 
-archived_athdr	<- ARCHIVED_AT  ':' FWS archive_url         %CRLF
+archived_athdr	<- ARCHIVED_AT      ':' FWS archive_url                %CRLF
+
+-- ------------------------------------------------------------------------
 
 archive_url	<- "<" { [^>]+ } ">"
 
@@ -379,11 +411,7 @@ domain		<- dot_atom / domain_literal
 domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
 address_literal	<- "[" %dtext* "]"
 
--- -------------------------------------------------------------
--- fields defined in RFC-5322, RFC-2822, RFC-822
--- see RFC-5321 for more information on Return-Path: and 
--- Received:
--- -------------------------------------------------------------
+-- ------------------------------------------------------------------------
 
 RETURN_PATH	<- [Rr][Ee][Tt][Uu][Rr][Nn] "-" [Pp][Aa][Tt][Hh]
 RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
@@ -403,12 +431,6 @@ COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
 ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
 
--- ------------------------------------------------------------
--- fields defined in RFC-2045, RFC-2046, RFC-2047, RFC-2048, RFC-2049
--- (this is the MIME stuff).  Content-Lentgh: isn't defined, but
--- is commonly used, so include it here.
--- ------------------------------------------------------------
-
 MIME_VERSION	          <- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 CONTENT_TYPE	          <- CONTENT "-" [Tt][Yy][Pp][Ee]
 CONTENT_TRANSFER_ENCODING <- CONTENT "-" [Tt][Rr][Aa][Nn][Ss][Ff][Ee][Rr] "-" [Ee][Nn][Cc][Oo][Dd][Ii][Nn][Gg]
@@ -417,24 +439,15 @@ CONTENT_DESCRIPTION       <- CONTENT "-" [Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo
 CONTENT_LENGTH	          <- CONTENT "-" [Ll][Ee][Nn][Gg][Tt][Hh]
 CONTENT		          <- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
 
--- ---------------------------------------------------------------
--- fields defined in RFC-2919 (List-ID) and RFC-2369 (the rest)
--- ---------------------------------------------------------------
-
-LIST_ID			<- LIST "-" [Ii][Dd]
-LIST_HELP		<- LIST "-" [Hh][Ee][Ll][Pp]
-LIST_UNSUBSCRIBE	<- LIST "-" [Uu][Nn] SUBSCRIBE
-LIST_SUBSCRIBE		<- LIST "-" SUBSCRIBE
-LIST_POST		<- LIST "-" [Pp][Oo][Ss][Tt]
-LIST_OWNER		<- LIST "-" [Oo][Ww][Nn][Ee][Rr]
-LIST_ARCHIVE		<- LIST "-" [Aa][Rr][Cc][Hh][Ii][Vv][Ee]
-LIST			<- [Ll][Ii][Ss][Tt]
-SUBSCRIBE		<- [Ss][Uu][Bb][Ss][Cc][Rr][Ii][Bb][Ee]
-
--- ------------------------------------------------------------------
--- fields defined in RFC-1036 (USENET); only the ones not defined
--- elsewhere are defined here
--- ------------------------------------------------------------------
+LIST_ID		<- LIST "-" [Ii][Dd]
+LIST_HELP	<- LIST "-" [Hh][Ee][Ll][Pp]
+LIST_UNSUBSCRIBE<- LIST "-" [Uu][Nn] SUBSCRIBE
+LIST_SUBSCRIBE	<- LIST "-" SUBSCRIBE
+LIST_POST	<- LIST "-" [Pp][Oo][Ss][Tt]
+LIST_OWNER	<- LIST "-" [Oo][Ww][Nn][Ee][Rr]
+LIST_ARCHIVE	<- LIST "-" [Aa][Rr][Cc][Hh][Ii][Vv][Ee]
+LIST		<- [Ll][Ii][Ss][Tt]
+SUBSCRIBE	<- [Ss][Uu][Bb][Ss][Cc][Rr][Ii][Bb][Ee]
 
 NEWSGROUPS	<- [Nn][Ee][Ww][Ss][Gg][Rr][Oo][Uu][Pp][Ss] 
 PATH		<- [Pp][Aa][Tt][Hh]
@@ -447,10 +460,6 @@ SUMMARY		<- [Ss][Uu][Mm][Mm][Aa][Rr][Yy]
 APPROVED	<- [Aa][Pp][Pp][Rr][Oo][Vv][Ee][Dd]
 LINES		<- [Ll][Ii][Nn][Ee][Ss]
 XREF		<- [Xx][Rr][Ee][Ff]
-
--- --------------------------------------------------------------------
--- field defined by RFC-5064, Archived-At:
--- -------------------------------------------------------------------
 
 ARCHIVED_AT	<- [Aa][Rr][Cc][Hh][Ii][Vv][Ee][Dd] "-" [Aa][Tt]
 
