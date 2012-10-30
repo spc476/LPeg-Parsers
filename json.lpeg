@@ -2,7 +2,7 @@
 -- **********************************************************************
 
 local iconv      = require "org.conman.iconv"
-local tcc        = require "org.conman.tcc"
+local cc         = require "org.conman.cc"
 local lpeg       = require "lpeg"
 local re         = require "re"
 
@@ -38,11 +38,7 @@ int toutf16(lua_State *L)
 
 ]]
 
-local chunk = tcc.new()
-chunk:output_type('memory')
-chunk:add_string(TOUTF16)
-chunk:relocate()
-local toutf16 = chunk:get_symbol('toutf16')
+local toutf16 = cc.compile('toutf16',TOUTF16)
 
 -- **********************************************************************
 
