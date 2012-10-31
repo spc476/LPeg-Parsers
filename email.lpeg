@@ -68,6 +68,8 @@ local value      = C((P(1) - eoh)^0) / function(v)
 				         return v:gsub("[%s%c]+"," ")
                                        end
 
+local unixfrom	 = V"FROM" * WSP * (P(1) - eoh)^0 * CRLF
+
 local generic_header = name * ":" * (WSP * value)^0 * eoh
 	/ function(a,b,c,d)
             local b = b or ""
@@ -114,13 +116,16 @@ local G = --[[ lpeg/re ]] [[
 
 email		<- %theheaders
 headers		<- 
+
+		   %unixfrom	-- burn a Unix style From line
+
 		-- -------------------------------------------------------
 		-- Fields defined in RFC-822, RFC-2822 and RFC-5322
 		-- see RFC-5321 for further information about 
 		-- Return-Path: and Received:
 		-- -------------------------------------------------------
 
-		   {:from:			fromhdr		:} -> {}
+		/  {:from:			fromhdr		:} -> {}
 		/  {:to:			tohdr		:} -> {}
 		/  {:subject:			subjecthdr	:} -> {}
 		/  {:date:			datehdr		:} -> {}
@@ -511,6 +516,7 @@ local R =
   group      = group,
   mimetype   = mimetype,
   generic_header = generic_header,
+  unixfrom   = unixfrom,
 
   tonumber = tonumber,
   
