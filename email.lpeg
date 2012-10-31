@@ -343,7 +343,7 @@ opt_info	<- via? with? id? for? arc?
 via		<- CFWS VIA FWS {:link: link :}
 with		<- CFWS WITH FWS {:with: protocol :}
 id		<- CFWS ID FWS {:id: (atom !'.' / msg_id / dot_atom_text) :}
-for		<- CFWS FOR FWS {:for: (path / mailbox) :}
+for		<- CFWS FOR FWS {:for: (path / mailbox / user) :}
 arc		<- CFWS atom FWS word
 link		<- TCP / addtl_link
 addtl_link	<- atom
@@ -354,6 +354,7 @@ attdl_protocol	<- atom
 path		<- "<" (adl ":")? mailbox ">"
 adl		<- at_domain ("," at_domain)*
 at_domain	<- "@" domain
+user		<- [A-Za-z0-9]+
 BY		<- [Bb][Yy]
 VIA		<- [Vv][Ii][Aa]
 WITH		<- [Ww][Ii][Tt][Hh]
