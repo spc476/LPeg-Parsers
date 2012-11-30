@@ -465,7 +465,7 @@ REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
 SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
 COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
 KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
-ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Ee][Dd]
+ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Tt][Ee][Dd]
 
 MIME_VERSION	          <- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 CONTENT_TYPE	          <- CONTENT "-" [Tt][Yy][Pp][Ee]
