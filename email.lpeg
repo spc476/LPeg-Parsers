@@ -59,7 +59,7 @@ local SP         = P" "
 local CRLF       = P"\r"^-1 * P"\n"
 local ctext      = R("!'" , "*[" , "]~")
 local qtext      = R("!!" , "#[" , "]~")
-local dtext      = R("!Z" , "^!")
+local dtext      = R("!Z" , "^~")
 local theheaders = Cf(Ct"" * V"headers"^1,doset) * CRLF
 
 local eoh        = (CRLF * #CRLF) + (CRLF - (CRLF^-1 * WSP))
