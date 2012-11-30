@@ -487,7 +487,7 @@ SUBSCRIBE	<- [Ss][Uu][Bb][Ss][Cc][Rr][Ii][Bb][Ee]
 
 NEWSGROUPS	<- [Nn][Ee][Ww][Ss][Gg][Rr][Oo][Uu][Pp][Ss] 
 PATH		<- [Pp][Aa][Tt][Hh]
-FOLLOWUP_TO	<- [Ff][Oo][Ll][Ll][Oo][Ww] "-" [Uu][Pp]
+FOLLOWUP_TO	<- [Ff][Oo][Ll][Ll][Oo][Ww][Uu][Pp] "-" TO
 EXPIRES		<- [Ee][Xx][Pp][Ii][Rr][Ee][Ss]
 CONTROL		<- [Cc][Oo][Nn][Tt][Rr][Oo][Ll]
 DISTRIBUTION	<- [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn]
