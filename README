@@ -1,0 +1,161 @@
+
+The code herein contains LPeg [1] routines for parsing some common data
+formats.  The current formats are:
+
+Email
+
+	Parses email headers as defined in:
+
+		RFC-0822	Internet Message Format
+		RFC-1036	Standard for Interchange of USENET Messages
+		RFC-2045	Multipurpose Internet Mail Extensions I
+		RFC-2046	Multipurpose Internet Mail Extensions II
+		RFC-2047	Multipurpose Internet Mail Extensions III
+		RFC-2048	Multipurpose Internet Mail Extensions IV
+		RFC-2369	The Use of URLs as Meta-Syntax for Core Mail 
+				List Commands and their Transport through 
+				Message Header Fields
+		RFC-2822	Internet Message Format	
+		RFC-2919	A Structured Field and Namespace for the Identification of Mailing Lists
+		RFC-5064	The Archived-At Message Header Field
+		RFC-5322	Internet Message Format
+
+	Headers are returned in a Lua table.  For example, the following
+	headers:
+
+		Return-Path: <sean@conman.org>
+		Received: from brevard.conman.org (brevard.conman.org 
+			[66.252.224.242])
+			by mail.example.com (Postfix) 
+			with ESMTP id 538562EA5D07
+			for <sherlock@example.com>; 
+			Fri, 28 Dec 2012 21:40:11 -0500
+		From: Sean Conner <sean@conman.org>
+		To: Sherlock Holmes <sherlock@example.com>,
+			the-scooby-gang: Fred <fred@example.net>,
+				Daphne <daphne@example.net>,
+				Velma <velma@example.net>,
+				Shaggy <shaggy@example.net>,
+				Scobby-Doo <scooby@example.net>;,
+			The Batman <batman@example.org>
+		Subject: I know who did it!
+		Date: Fri, 28 Dec 2012 21:40:11 -0500
+		Message-ID: <1234.5678.90abcd@conman.org>
+
+	Will return the following Lua table:
+
+		{
+		  received =
+		  {
+		    [1] =
+		    {
+		      with = "ESMTP",
+		      from = "brevard.conman.org",
+		      id = "538562EA5D07",
+		      when =
+		      {
+		        min = 0.000000,
+		        zone = -18000.000000,
+		        day = 28.000000,
+		        month = 12.000000,
+		        year = 2012.000000,
+		        sec = 1.000000,
+		        hour = 1.000000,
+		        weekday = "Fri",
+		      },
+		      for =
+		      {
+		        address = "sherlock@example.com",
+		      },
+		      by = "mail.example.com",
+		    },
+		  },
+		  to =
+		  {
+		    [1] =
+		    {
+		      name = "Sherlock Holmes",
+		      address = "sherlock@example.com",
+		    },
+		    [2] =
+		    {
+		      ['the-scooby-gang'] =
+		      {
+		        [1] =
+		        {
+		          name = "Fred",
+		          address = "fred@example.net",
+		        },
+		        [2] =
+		        {
+		          name = "Daphne",
+		          address = "daphne@example.net",
+		        },
+		        [3] =
+		        {
+		          name = "Velma",
+		          address = "velma@example.net",
+		        },
+		        [4] =
+		        {
+		          name = "Shaggy",
+		          address = "shaggy@example.net",
+		        },
+		        [5] =
+		        {
+		          name = "Scobby-Doo",
+		          address = "scooby@example.net",
+		        },
+		      },
+		    },
+		    [3] =
+		    {
+		      name = "The Batman",
+		      address = "batman@example.org",
+		    },
+		  },
+		  from =
+		  {
+		    [1] =
+		    {
+		      name = "Sean Conner",
+		      address = "sean@conman.org",
+		    },
+		  },
+		  date =
+		  {
+		    min = 0.000000,
+		    zone = -18000.000000,
+		    day = 28.000000,
+		    month = 12.000000,
+		    year = 2012.000000,
+		    sec = 1.000000,
+		    hour = 1.000000,
+		    weekday = "Fri",
+		  },
+		  return_path =
+		  {
+		    [1] =
+		    {
+		      address = "sean@conman.org",
+		    },
+		  },
+		  message_id = "1234.5678.90abcd@conman.org",
+		  subject = "I know who did it!",
+		}
+
+	The only fields not supported are the Resent-* fields; they are
+	rarely used and the semantics are particularly hard to support via
+	parsing only.  These fields, as well as any other fields not
+	otherwise understood or parsable will end up on a field called
+	'generic' with the key being the raw header name.
+
+JSON
+
+	Implements a JSON parser.  It requires some additional modules [2]
+	to run.  This will parse a JSON file into a Lua table.  The full
+	grammar is supported, but it expects the input to be valid UTF-8.
+
+[1]	http://www.inf.puc-rio.br/~roberto/lpeg/
+
+[2]	https://github.com/spc476/lua-conmanorg
