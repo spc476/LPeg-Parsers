@@ -179,5 +179,5 @@ local R =
 -- *********************************************************************
 
 lpeg.setmaxstack(1000)
-json = re.compile(G,R)
+return re.compile(G,R)
 
