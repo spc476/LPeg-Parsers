@@ -31,14 +31,15 @@ IPv4 = Cf(
 
 cc   = P"::" / "\0\0"
 set  = -P(R("AF","af","09","::"))
-h16  = Cf(Cc(0) * C(HEXDIG * HEXDIG^-3),function(a,b)
-                                          return a * 16 + tonumber(b,16)
-                                        end)
+h16  = C(HEXDIG^1)
      / function(c)
-         local q,r = idiv(c,256)
-         return string.char(q) .. string.char(r)
+         local n = tonumber(c,16)
+         if n < 65536 then
+           local q,r = idiv(n,256)
+           return string.char(q) .. string.char(r)
+         end
        end
-       
+
 h16c = h16 * P":" * #HEXDIG
 ls32 = IPv4 + h16c * h16
 
