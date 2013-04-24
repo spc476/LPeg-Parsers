@@ -13,17 +13,14 @@ function acc(a,v) return a .. v end
 DIGIT  = R"09"
 HEXDIG = R("AF","af","09")
 
-dec_octet = C(
-               P"25" * R"05"
-             + P"2"  * R"04" * DIGIT
-             + P"1"  * DIGIT * DIGIT
-             + R"19" * DIGIT
-             + DIGIT
-            )
-            / function(c)
-                return string.char(tonumber(c))
+dec_octet = C(DIGIT^1)
+          / function(c)
+              local n = tonumber(c)
+              if n < 256 then
+                return string.char(n)
               end
-
+            end
+              
 IPv4 = Cf(
            Cc"" 
            * dec_octet * "." 
