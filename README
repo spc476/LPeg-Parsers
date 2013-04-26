@@ -156,6 +156,11 @@ JSON
 	to run.  This will parse a JSON file into a Lua table.  The full
 	grammar is supported, but it expects the input to be valid UTF-8.
 
+IP
+
+	Provides two LPeg patterns, IPv4 and IPv6 which parse and convert
+	said addresses directly into their network-order binary formats.
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg
