@@ -52,7 +52,7 @@ IPv4 = Cf(
 	acc
 )
 
-local set  = -P(R("AF","af","09","::"))
+local set  = -P(HEXDIG + P"::")
 local h16  = C(HEXDIG^1)
            / function(c)
                local n = tonumber(c,16)
