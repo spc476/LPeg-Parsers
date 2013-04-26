@@ -52,7 +52,6 @@ IPv4 = Cf(
 	acc
 )
 
-local cc   = P"::" / "\0\0"
 local set  = -P(R("AF","af","09","::"))
 local h16  = C(HEXDIG^1)
            / function(c)
