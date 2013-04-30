@@ -36,8 +36,8 @@ module(...)
 
 local function acc(a,v) return a .. v end
 
-local DIGIT  = R"09"
-local HEXDIG = R("AF","af","09")
+local DIGIT  = lpeg.locale().digit
+local HEXDIG = lpeg.locale().xdigit
 
 local dec_octet = C(DIGIT^1)
                 / function(c)
