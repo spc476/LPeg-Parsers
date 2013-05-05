@@ -90,7 +90,7 @@ local value      = C((P(1) - eoh)^0) / function(v)
 
 local unixfrom	 = V"FROM" * WSP * (P(1) - eoh)^0 * CRLF
 
-local generic_header = name * ":" * (WSP * value)^0 * eoh
+local generic_header = name * ":" * WSP^0 * value * eoh
 	/ function(a,b,c,d)
             local b = b or ""
 	    return { [a] = b , _GENERIC = true }
