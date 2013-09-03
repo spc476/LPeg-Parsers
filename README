@@ -1,5 +1,5 @@
 
-The code herein contains LPeg [1] routines for parsing some common data
+The code herein contains LPeg [1] 10.2 routines for parsing some common data
 formats.  The current formats are:
 
 Email
