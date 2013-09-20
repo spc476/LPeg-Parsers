@@ -586,7 +586,7 @@ local R =
 
   tozone = function(cap)
     local hour = tonumber(cap:sub(2,3)) * 3600
-    local min  = tonumber(cap:sub(4,5))
+    local min  = tonumber(cap:sub(4,5)) *   60
     local sec  = hour + min
 
     if cap:sub(1,1) == '-' then
