@@ -34,6 +34,17 @@ local Ct = lpeg.Ct
 
 -- ***********************************************************************
 
+local function H(text)
+  local pattern = P(true)
+  for c in text:gmatch(".") do
+    pattern = pattern * (P(c:lower()) + P(c:upper()))
+  end
+  
+  return pattern
+end
+
+-- ***********************************************************************
+
 local function doset(t,i)
 
   local function append(t,l)
@@ -73,6 +84,7 @@ end
 
 -- *******************************************************************
 
+local FROM       = H "From"
 local VCHAR      = R"!~"
 local WSP        = S" \t"
 local SP         = P" "
@@ -88,7 +100,7 @@ local value      = C((P(1) - eoh)^0) / function(v)
 				         return v:gsub("[%s%c]+"," ")
                                        end
 
-local unixfrom	 = V"FROM" * WSP * (P(1) - eoh)^0 * CRLF
+local unixfrom	 = FROM * WSP * (P(1) - eoh)^0 * CRLF
 
 local generic_header = name * ":" * WSP^0 * value * eoh
 	/ function(a,b,c,d)
@@ -222,51 +234,51 @@ headers		<-
 
 -- ------------------------------------------------------------------------
 
-fromhdr		<- FROM         ':' mailbox_list            -> {} %CRLF
-subjecthdr	<- SUBJECT      ':' unstructured => cleanup       %CRLF
-datehdr		<- DATE         ':' date_time               -> {} %CRLF
-tohdr		<- TO           ':' address_list            -> {} %CRLF
-cchdr		<- CC           ':' address_list            -> {} %CRLF
-bcchdr		<- BCC          ':' address_list            -> {} %CRLF
-commenthdr	<- COMMENT      ':' unstructured => cleanup       %CRLF
-keywordshdr	<- KEYWORDS     ':' (phrase (',' phrase)* ) -> {} %CRLF
-message_idhdr	<- MESSAGE_ID   ':' msg_id                        %CRLF
-in_reply_tohdr	<- IN_REPLY_TO  ':' msg_id+                 -> {} %CRLF
-referenceshdr	<- REFERENCES   ':' msg_id+                 -> {} %CRLF
-reply_tohdr	<- REPLY_TO     ':' address_list            -> {} %CRLF
-senderhdr	<- SENDER       ':' mailbox                 -> {} %CRLF
-receivedhdr	<- RECEIVED     ':' FWS stamp               -> {} %CRLF
-return_pathhdr	<- RETURN_PATH  ':' FWS reverse_path        -> {} %CRLF
-encryptedhdr	<- ENCRYPTED    ':' unstructured => cleanup       %CRLF
+fromhdr		<- %FROM         ':' mailbox_list            -> {} %CRLF
+subjecthdr	<- %SUBJECT      ':' unstructured => cleanup       %CRLF
+datehdr		<- %DATE         ':' date_time               -> {} %CRLF
+tohdr		<- %TO           ':' address_list            -> {} %CRLF
+cchdr		<- %CC           ':' address_list            -> {} %CRLF
+bcchdr		<- %BCC          ':' address_list            -> {} %CRLF
+commenthdr	<- %COMMENT      ':' unstructured => cleanup       %CRLF
+keywordshdr	<- %KEYWORDS     ':' (phrase (',' phrase)* ) -> {} %CRLF
+message_idhdr	<- %MESSAGE_ID   ':' msg_id                        %CRLF
+in_reply_tohdr	<- %IN_REPLY_TO  ':' msg_id+                 -> {} %CRLF
+referenceshdr	<- %REFERENCES   ':' msg_id+                 -> {} %CRLF
+reply_tohdr	<- %REPLY_TO     ':' address_list            -> {} %CRLF
+senderhdr	<- %SENDER       ':' mailbox                 -> {} %CRLF
+receivedhdr	<- %RECEIVED     ':' FWS stamp               -> {} %CRLF
+return_pathhdr	<- %RETURN_PATH  ':' FWS reverse_path        -> {} %CRLF
+encryptedhdr	<- %ENCRYPTED    ':' unstructured => cleanup       %CRLF
 
-mimehdr		<- MIME_VERSION              ':' mimeversion             %CRLF
-content_typehdr	<- CONTENT_TYPE              ':' FWS %mimetype           %CRLF
-ctehdr		<- CONTENT_TRANSFER_ENCODING ':' FWS mechanism           %CRLF
-content_idhdr	<- CONTENT_ID                ':' msg_id                  %CRLF
-content_deschdr	<- CONTENT_DESCRIPTION       ':' unstructured => cleanup %CRLF
-content_lenhdr	<- CONTENT_LENGTH            ':' FWS length              %CRLF
+mimehdr		<- %MIME_VERSION              ':' mimeversion             %CRLF
+content_typehdr	<- %CONTENT_TYPE              ':' FWS %mimetype           %CRLF
+ctehdr		<- %CONTENT_TRANSFER_ENCODING ':' FWS mechanism           %CRLF
+content_idhdr	<- %CONTENT_ID                ':' msg_id                  %CRLF
+content_deschdr	<- %CONTENT_DESCRIPTION       ':' unstructured => cleanup %CRLF
+content_lenhdr	<- %CONTENT_LENGTH            ':' FWS length              %CRLF
 
-list_idhdr	<- LIST_ID          ':' FWS           list_id    -> {} %CRLF
-list_helphdr	<- LIST_HELP        ':' FWS           list_locs  -> {} %CRLF
-list_unsubhdr	<- LIST_UNSUBSCRIBE ':' FWS           list_locs  -> {} %CRLF
-list_subhdr	<- LIST_SUBSCRIBE   ':' FWS           list_locs  -> {} %CRLF
-list_posthdr	<- LIST_POST        ':' FWS (list_no? list_locs) -> {} %CRLF
-list_ownerhdr	<- LIST_OWNER       ':' FWS           list_locs  -> {} %CRLF
-list_archivehdr	<- LIST_ARCHIVE	    ':' FWS           list_locs  -> {} %CRLF
+list_idhdr	<- %LIST_ID          ':' FWS           list_id    -> {} %CRLF
+list_helphdr	<- %LIST_HELP        ':' FWS           list_locs  -> {} %CRLF
+list_unsubhdr	<- %LIST_UNSUBSCRIBE ':' FWS           list_locs  -> {} %CRLF
+list_subhdr	<- %LIST_SUBSCRIBE   ':' FWS           list_locs  -> {} %CRLF
+list_posthdr	<- %LIST_POST        ':' FWS (list_no? list_locs) -> {} %CRLF
+list_ownerhdr	<- %LIST_OWNER       ':' FWS           list_locs  -> {} %CRLF
+list_archivehdr	<- %LIST_ARCHIVE     ':' FWS           list_locs  -> {} %CRLF
 
-newsgrouphdr	<- NEWSGROUPS	    ':' FWS newsgroups           -> {} %CRLF
-pathhdr		<- PATH             ':' FWS newspath?            -> {} %CRLF
-followup_tohdr	<- FOLLOWUP_TO      ':' FWS newsgroups           -> {} %CRLF
-expireshdr	<- EXPIRES          ':' date_time                -> {} %CRLF
-controlhdr	<- CONTROL          ':' FWS control_list         -> {} %CRLF
-distributionhdr	<- DISTRIBUTION     ':' FWS dist_list            -> {} %CRLF
-organizationhdr	<- ORGANIZATION     ':' unstructured => cleanup        %CRLF
-summaryhdr	<- SUMMARY          ':' unstructured => cleanup        %CRLF
-approvedhdr	<- APPROVED         ':' unstructured => cleanup        %CRLF
-lineshdr	<- LINES            ':' FWS length                     %CRLF
-xrefhdr		<- XREF             ':' FWS xref                 -> {} %CRLF
+newsgrouphdr	<- %NEWSGROUPS       ':' FWS newsgroups           -> {} %CRLF
+pathhdr		<- %PATH             ':' FWS newspath?            -> {} %CRLF
+followup_tohdr	<- %FOLLOWUP_TO	     ':' FWS newsgroups           -> {} %CRLF
+expireshdr	<- %EXPIRES          ':' date_time                -> {} %CRLF
+controlhdr	<- %CONTROL          ':' FWS control_list         -> {} %CRLF
+distributionhdr	<- %DISTRIBUTION     ':' FWS dist_list            -> {} %CRLF
+organizationhdr	<- %ORGANIZATION     ':' unstructured => cleanup        %CRLF
+summaryhdr	<- %SUMMARY          ':' unstructured => cleanup        %CRLF
+approvedhdr	<- %APPROVED         ':' unstructured => cleanup        %CRLF
+lineshdr	<- %LINES            ':' FWS length                     %CRLF
+xrefhdr		<- %XREF             ':' FWS xref                 -> {} %CRLF
 
-archived_athdr	<- ARCHIVED_AT      ':' FWS archive_url                %CRLF
+archived_athdr	<- %ARCHIVED_AT      ':' FWS archive_url                %CRLF
 
 -- ------------------------------------------------------------------------
 
@@ -357,7 +369,7 @@ stamp		<- (
 		     from_domain? by_domain? opt_info? CFWS?
 		     ";" {:when: date_time -> {} :}
                    ) -> {}
-from_domain	<- FROM    FWS {:from: extended_domain :}
+from_domain	<- %FROM    FWS {:from: extended_domain :}
 by_domain	<- CFWS BY FWS {:by:   extended_domain :}
 extended_domain	<- domain
 		/  domain FWS "(" tcp_info ")"
@@ -467,64 +479,69 @@ domain		<- dot_atom / domain_literal
 domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
 address_literal	<- "[" %dtext* "]"
 
--- ------------------------------------------------------------------------
-
-RETURN_PATH	<- [Rr][Ee][Tt][Uu][Rr][Nn] "-" [Pp][Aa][Tt][Hh]
-RECEIVED	<- [Rr][Ee][Cc][Ee][Ii][Vv][Ee][Dd]
--- Resent headers still need to be done
-DATE		<- [Dd][Aa][Tt][Ee]
-FROM		<- [Ff][Rr][Oo][Mm]
-SENDER		<- [Ss][Ee][Nn][Dd][Ee][Rr]
-REPLY_TO	<- [Rr][Ee][Pp][Ll][Yy] "-" TO
-TO		<- [Tt][Oo]
-CC		<- [Cc][Cc]
-BCC		<- [Bb][Cc][Cc]
-MESSAGE_ID	<- [Mm][Ee][Ss][Ss][Aa][Gg][Ee] "-" [Ii][Dd]
-IN_REPLY_TO	<- [Ii][Nn] "-" REPLY_TO
-REFERENCES	<- [Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee][Ss]
-SUBJECT		<- [Ss][Uu][Bb][Jj][Ee][Cc][Tt]
-COMMENT		<- [Cc][Oo][Mm][Mm][Ee][Nn][Tt]
-KEYWORDS	<- [Kk][Ee][Yy][Ww][Oo][Rr][Dd][Ss]
-ENCRYPTED	<- [Ee][Nn][Cc][Rr][Yy][Pp][Tt][Ee][Dd]
-
-MIME_VERSION	          <- [Mm][Ii][Mm][Ee] "-" [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
-CONTENT_TYPE	          <- CONTENT "-" [Tt][Yy][Pp][Ee]
-CONTENT_TRANSFER_ENCODING <- CONTENT "-" [Tt][Rr][Aa][Nn][Ss][Ff][Ee][Rr] "-" [Ee][Nn][Cc][Oo][Dd][Ii][Nn][Gg]
-CONTENT_ID	          <- CONTENT "-" [Ii][Dd]
-CONTENT_DESCRIPTION       <- CONTENT "-" [Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn] 
-CONTENT_LENGTH	          <- CONTENT "-" [Ll][Ee][Nn][Gg][Tt][Hh]
-CONTENT		          <- [Cc][Oo][Nn][Tt][Ee][Nn][Tt]
-
-LIST_ID		<- LIST "-" [Ii][Dd]
-LIST_HELP	<- LIST "-" [Hh][Ee][Ll][Pp]
-LIST_UNSUBSCRIBE<- LIST "-" [Uu][Nn] SUBSCRIBE
-LIST_SUBSCRIBE	<- LIST "-" SUBSCRIBE
-LIST_POST	<- LIST "-" [Pp][Oo][Ss][Tt]
-LIST_OWNER	<- LIST "-" [Oo][Ww][Nn][Ee][Rr]
-LIST_ARCHIVE	<- LIST "-" [Aa][Rr][Cc][Hh][Ii][Vv][Ee]
-LIST		<- [Ll][Ii][Ss][Tt]
-SUBSCRIBE	<- [Ss][Uu][Bb][Ss][Cc][Rr][Ii][Bb][Ee]
-
-NEWSGROUPS	<- [Nn][Ee][Ww][Ss][Gg][Rr][Oo][Uu][Pp][Ss] 
-PATH		<- [Pp][Aa][Tt][Hh]
-FOLLOWUP_TO	<- [Ff][Oo][Ll][Ll][Oo][Ww][Uu][Pp] "-" TO
-EXPIRES		<- [Ee][Xx][Pp][Ii][Rr][Ee][Ss]
-CONTROL		<- [Cc][Oo][Nn][Tt][Rr][Oo][Ll]
-DISTRIBUTION	<- [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn]
-ORGANIZATION	<- [Oo][Rr][Gg][Aa][Nn][Ii][Zz][Aa][Tt][Ii][Oo][Nn]
-SUMMARY		<- [Ss][Uu][Mm][Mm][Aa][Rr][Yy]
-APPROVED	<- [Aa][Pp][Pp][Rr][Oo][Vv][Ee][Dd]
-LINES		<- [Ll][Ii][Nn][Ee][Ss]
-XREF		<- [Xx][Rr][Ee][Ff]
-
-ARCHIVED_AT	<- [Aa][Rr][Cc][Hh][Ii][Vv][Ee][Dd] "-" [Aa][Tt]
-
 ]]
 
 -- ***********************************************************************
 
+
 local R =
 {
+  -- -----------------------------------------------------------------------
+  -- These are being defined here instead of in the re portion because of a
+  -- rule limitiation in LPeg 0.12 (default of 200, requires a recompile to
+  -- extend).  Moving the header names out to here will let this work under
+  -- LPeg 0.12, while still working back to LPeg 0.10.2.
+  -- -----------------------------------------------------------------------
+  
+  RETURN_PATH = H "Return-Path",
+  RECEIVED    = H "Received",
+  -- Resent headers still need to be done
+  DATE        = H "Date",
+  FROM        = FROM,
+  SENDER      = H "Sender",
+  REPLY_TO    = H "Reply-To",
+  TO          = H "To",
+  CC          = H "Cc",
+  BCC         = H "Bcc",
+  MESSAGE_ID  = H "Message-ID",
+  IN_REPLY_TO = H "In-Reply-To",
+  REFERENCES  = H "References",
+  SUBJECT     = H "Subject",
+  COMMENT     = H "Comment",
+  KEYWORDS    = H "Keywords",
+  ENCRYPTED   = H "Encrypted",
+  
+  MIME_VERSION              = H "MIME-Version",
+  CONTENT_TYPE              = H "Content-Type",
+  CONTENT_TRANSFER_ENCODING = H "Content-Transfer-Encoding",
+  CONTENT_ID                = H "Contend-ID",
+  CONTENT_DESCRIPTION       = H "Content-Description",
+  CONTENT_LENGTH            = H "Content-Length",
+  
+  LIST_ID          = H "List-ID",
+  LIST_HELP        = H "List-Help",
+  LIST_UNSUBSCRIBE = H "List-Unsubscribe",
+  LIST_SUBSCRIBE   = H "List-Subscribe",
+  LIST_POST        = H "List-Post",
+  LIST_OWNER       = H "List-Owner",
+  LIST_ARCHIVE     = H "List-Archive",
+  
+  NEWSGROUPS   = H "Newsgroups",
+  PATH         = H "Path",
+  FOLLOWUP_TO  = H "Followup-To",
+  EXPIRES      = H "Expires",
+  CONTROL      = H "Control",
+  DISTRIBUTION = H "Distribution",
+  ORGANIZATION = H "Organization",
+  SUMMARY      = H "Summary",
+  APPROVED     = H "Approved",
+  LINES        = H "Lines",
+  XREF         = H "XRef",
+  
+  ARCHIVED_AT  = H "Archived-At",
+  
+  -- -------[ end of header names ]---------------
+  
   VCHAR      = VCHAR,
   WSP        = WSP,
   SP         = SP,
@@ -598,4 +615,3 @@ local R =
 -- **********************************************************************
 
 return re.compile(G,R)
-
