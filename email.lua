@@ -476,7 +476,7 @@ angle_addr	<- CFWS? "<" addr_spec ">" CFWS?
 addr_spec	<- {:address: (local_part "@" domain) -> merge_addr :}
 local_part	<- dot_atom / quoted_string
 domain		<- dot_atom / domain_literal
-domain_literal	<- CFWS? "[" (FWS? %dtext)* FWS? "]" CFWS?
+domain_literal	<- CFWS? { "[" (FWS? %dtext)* FWS? "]" } CFWS?
 address_literal	<- "[" %dtext* "]"
 
 ]]
