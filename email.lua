@@ -33,6 +33,8 @@ local Cg = lpeg.Cg
 local Ct = lpeg.Ct
 
 -- ***********************************************************************
+-- create a parsing expression that will match text case-insensitively
+-- ***********************************************************************
 
 local function H(text)
   local pattern = P(true)
@@ -43,6 +45,10 @@ local function H(text)
   return pattern
 end
 
+-- ***********************************************************************
+-- function to acculate values into a table.  Values with the same key
+-- will end up together under a single key, in the order they appear.  The
+-- keys themselves are in no particular order.
 -- ***********************************************************************
 
 local function doset(t,i)
@@ -284,6 +290,10 @@ archived_athdr	<- %ARCHIVED_AT      ':' FWS archive_url                %CRLF
 
 archive_url	<- "<" { [^>]+ } ">"
 
+	-- -------------------------------------------
+	-- Usenet (newsgroups) specific headers
+	-- -------------------------------------------
+
 xref		<- {:host: xrefhost :} FWS xreflist
 xreflist	<- groupmsg -> {} (FWS groupmsg)* -> {}
 xrefhost	<- [A-Za-z0-9]+
@@ -321,11 +331,19 @@ SENDSYS		<- [Ss][Ee][Nn][Dd][Ss][Yy][Ss]
 VERSION		<- [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 MODERATED	<- [Mm][Oo][Dd][Ee][Rr][Aa][Tt][Ee][Dd]
 
+	-- ----------------------------------------------
+	-- Mailing list specific headers
+	-- ----------------------------------------------
+
 list_id		<- {:name: phrase? :} "<" {:id: list_label :} ">"
 list_label	<- dot_atom_text
 list_locs	<- list_loc ("," list_loc)*
 list_loc	<- CFWS? "<" { [^>]+ } ">" CFWS?
 list_no		<- CFWS? {:list_no: [Nn][Oo] :}
+
+	-- -----------------------------------------------
+	-- MIME specific headers
+	-- -----------------------------------------------
 
 length		<- %d+ -> tonumber
 mechanism	<- BIT7			-> "7bit"
@@ -362,6 +380,10 @@ value		<- (token / quoted_string)
 token		<- [^][()<>@,;:\"/?=%s%c]+
 
 mimeversion	<- (CFWS? {%d+} CFWS? '.' CFWS? {%d+} CFWS?) -> {} -> vmerge
+
+	-- ----------------------------------------------------
+	-- tracing (Return-Path and Received) specific headers
+	-- ----------------------------------------------------
 
 reverse_path	<- path / "<>"
 
@@ -401,10 +423,18 @@ ESMTP		<- [Ee] SMTP
 SMTP		<- [Ss][Mm][Tt][Pp]
 ID		<- [Ii][Dd]
 
+	-- -----------------------------
+	-- message IDs
+	-- -----------------------------
+
 msg_id		<- CFWS? "<" { id_left "@" id_right } ">" CFWS?
 id_left		<- dot_atom_text
 id_right	<- dot_atom_text / no_fold_literal
 no_fold_literal	<- "[" %dtext* "]"
+
+	-- ------------------------------------------
+	-- time keeps on slipping, into the future
+	-- ------------------------------------------
 
 date_time	<- ( {:weekday: day_of_week :} "," )? thedate time CFWS?
 day_of_week	<- FWS { day_name }
@@ -424,6 +454,11 @@ hour		<- {:hour: %d%d -> tonumber :}
 min		<- {:min:  %d%d -> tonumber :}
 second		<- {:sec:  %d%d -> tonumber :}
 zone		<- FWS {:zone: (("+" / "-") %d^4) -> tozone:}
+
+	-- ----------------------------------------------------
+	-- various tokens and pieces used to build up a larger
+	-- parsing expression
+	-- ----------------------------------------------------
 
 unstructured	<- FWS? { (FWS? %VCHAR)* } %WSP*
 phrase		<- word+
@@ -465,6 +500,11 @@ CFWS		<- (FWS? comment)? FWS?
 comment		<- "(" (FWS? ccontent)* FWS? ")"
 ccontent	<- %ctext / quoted_pair / comment
 
+	-- --------------------------------------------------
+	-- Email addresses---for those of you who don't want
+	-- a 4,000+ line regular expression 
+	-- --------------------------------------------------
+
 address_list	<- address ("," address)*
 address		<- mailbox / %group
 group_list	<- mailbox_list / CFWS
@@ -482,7 +522,6 @@ address_literal	<- "[" %dtext* "]"
 ]]
 
 -- ***********************************************************************
-
 
 local R =
 {
