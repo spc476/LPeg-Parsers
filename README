@@ -161,6 +161,78 @@ IP
 	Provides two LPeg patterns, IPv4 and IPv6 which parse and convert
 	said addresses directly into their network-order binary formats.
 
+INI
+
+	Provides a INI file parser that returns a Lua table from a INI
+	file.  A sample INI file such as:
+
+		; we allow "default" values
+
+		default = ok
+
+		[section1]
+
+		var1 = foo
+		var2 = 12,23,34,54,44
+		VAR3 = "var3=foo",33,44,55
+		var2 = apple
+		Var4 = 55
+
+		[section2]
+			# another comment
+			; and so is this one
+		
+			var1 = foo bar baz ; this is a comment
+			var2 = "foo bar baz ; this is not a comment"
+
+		[section1]
+
+			var4=this is a test
+			var5= this is also a test
+			var2 = pear
+			var3 = 88,99
+
+
+	will result in a Lua table of:
+
+		{
+		  section1 =
+		  {
+		    var1 = "foo",
+		    var5 = "this is also a test",
+		    var4 =
+		    {
+		      [1] = "55",
+		      [2] = "this is a test",
+		    },
+		    var3 =
+		    {
+		      [1] = "var3=foo",
+		      [2] = "33",
+		      [3] = "44",
+		      [4] = "55",
+		      [5] = "88",
+		      [6] = "99",
+		    },
+		    var2 =
+		    {
+		      [1] = "12",
+		      [2] = "23",
+		      [3] = "34",
+		      [4] = "54",
+		      [5] = "44",
+		      [6] = "apple",
+		      [7] = "pear",
+		    },
+		  },
+		  default = "ok",
+		  section2 =
+		  {
+		    var1 = "foo bar baz ",
+		    var2 = "foo bar baz ; this is not a comment",
+		  },
+		}
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg
