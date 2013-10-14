@@ -31,6 +31,7 @@ local Cc = lpeg.Cc
 local Cf = lpeg.Cf
 local Cg = lpeg.Cg
 local Ct = lpeg.Ct
+local Cp = lpeg.Cp
 
 -- ***********************************************************************
 -- create a parsing expression that will match text case-insensitively
@@ -653,4 +654,5 @@ local R =
 
 -- **********************************************************************
 
-return re.compile(G,R)
+return re.compile(G,R) * Cp()
+
