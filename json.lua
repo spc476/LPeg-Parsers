@@ -24,7 +24,7 @@ local cc         = require "org.conman.cc"
 local lpeg       = require "lpeg"
 local re         = require "re"
 
-local conversion = iconv.open("UTF-16LE","UTF-8")
+local conversion = iconv("UTF-8","UTF-16LE")
 
 -- **********************************************************************
 
