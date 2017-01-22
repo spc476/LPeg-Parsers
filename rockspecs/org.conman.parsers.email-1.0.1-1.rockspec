@@ -26,7 +26,7 @@ description =
 dependencies =
 {
   "lua",
-  "lpeg >= 0.10"
+  "lpeg >= 1.0.1"
 }
 
 build =
