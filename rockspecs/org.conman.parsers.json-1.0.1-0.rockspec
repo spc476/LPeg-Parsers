@@ -1,9 +1,9 @@
 package = "org.conman.parsers.json"
-version = "1.0.0-0"
+version = "1.0.1-0"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/json-1.0.0/json.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/json-1.0.1/json.lua"
 }
 
 description =
@@ -14,11 +14,7 @@ description =
   summary    = "Parse JSON files",
   detailed   = [[
 	Parse a JSON file into a Lua table.  This supports UTF-8 encoded
-	JSON files.  Be warned, this module requires an experimental module
-	that can compile C code embedded in Lua, which is not easy to
-	install.
-
-	You have been warned.
+	JSON files.
   ]]
 }
 
@@ -26,8 +22,6 @@ dependencies =
 {
   "lua",
   "lpeg >= 0.10",
-  "org.conman.cc >= 1.0.0",
-  "org.conman.iconv >= 1.0.0",
 }
 
 build =
