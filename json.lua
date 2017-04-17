@@ -19,44 +19,36 @@
 --
 -- ********************************************************************
 
-local iconv      = require "org.conman.iconv"
-local cc         = require "org.conman.cc"
-local lpeg       = require "lpeg"
-local re         = require "re"
+local lpeg = require "lpeg"
+local re   = require "re"
+local utf8
 
-local conversion = iconv("UTF-8","UTF-16LE")
-
--- **********************************************************************
-
-local TOUTF16 = --[[ C ]] [[
-#include <stddef.h>
-#include <lua.h>
-#include <lauxlib.h>
-
-int toutf16(lua_State *L)
-{
-  size_t len;
-  size_t i;
-
-  luaL_checktype(L,1,LUA_TTABLE);
-  len = lua_objlen(L,1);
+if _VERSION < "Lua 5.3" then
+  local char  = require "string".char
+  local floor = require "math".floor
   
-  unsigned short input[len];
-
-  for (i = 0 ; i < len ; i++)
+  utf8 =
   {
-    lua_rawgeti(L,1,i+1);
-    input[i] = lua_tointeger(L,-1);
-    lua_pop(L,1);
-  }
-  
-  lua_pushlstring(L,(char *)input,len * sizeof(short));
-  return 1;
-}
-
-]]
-
-local toutf16 = cc.compile('toutf16',TOUTF16)
+    char = function(n)
+      if n < 0x80 then
+        return char(n)
+      elseif n < 0x800 then
+        return char(
+        	floor(n / 2^6) + 0xC0,
+        	(n % 0x40)     + 0x80
+        )
+      else
+        return char(
+        	(floor(n / 2^12) + 0xE0),
+        	(floor(n / 2^ 6) % 0x40) + 0x80,
+        	(n               % 0x40) + 0x80
+        )
+      end
+    end
+  }  
+else
+  utf8 = require "utf8"
+end
 
 -- **********************************************************************
 
@@ -111,9 +103,9 @@ value_separator	<- ws "," ws
 ws		<- (%c / %s)*
 ]]
 
-local member = lpeg.V"member"
+local member          = lpeg.V"member"
 local value_separator = lpeg.V"value_separator"
-local member_list = lpeg.Cf(
+local member_list     = lpeg.Cf(
 		lpeg.Ct("") * (member * (value_separator * member)^0)^0,
 		rawset
 	)
@@ -145,9 +137,7 @@ local R =
   end,
 
   unicode = function(subject,position,capture)
-    local utf16 = toutf16(capture)
-    local utf8  = conversion(utf16)
-    return position,utf8
+    return position,utf8.char(capture)
   end,
     
   normal = function(subject,position,capture)
@@ -180,4 +170,3 @@ local R =
 
 lpeg.setmaxstack(1000)
 return re.compile(G,R)
-
