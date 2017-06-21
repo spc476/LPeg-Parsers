@@ -2,6 +2,10 @@
 The code herein contains LPeg [1] routines for parsing some common data
 formats.  The current formats are:
 
+ABNF
+
+	The core ruleset from RFC-5234.  These rules are used often in RFCs.
+
 Email
 
 	Parses email headers as defined in:
