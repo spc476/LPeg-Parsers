@@ -73,7 +73,7 @@ end
 -- **********************************************************************
 
 local G = --[[ lpeg/re ]] [[
-json            <- object /  array -> {}
+json            <- object /  array
 
 object          <- begin_object
                         %member_list
