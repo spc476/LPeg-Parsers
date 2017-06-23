@@ -22,33 +22,52 @@
 
 local lpeg = require "lpeg"
 local re   = require "re"
+local up
 local utf8
 
 if _VERSION < "Lua 5.3" then
-  local char  = require "string".char
-  local floor = require "math".floor
+  local char   = require "string".char
+  local floor  = require "math".floor
+  local select = select
   
   utf8 =
   {
-    char = function(n)
-      if n < 0x80 then
-        return char(n)
-      elseif n < 0x800 then
-        return char(
-                floor(n / 2^6) + 0xC0,
-                (n % 0x40)     + 0x80
-        )
-      else
-        return char(
-                (floor(n / 2^12) + 0xE0),
-                (floor(n / 2^ 6) % 0x40) + 0x80,
-                (n               % 0x40) + 0x80
-        )
+    char = function(...)
+      local function onechar(n)
+        if n < 0x80 then
+          return char(n)
+        elseif n < 0x800 then
+          return char(
+                  floor(n / 2^6) + 0xC0,
+                  (n % 0x40)     + 0x80
+          )
+        else
+          return char(
+                  (floor(n / 2^12) + 0xE0),
+                  (floor(n / 2^ 6) % 0x40) + 0x80,
+                  (n               % 0x40) + 0x80
+          )
+        end
       end
+      
+      local res = ""
+      for i = 1 , select('#',...) do
+        local c = select(i,...)
+        res = res .. onechar(c)
+      end
+      return res
     end
   }
+  
+  if _VERSION == "Lua 5.1" then
+    up = unpack
+  else
+    up = table.unpack -- luacheck: ignore
+  end
+  
 else
   utf8 = require "utf8"
+  up   = table.unpack -- luacheck: ignore
 end
 
 -- **********************************************************************
@@ -138,7 +157,7 @@ local R =
   end,
   
   unicode = function(_,position,capture)
-    return position,utf8.char(capture)
+    return position,utf8.char(up(capture))
   end,
   
   normal = function(_,position,capture)
