@@ -160,6 +160,10 @@ JSON
 	to run.  This will parse a JSON file into a Lua table.  The full
 	grammar is supported, but it expects the input to be valid UTF-8.
 
+	A JSON null value will be converted to nil.  If you won't want this
+	behavior, define a global variable called "null" to be the value
+	you want for a JSON null.
+
 IP
 
 	Provides two LPeg patterns, IPv4 and IPv6 which parse and convert

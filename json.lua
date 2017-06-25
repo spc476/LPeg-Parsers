@@ -18,6 +18,7 @@
 -- Comments, questions and criticisms can be sent to: sean@conman.org
 --
 -- ********************************************************************
+-- luacheck: globals null
 -- luacheck: ignore 611
 
 local lpeg = require "lpeg"
@@ -137,7 +138,7 @@ local R =
   member_list = member_list,
   
   retnil = function(_,position)
-    return position,nil
+    return position,null
   end,
   
   retfalse = function(_,position)
