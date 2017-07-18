@@ -2,11 +2,11 @@
 The code herein contains LPeg [1] routines for parsing some common data
 formats.  The current formats are:
 
-ABNF
+abnf
 
 	The core ruleset from RFC-5234.  These rules are used often in RFCs.
 
-Email
+email
 
 	Parses email headers as defined in:
 
@@ -154,7 +154,7 @@ Email
 	otherwise understood or parsable will end up on a field called
 	'generic' with the key being the raw header name.
 
-JSON
+json
 
 	Implements a JSON parser.  It requires some additional modules [2]
 	to run.  This will parse a JSON file into a Lua table.  The full
@@ -164,12 +164,20 @@ JSON
 	behavior, define a global variable called "null" to be the value
 	you want for a JSON null.
 
-IP
+jsonS
+
+	Another implementation of a JSON parser.  This one "streams" the
+	input, meaning it will handle large JSON files the other one won't,
+	and is a drop in replacement.  You can also pass in a function that
+	will return more data so you can actually "stream" data into the
+	parser.
+
+ip
 
 	Provides two LPeg patterns, IPv4 and IPv6 which parse and convert
 	said addresses directly into their network-order binary formats.
 
-INI
+ini
 
 	Provides a INI file parser that returns a Lua table from a INI
 	file.  A sample INI file such as:
