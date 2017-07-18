@@ -1,9 +1,9 @@
 package = "org.conman.parsers.jsonS"
-version = "1.0.0-1"
+version = "1.0.1-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/jsonS-1.0.0/jsonS.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/jsonS-1.0.1/jsonS.lua"
 }
 
 description =
