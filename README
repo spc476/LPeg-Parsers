@@ -164,7 +164,7 @@ json
 	behavior, define a global variable called "null" to be the value
 	you want for a JSON null.
 
-jsonS
+jsons
 
 	Another implementation of a JSON parser.  This one "streams" the
 	input, meaning it will handle large JSON files the other one won't,
