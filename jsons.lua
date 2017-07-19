@@ -109,6 +109,12 @@ local jsonS do
   local object  = ws * P"{" * ws
   local objecte = ws * P"}" * ws
   
+  -- ------------------------------------------------------------
+  -- the only tokens that can end a file are the array end token,
+  -- and the object end token.  Everything else has to have more 
+  -- data past it.
+  -- ------------------------------------------------------------
+  
   jsonS  = (           Cc('number')     * number    * Cp()) * #P(1)
          + (           Cc('string')     * string    * Cp()) * #P(1)
          + (P'false' * Cc('boolean')    * Cc(false) * Cp()) * #P(1)
