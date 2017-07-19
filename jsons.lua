@@ -74,7 +74,7 @@ local jsonS do
   
   local int    = P"0"
                + R"19" * R"09"^0
-  local frac   = P"." * R"09"^0
+  local frac   = P"."  * R"09"^0
   local exp    = S"Ee" * S"+-"^-1 * R"09"^1
   local number = (P"-"^-1 * int * frac^-1 * exp^-1)
                / tonumber
@@ -109,23 +109,18 @@ local jsonS do
   local object  = ws * P"{" * ws
   local objecte = ws * P"}" * ws
   
-  -- ------------------------------------------------------------
-  -- the only tokens that can end a file are the array end token,
-  -- and the object end token.  Everything else has to have more 
-  -- data past it.
-  -- ------------------------------------------------------------
+  local next    = value + #arraye + #objecte
   
-  jsonS  = (           Cc('number')     * number    * Cp()) * #P(1)
-         + (           Cc('string')     * string    * Cp()) * #P(1)
-         + (P'false' * Cc('boolean')    * Cc(false) * Cp()) * #P(1)
-         + (P'true'  * Cc('boolean')    * Cc(true)  * Cp()) * #P(1)
-         + (P'null'  * Cc('null')       * Cc(null)  * Cp()) * #P(1)
-         + (array    * Cc('array')      * Ct("")    * Cp()) * #P(1)
-         + (object   * Cc('object')     * Ct("")    * Cp()) * #P(1)
-         + (name     * Cc('name')       * Cc(nil)   * Cp()) * #P(1)
-         + (value    * Cc('value')      * Cc(nil)   * Cp()) * #P(1)
-         +  arraye   * Cc('array_end')  * Cc(nil)   * Cp()
-         +  objecte  * Cc('object_end') * Cc(nil)   * Cp()
+  jsonS =            Cc('name')       * string    * name  * Cp()
+        +            Cc('value')      * string    * next  * Cp()
+        +            Cc('value')      * number    * next  * Cp()
+        + P'false' * Cc('value')      * Cc(false) * next  * Cp()
+        + P'true'  * Cc('value')      * Cc(true)  * next  * Cp()
+        + P'null'  * Cc('value')      * Cc(null)  * next  * Cp()
+        + array    * Cc('array')      * Ct("")    * #P(1) * Cp()
+        + object   * Cc('object')     * Ct("")    * #P(1) * Cp()
+        + arraye   * Cc('array_end')  * Cc(nil)   * next  * Cp()
+        + objecte  * Cc('object_end') * Cc(nil)   * next  * Cp()
 end
 
 -- **********************************************************************
@@ -159,7 +154,7 @@ local function match(_,fundat)
     local data = fundat
     fundat = function()
       local d = data
-      data = nil
+      data    = nil
       return d
     end
   end
@@ -167,29 +162,38 @@ local function match(_,fundat)
   local data
   local pos
   local result
-  local more
-  local add_array
-  local add_object
+  local add_array  -- forward function reference
+  local add_object -- forward function reference
   
   -- -----------------------------------------------------------------------
-  -- JSON arrays and objects are mapped to Lua tables.  Durring processing,
-  -- the current array/object is stored in result.  To keep track of nested
-  -- arrays and values, we store the parent in result[false].  And the end
-  -- of an array/object, we remove the parent pointer.  We do this to keep
-  -- the call stack at a minimum and use the structure we are decoding as
-  -- our stack.
+  
+  local function next_token()
+    local token,value,newpos = jsonS:match(data,pos)
+    if not token then
+      local new = fundat()
+      if new == nil or new == "" then return nil end
+      data = data:sub(pos,-1) .. new
+      pos  = 1
+      return next_token()
+    else
+      return token,value,newpos
+    end
+  end
+  
+  -- -----------------------------------------------------------------------
+  -- JSON arrays and objects are mapped to Lua tables.  During processing,
+  -- the current array/object is stored in result.  To help keep track of
+  -- things, the following are temporarily stored during processing:
   --
-  -- Also, result[true] will hold the proper function to call for subsequent
-  -- tokens, either adding to an array, or to an object.  And again, once
-  -- the array/object is done, we remove this value.  Then the value in the
-  -- parent node is used to restore the function.  Again, we use the
-  -- structure we are creating as our stack.
+  --	result[false]	-> parent node
+  --	result[true]	-> function to call for processing next token
   --
-  -- Both functions will return true if there are no parsing errors,
-  -- otherwise, they return false.
+  -- They are removed once an array/object is finished processing.
   -- -----------------------------------------------------------------------
   
-  local function start_list(token,value)
+  local function insert_list(token,key,value)
+    result[key] = value
+    
     if token == 'array' then
       value[false] = result
       value[true]  = add_array
@@ -199,121 +203,92 @@ local function match(_,fundat)
       value[true]  = add_object
       result       = value
     end
-    return true
+    return result[true]()
   end
   
   -- -----------------------------------------------------------------------
   
   local function end_list()
-    more          = result[false]
+    local parent  = result[false]
     result[true]  = nil
     result[false] = nil
-    result        = more or result
-    return true
+    result        = parent or result
+    return result[true]()
   end
   
   -- -----------------------------------------------------------------------
   
-  add_array = function(token,value)
+  add_array = function()
+    local token,value
+    
+    token,value,pos = next_token()
+    if token == nil          then return nil end
+    if token == 'object_end' then return nil end
+    if token == 'name'       then return nil end
+    
     if token == 'array_end' then
       return end_list()
-      
-    elseif token == 'object_end' then
-      return false
-      
-    elseif token == 'name' then
-      return false
-      
-    elseif token == 'value' then
-      return true
-      
     else
-      table.insert(result,value)
-      return start_list(token,value)
+      return insert_list(token,#result + 1,value)
     end
   end
   
-  -- ------------------------------------------------------------------
-  -- For objects, we temporarily store the name and value in the array
-  -- portion of the Lua table.  The actual setting of the field doesn't
-  -- occur until we get the 'value' token.  Then the name and value are
-  -- removed from the array portion and used to set the field portion.
-  -- ------------------------------------------------------------------
+  -- -----------------------------------------------------------------------
   
-  add_object = function(token,value)
+  add_object = function()
+    local token,value,name
+    
+    token,value,pos = next_token("object_name")
+    if not token then return nil end
+    
     if token == 'object_end' then
-      local val = table.remove(result)
-      local key = table.remove(result)
-      if not key then return false end
-      result[key.value] = val.value
       return end_list()
-      
-    elseif token == 'array_end' then
-      return false
-      
     elseif token == 'name' then
-      return type(result[1].token) == 'string'
-      
-    elseif token == 'value' then
-      local val = table.remove(result)
-      local key = table.remove(result)
-      if not key then return false end
-      result[key.value] = val.value
-      return true
-      
+      name = value
     else
-      table.insert(result, { token = token , value = value })
-      return start_list(token,value)
+      return nil
+    end
+    
+    token,value,pos = next_token("object_value")
+    
+    if token == 'value' or token == 'array' or token == 'object' then
+      return insert_list(token,name,value)
+    else
+      return nil
     end
   end
   
   -- ------------------------------------------------------------------
   
+  local token
   data = fundat()
-  if not data then return nil end
+  pos  = 1
   
-  local token,value,newpos = jsonS:match(data,1)
-  if not token or token ~= 'array'  and token ~= 'object' then
+  if data == nil or data == "" then return nil end
+  
+  token,result,pos = next_token()
+  
+  if not token or token ~= 'array' and token ~= 'object' then
     return nil
   end
   
-  pos    = newpos
-  result = value
-  more   = true
+  -- ---------------------------------------------------------------
+  -- The top level "next token" function will actually return the
+  -- accumulated result, clearing itself from the result.
+  -- ---------------------------------------------------------------
+  
+  result[true] = function()
+    result[true] = nil
+    return result
+  end
   
   if token == 'array' then
-    result[true] = add_array
+    return add_array()
+  elseif token == 'object' then
+    return add_object()
   else
-    result[true] = add_object
+    return nil
   end
-  
-  -- ------------------------------------------------------------------
-  -- Parse data.  If the LPeg parser returns nil, that triggers a refill of
-  -- the data.  If storing the result returns false, that indicates a syntax
-  -- error in the input stream, and will thus return a nil to indicate an
-  -- error.
-  -- ------------------------------------------------------------------
-  
-  local function process()
-    if not more then return result end
-    
-    token,value,newpos = jsonS:match(data,pos)
-    
-    if not token then
-      local new = fundat()
-      if new == nil or new == "" then return nil end
-      data = data:sub(pos,-1) .. new
-      pos  = 1
-      return process()
-    end
-    
-    if not result[true](token,value) then return nil end
-    
-    pos = newpos
-    return process()
-  end
-  
-  return process()
 end
 
 -- **********************************************************************
