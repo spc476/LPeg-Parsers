@@ -109,17 +109,17 @@ local jsonS do
   local object  = ws * P"{" * ws
   local objecte = ws * P"}" * ws
   
-  jsonS  = P'false' * Cc('boolean')    * Cc(false) * Cp()
-         + P'true'  * Cc('boolean')    * Cc(true)  * Cp()
-         + P'null'  * Cc('null')       * Cc(null)  * Cp()
-         +            Cc('number')     * number    * Cp()
-         +            Cc('string')     * string    * Cp()
-         + array    * Cc('array')      * Ct("")    * Cp()
-         + object   * Cc('object')     * Ct("")    * Cp()
+  jsonS  = (P'false' * Cc('boolean')    * Cc(false) * Cp()) * #P(1)
+         + (P'true'  * Cc('boolean')    * Cc(true)  * Cp()) * #P(1)
+         + (P'null'  * Cc('null')       * Cc(null)  * Cp()) * #P(1)
+         + (           Cc('number')     * number    * Cp()) * #P(1)
+         + (           Cc('string')     * string    * Cp()) * #P(1)
+         + (array    * Cc('array')      * Ct("")    * Cp()) * #P(1)
+         + (object   * Cc('object')     * Ct("")    * Cp()) * #P(1)
          + arraye   * Cc('array_end')  * Cc(nil)   * Cp()
          + objecte  * Cc('object_end') * Cc(nil)   * Cp()
-         + name     * Cc('name')       * Cc(nil)   * Cp()
-         + value    * Cc('value')      * Cc(nil)   * Cp()
+         + (name     * Cc('name')       * Cc(nil)   * Cp()) * #P(1)
+         + (value    * Cc('value')      * Cc(nil)   * Cp()) * #P(1)
 end
 
 -- **********************************************************************
@@ -136,6 +136,9 @@ end
 -- Note:	The JSON "null" value will be returned as a Lua nil.  If
 --		you want a custom null value, define a global variable
 --		named "null" with the sentinel value you want.
+--
+--		Always returning a single character from fundat() will
+--		cause issues with parsing.
 -- **********************************************************************
 
 local function match(_,fundat)
