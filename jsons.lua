@@ -102,11 +102,11 @@ local jsonS do
   local string    = P'"' * Cs(char^0) * P'"'
   
   local ws     = R("\0\32","\127\127")^0
-  local NAME   = ws * P":" * ws
-  local VALUE  = ws * P"," * ws
-  local array  = ws * P"[" * ws
+  local array  = ws * P"[" * ws * #P(1)
+  local object = ws * P"{" * ws * #P(1)
+  local NAME   = ws * P":" * ws * #P(1)
+  local VALUE  = ws * P"," * ws * #P(1)
   local ARRAY  = ws * P"]" * ws
-  local object = ws * P"{" * ws
   local OBJECT = ws * P"}" * ws
   
   jsonS =            Cc('string')  * string    * Cp()
