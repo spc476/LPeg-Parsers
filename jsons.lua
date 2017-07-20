@@ -79,7 +79,7 @@ local jsonS do
   local number = (P"-"^-1 * int * frac^-1 * exp^-1)
                / tonumber
                
-  local unescaped = R(" !","#[","]~")
+  local unescaped = R(" !","#[","]~","\128\255")
   local char      = unescaped
                   + P[[\"]] / [["]]
                   + P[[\\]] / [[\]]
@@ -101,26 +101,25 @@ local jsonS do
                     end
   local string    = P'"' * Cs(char^0) * P'"'
   
-  local ws      = R("\0\32","\127\127")^0
-  local name    = ws * P":" * ws
-  local value   = ws * P"," * ws
-  local array   = ws * P"[" * ws
-  local arraye  = ws * P"]" * ws
-  local object  = ws * P"{" * ws
-  local objecte = ws * P"}" * ws
+  local ws     = R("\0\32","\127\127")^0
+  local NAME   = ws * P":" * ws
+  local VALUE  = ws * P"," * ws
+  local array  = ws * P"[" * ws
+  local ARRAY  = ws * P"]" * ws
+  local object = ws * P"{" * ws
+  local OBJECT = ws * P"}" * ws
   
-  local next    = value + #arraye + #objecte
-  
-  jsonS =            Cc('name')       * string    * name  * Cp()
-        +            Cc('value')      * string    * next  * Cp()
-        +            Cc('value')      * number    * next  * Cp()
-        + P'false' * Cc('value')      * Cc(false) * next  * Cp()
-        + P'true'  * Cc('value')      * Cc(true)  * next  * Cp()
-        + P'null'  * Cc('value')      * Cc(null)  * next  * Cp()
-        + array    * Cc('array')      * Ct("")    * #P(1) * Cp()
-        + object   * Cc('object')     * Ct("")    * #P(1) * Cp()
-        + arraye   * Cc('array_end')  * Cc(nil)   * next  * Cp()
-        + objecte  * Cc('object_end') * Cc(nil)   * next  * Cp()
+  jsonS =            Cc('string')  * string    * Cp()
+        +            Cc('number')  * number    * Cp() * #P(1)
+        + P'false' * Cc('boolean') * Cc(false) * Cp()
+        + P'true'  * Cc('boolean') * Cc(true)  * Cp()
+        + P'null'  * Cc('null')    * Cc(null)  * Cp()
+        + array    * Cc('array')   * Ct("")    * Cp()
+        + object   * Cc('object')  * Ct("")    * Cp()
+        + ARRAY    * Cc('ARRAY')   * Cc(nil)   * Cp()
+        + OBJECT   * Cc('OBJECT')  * Cc(nil)   * Cp()
+        + NAME     * Cc('NAME')    * Cc(nil)   * Cp()
+        + VALUE    * Cc('VALUE')   * Cc(nil)   * Cp()
 end
 
 -- **********************************************************************
@@ -162,21 +161,27 @@ local function match(_,fundat)
   local data
   local pos
   local result
-  local add_array  -- forward function reference
-  local add_object -- forward function reference
+  local okay
+  local array  -- forward function reference
+  local object -- forward function reference
   
   -- -----------------------------------------------------------------------
   
-  local function next_token()
-    local token,value,newpos = jsonS:match(data,pos)
+  local function next_token(list)
+    local token,val,newpos = jsonS:match(data,pos)
     if not token then
       local new = fundat()
-      if new == nil or new == "" then return nil end
+      if new == nil or new == "" then error "parse" end
       data = data:sub(pos,-1) .. new
       pos  = 1
-      return next_token()
+      return next_token(list)
     else
-      return token,value,newpos
+      for _,isthis in ipairs(list) do
+        if isthis == token then
+          return token,val,newpos
+        end
+      end
+      error "parse"
     end
   end
   
@@ -185,24 +190,26 @@ local function match(_,fundat)
   -- the current array/object is stored in result.  To help keep track of
   -- things, the following are temporarily stored during processing:
   --
-  --	result[false]	-> parent node
-  --	result[true]	-> function to call for processing next token
+  --    result[false]   -> parent node
+  --    result[true]    -> function to call for processing next token
   --
   -- They are removed once an array/object is finished processing.
   -- -----------------------------------------------------------------------
   
-  local function insert_list(token,key,value)
-    result[key] = value
+  local function insert_list(token,key,value,resume)
+    result[key]  = value
+    result[true] = resume
     
     if token == 'array' then
       value[false] = result
-      value[true]  = add_array
+      value[true]  = array
       result       = value
     elseif token == 'object' then
       value[false] = result
-      value[true]  = add_object
+      value[true]  = object
       result       = value
     end
+    
     return result[true]()
   end
   
@@ -213,82 +220,77 @@ local function match(_,fundat)
     result[true]  = nil
     result[false] = nil
     result        = parent or result
-    return result[true]()
-  end
-  
-  -- -----------------------------------------------------------------------
-  
-  add_array = function()
-    local token,value
     
-    token,value,pos = next_token()
-    if token == nil          then return nil end
-    if token == 'object_end' then return nil end
-    if token == 'name'       then return nil end
-    
-    if token == 'array_end' then
-      return end_list()
+    if not parent then
+      return pos > #data and result or nil
     else
-      return insert_list(token,#result + 1,value)
+      return result[true]()
     end
   end
   
   -- -----------------------------------------------------------------------
   
-  add_object = function()
-    local token,value,name
-    
-    token,value,pos = next_token("object_name")
-    if not token then return nil end
-    
-    if token == 'object_end' then
+  local token
+  local value
+  
+  local function array_value()
+    token,value,pos = next_token { 'ARRAY' , 'VALUE' }
+    if token == 'ARRAY' then
       return end_list()
-    elseif token == 'name' then
-      name = value
     else
-      return nil
+      assert(token == 'VALUE')
+      token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null ' , 'array' , 'object' }
+      return insert_list(token,#result + 1,value,array_value)
     end
-    
-    token,value,pos = next_token("object_value")
-    
-    if token == 'value' or token == 'array' or token == 'object' then
-      return insert_list(token,name,value)
+  end
+  
+  array = function()
+    token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null' , 'array' , 'object' , 'ARRAY' }
+    if token == 'ARRAY' then return end_list() end
+    return insert_list(token,#result + 1,value,array_value)
+  end
+  
+  -- -----------------------------------------------------------------------
+  
+  local function object_value()
+    token,value,pos = next_token { 'VALUE','OBJECT'}
+    if token == 'OBJECT' then
+      return end_list()
     else
-      return nil
+      return object()
     end
+  end
+  
+  object = function()
+    token,value,pos = next_token { 'string' , 'OBJECT' }
+    
+    if token == 'OBJECT' then return end_list() end
+    
+    local name = value
+    
+    token,value,pos = next_token { 'NAME' }
+    token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null' , 'array' , 'object' }
+    return insert_list(token,name,value,object_value)
   end
   
   -- ------------------------------------------------------------------
   
-  local token
-  data = fundat()
-  pos  = 1
+  okay,result = pcall(function()
+    data = fundat()
+    pos  = 1
+    
+    if data == nil or data == "" then return nil end
+    
+    token,result,pos = next_token { 'array' , 'object' }
+    
+    if token == 'array' then
+      return array()
+    elseif token == 'object' then
+      return object()
+    end
+  end)
   
-  if data == nil or data == "" then return nil end
-  
-  token,result,pos = next_token()
-  
-  if not token or token ~= 'array' and token ~= 'object' then
-    return nil
-  end
-  
-  -- ---------------------------------------------------------------
-  -- The top level "next token" function will actually return the
-  -- accumulated result, clearing itself from the result.
-  -- ---------------------------------------------------------------
-  
-  result[true] = function()
-    result[true] = nil
-    return result
-  end
-  
-  if token == 'array' then
-    return add_array()
-  elseif token == 'object' then
-    return add_object()
-  else
-    return nil
-  end
+  return okay and result or nil
 end
 
 -- **********************************************************************
