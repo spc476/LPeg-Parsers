@@ -110,7 +110,7 @@ local jsonS do
   local OBJECT = ws * P"}" * ws
   
   jsonS =            Cc('string')  * string    * Cp()
-        +            Cc('number')  * number    * Cp() * #P(1)
+        +            Cc('number')  * number    * Cp() * #(VALUE + ARRAY + OBJECT)
         + P'false' * Cc('boolean') * Cc(false) * Cp()
         + P'true'  * Cc('boolean') * Cc(true)  * Cp()
         + P'null'  * Cc('null')    * Cc(null)  * Cp()
