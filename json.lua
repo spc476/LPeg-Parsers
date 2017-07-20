@@ -121,7 +121,7 @@ begin_object    <- ws "{" ws
 end_object      <- ws "}" ws
 name_separator  <- ws ":" ws
 value_separator <- ws "," ws
-ws              <- (%c / %s)*
+ws              <- %WS*
 ]]
 
 local member          = lpeg.V"member"
@@ -135,6 +135,8 @@ local member_list     = lpeg.Cf(
 
 local R =
 {
+  WS = lpeg.S"\t\r\n ",
+  
   member_list = member_list,
   
   retnil = function(_,position)
