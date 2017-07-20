@@ -215,16 +215,35 @@ local function match(_,fundat)
   
   -- -----------------------------------------------------------------------
   
-  local function end_list()
-    local parent  = result[false]
-    result[true]  = nil
-    result[false] = nil
-    result        = parent or result
+  local end_list do
+    local SPACE = lpeg.S"\t\r\n "^0 * lpeg.P(-1)
+
+    local function drain(d)
+      local extra = fundat()
+      if not extra or extra == "" then
+        return d
+      else
+        return drain(d .. extra)
+      end
+    end
     
-    if not parent then
-      return pos > #data and result or nil
-    else
-      return result[true]()
+    end_list = function()
+      local parent  = result[false]
+      result[true]  = nil
+      result[false] = nil
+      result        = parent or result
+      
+      if not parent then
+        if pos > #data then
+          local extra = drain("")
+          if SPACE:match(extra) then
+            return result
+          end
+        end
+        return nil
+      else
+        return result[true]()
+      end
     end
   end
   
