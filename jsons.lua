@@ -239,7 +239,7 @@ local function match(_,fundat)
       return end_list()
     else
       assert(token == 'VALUE')
-      token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null ' , 'array' , 'object' }
+      token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null' , 'array' , 'object' }
       return insert_list(token,#result + 1,value,array_value)
     end
   end
@@ -289,7 +289,7 @@ local function match(_,fundat)
       return object()
     end
   end)
-  
+
   return okay and result or nil
 end
 
