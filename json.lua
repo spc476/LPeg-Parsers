@@ -82,7 +82,7 @@ object          <- begin_object
 member          <- {: string name_separator value :}
 
 array           <- begin_array
-                        {| (value (value_separator value)* )* |}
+                        {| (value (value_separator value)* )? |}
                    end_array
                    
 number          <- { "-" ? int frac ? exp ? } => tonumber
