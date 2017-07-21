@@ -74,7 +74,7 @@ local jsonS do
   
   local int    = P"0"
                + R"19" * R"09"^0
-  local frac   = P"."  * R"09"^0
+  local frac   = P"."  * R"09"^1
   local exp    = S"Ee" * S"+-"^-1 * R"09"^1
   local number = (P"-"^-1 * int * frac^-1 * exp^-1)
                / tonumber
