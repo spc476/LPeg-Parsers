@@ -216,6 +216,10 @@ local function match(_,fundat)
   -- -----------------------------------------------------------------------
   
   local end_list do
+    -- ---------------------------------------------------------
+    -- Sigh---the things I do to follow the letter of the spec.
+    -- ---------------------------------------------------------
+    
     local SPACE = lpeg.S"\t\r\n "^0 * lpeg.P(-1)
 
     local function drain(d)
@@ -276,7 +280,12 @@ local function match(_,fundat)
     if token == 'OBJECT' then
       return end_list()
     else
-      return object()
+      assert(token == 'VALUE')
+      token,value,pos = next_token { 'string' }
+      local name = value
+      token,value,pos = next_token { 'NAME' }
+      token,value,pos = next_token { 'string' , 'number' , 'boolean' , 'null' , 'array' , 'object' }
+      return insert_list(token,name,value,object_value)
     end
   end
   
