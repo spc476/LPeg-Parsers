@@ -221,7 +221,7 @@ local function match(_,fundat)
     -- ---------------------------------------------------------
     
     local SPACE = lpeg.S"\t\r\n "^0 * lpeg.P(-1)
-
+    
     local function drain(d)
       local extra = fundat()
       if not extra or extra == "" then
@@ -317,7 +317,7 @@ local function match(_,fundat)
       return object()
     end
   end)
-
+  
   return okay and result or nil
 end
 
