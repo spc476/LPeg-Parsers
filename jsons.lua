@@ -101,7 +101,7 @@ local jsonS do
                     end
   local string    = P'"' * Cs(char^0) * P'"'
   
-  local ws     = S"\t\r\n "^0 --R("\0\32","\127\127")^0
+  local ws     = S"\t\r\n "^0
   local array  = ws * P"[" * ws * #P(1)
   local object = ws * P"{" * ws * #P(1)
   local NAME   = ws * P":" * ws * #P(1)
