@@ -1,9 +1,9 @@
 package = "org.conman.parsers.email"
-version = "1.0.1-1"
+version = "1.1.0-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/email-1.0.1/email.lua",
+  url = "https://raw.github.com/spc476/LPeg-Parsers/email-1.1.0/email.lua",
 }
 
 description =

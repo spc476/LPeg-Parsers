@@ -225,6 +225,12 @@ headers		<-
 		/  {:approved:			approvedhdr	:} -> {}
 		/  {:lines:			lineshdr	:} -> {}
 		/  {:xref:			xrefhdr		:} -> {}
+		
+		-- --------------------------------------------------------
+		-- field defined in RFC-3834
+		-- --------------------------------------------------------
+		
+		/  {:auto_submitted:		autosubmithdr   :} -> {}
 
 		-- --------------------------------------------------------
 		-- field defined in RFC-5064
@@ -285,9 +291,14 @@ approvedhdr	<- %APPROVED         ':' unstructured => cleanup        %CRLF
 lineshdr	<- %LINES            ':' FWS length                     %CRLF
 xrefhdr		<- %XREF             ':' FWS xref                 -> {} %CRLF
 
+autosubmithdr	<- %AUTO_SUBMITTED   ':' FWS auto_submit          -> {} %CRLF
+
 archived_athdr	<- %ARCHIVED_AT      ':' FWS archive_url                %CRLF
 
 -- ------------------------------------------------------------------------
+
+auto_submit	<- {:type: ('no' / 'auto-generated' / 'auto-replied' / token) :}
+		   ( CFWS? ";" CFWS? parameter )*
 
 archive_url	<- "<" { [^>]+ } ">"
 
@@ -577,6 +588,8 @@ local R =
   APPROVED     = H "Approved",
   LINES        = H "Lines",
   XREF         = H "XRef",
+  
+  AUTO_SUBMITTED = H"Auto-Submitted",
   
   ARCHIVED_AT  = H "Archived-At",
   
