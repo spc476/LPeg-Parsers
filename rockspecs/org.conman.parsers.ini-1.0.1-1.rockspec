@@ -1,9 +1,9 @@
 package = "org.conman.parsers.ini"
-version = "1.0.0-0"
+version = "1.0.1-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/ini-1.0.0/ini.lua",
+  url = "https://raw.github.com/spc476/LPeg-Parsers/ini-1.0.1/ini.lua",
 }
 
 description =
@@ -36,4 +36,3 @@ build =
     }
   }
 }
-
