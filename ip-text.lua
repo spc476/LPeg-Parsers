@@ -53,11 +53,11 @@ local h16c = h16 * P":" * #HEXDIG
 local ls32 = IPv4 + h16c * h16
 
 local function mh16(n)
-  local accum = h16c
-  for _ = 2 , n - 1 do
-    accum = accum * h16c
+  local accum = h16
+  for _ = 1 , n do
+    accum = h16c * accum
   end
-  return accum * h16
+  return accum
 end
 
 local function mh16c(n)
@@ -74,36 +74,36 @@ local IPv6 = C(Cc"" *                   mh16c(6) * ls32) -- a
            + C(Cc"" * h16 *     P'::' * mh16c(4) * ls32)
            + C(Cc"" *           P'::' * mh16c(3) * ls32) -- d
            + C(Cc"" * h16 *     P'::' * mh16c(3) * ls32)
-           + C(Cc"" * mh16(2) * P'::' * mh16c(3) * ls32)
+           + C(Cc"" * mh16(1) * P'::' * mh16c(3) * ls32)
            + C(Cc"" *           P'::' * mh16c(2) * ls32) -- e
            + C(Cc"" * h16     * P'::' * mh16c(2) * ls32)
+           + C(Cc"" * mh16(1) * P'::' * mh16c(2) * ls32)
            + C(Cc"" * mh16(2) * P'::' * mh16c(2) * ls32)
-           + C(Cc"" * mh16(3) * P'::' * mh16c(2) * ls32)
            + C(Cc"" *           P'::' * h16c     * ls32) -- f
            + C(Cc"" * h16     * P'::' * h16c     * ls32)
+           + C(Cc"" * mh16(1) * P'::' * h16c     * ls32)
            + C(Cc"" * mh16(2) * P'::' * h16c     * ls32)
            + C(Cc"" * mh16(3) * P'::' * h16c     * ls32)
-           + C(Cc"" * mh16(4) * P'::' * h16c     * ls32)
            + C(Cc"" *           P'::'            * ls32) -- g
            + C(Cc"" * h16 *     P'::'            * ls32)
+           + C(Cc"" * mh16(1) * P'::'            * ls32)
            + C(Cc"" * mh16(2) * P'::'            * ls32)
            + C(Cc"" * mh16(3) * P'::'            * ls32)
            + C(Cc"" * mh16(4) * P'::'            * ls32)
-           + C(Cc"" * mh16(5) * P'::'            * ls32)
            + C(Cc"" *           P'::'            * h16 ) -- h
            + C(Cc"" * h16     * P'::'            * h16 )
+           + C(Cc"" * mh16(1) * P'::'            * h16 )
            + C(Cc"" * mh16(2) * P'::'            * h16 )
            + C(Cc"" * mh16(3) * P'::'            * h16 )
            + C(Cc"" * mh16(4) * P'::'            * h16 )
            + C(Cc"" * mh16(5) * P'::'            * h16 )
-           + C(Cc"" * mh16(6) * P'::'            * h16 )
            + C(Cc"" *           P'::'                  ) -- i
            + C(Cc"" * h16     * P'::'                  )
+           + C(Cc"" * mh16(1) * P'::'                  )
            + C(Cc"" * mh16(2) * P'::'                  )
            + C(Cc"" * mh16(3) * P'::'                  )
            + C(Cc"" * mh16(4) * P'::'                  )
            + C(Cc"" * mh16(5) * P'::'                  )
            + C(Cc"" * mh16(6) * P'::'                  )
-           + C(Cc"" * mh16(7) * P'::'                  )
 
 return { IPv4 = IPv4 , IPv6 = IPv6 }
