@@ -24,8 +24,6 @@ local lpeg     = require "lpeg"
 local tonumber = tonumber
 
 local Cmt = lpeg.Cmt
-local Cc  = lpeg.Cc
-local C   = lpeg.C
 local P   = lpeg.P
 
 -- *********************************************************************
@@ -40,7 +38,7 @@ local dec_octet = Cmt(DIGIT^1,function(_,position,capture)
   end
 end)
 
-local IPv4 = C(dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet)
+local IPv4 = dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet
 
 local h16 = Cmt(HEXDIG^1,function(_,position,capture)
   local n = tonumber(capture,16)
@@ -68,42 +66,42 @@ local function mh16c(n)
   return accum
 end
 
-local IPv6 = C(                  mh16c(6) * ls32) -- a
-           + C(          P'::' * mh16c(5) * ls32) -- b
-           + C(          P'::' * mh16c(4) * ls32) -- c
-           + C(h16 *     P'::' * mh16c(4) * ls32)
-           + C(          P'::' * mh16c(3) * ls32) -- d
-           + C(h16 *     P'::' * mh16c(3) * ls32)
-           + C(mh16(1) * P'::' * mh16c(3) * ls32)
-           + C(          P'::' * mh16c(2) * ls32) -- e
-           + C(h16     * P'::' * mh16c(2) * ls32)
-           + C(mh16(1) * P'::' * mh16c(2) * ls32)
-           + C(mh16(2) * P'::' * mh16c(2) * ls32)
-           + C(          P'::' * h16c     * ls32) -- f
-           + C(h16     * P'::' * h16c     * ls32)
-           + C(mh16(1) * P'::' * h16c     * ls32)
-           + C(mh16(2) * P'::' * h16c     * ls32)
-           + C(mh16(3) * P'::' * h16c     * ls32)
-           + C(          P'::'            * ls32) -- g
-           + C(h16 *     P'::'            * ls32)
-           + C(mh16(1) * P'::'            * ls32)
-           + C(mh16(2) * P'::'            * ls32)
-           + C(mh16(3) * P'::'            * ls32)
-           + C(mh16(4) * P'::'            * ls32)
-           + C(          P'::'            * h16 ) -- h
-           + C(h16     * P'::'            * h16 )
-           + C(mh16(1) * P'::'            * h16 )
-           + C(mh16(2) * P'::'            * h16 )
-           + C(mh16(3) * P'::'            * h16 )
-           + C(mh16(4) * P'::'            * h16 )
-           + C(mh16(5) * P'::'            * h16 )
-           + C(          P'::'                  ) -- i
-           + C(h16     * P'::'                  )
-           + C(mh16(1) * P'::'                  )
-           + C(mh16(2) * P'::'                  )
-           + C(mh16(3) * P'::'                  )
-           + C(mh16(4) * P'::'                  )
-           + C(mh16(5) * P'::'                  )
-           + C(mh16(6) * P'::'                  )
+local IPv6 =                   mh16c(6) * ls32 -- a
+           +           P'::' * mh16c(5) * ls32 -- b
+           +           P'::' * mh16c(4) * ls32 -- c
+           + h16 *     P'::' * mh16c(4) * ls32
+           +           P'::' * mh16c(3) * ls32 -- d
+           + h16 *     P'::' * mh16c(3) * ls32
+           + mh16(1) * P'::' * mh16c(3) * ls32
+           +           P'::' * mh16c(2) * ls32 -- e
+           + h16     * P'::' * mh16c(2) * ls32
+           + mh16(1) * P'::' * mh16c(2) * ls32
+           + mh16(2) * P'::' * mh16c(2) * ls32
+           +           P'::' * h16c     * ls32 -- f
+           + h16     * P'::' * h16c     * ls32
+           + mh16(1) * P'::' * h16c     * ls32
+           + mh16(2) * P'::' * h16c     * ls32
+           + mh16(3) * P'::' * h16c     * ls32
+           +           P'::'            * ls32 -- g
+           + h16 *     P'::'            * ls32
+           + mh16(1) * P'::'            * ls32
+           + mh16(2) * P'::'            * ls32
+           + mh16(3) * P'::'            * ls32
+           + mh16(4) * P'::'            * ls32
+           +           P'::'            * h16  -- h
+           + h16     * P'::'            * h16
+           + mh16(1) * P'::'            * h16
+           + mh16(2) * P'::'            * h16
+           + mh16(3) * P'::'            * h16
+           + mh16(4) * P'::'            * h16
+           + mh16(5) * P'::'            * h16
+           +           P'::'                   -- i
+           + h16     * P'::'
+           + mh16(1) * P'::'
+           + mh16(2) * P'::'
+           + mh16(3) * P'::'
+           + mh16(4) * P'::'
+           + mh16(5) * P'::'
+           + mh16(6) * P'::'
 
 return { IPv4 = IPv4 , IPv6 = IPv6 }
