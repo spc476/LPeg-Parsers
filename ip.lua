@@ -52,16 +52,15 @@ IPv4 = Cf(
         acc
 )
 
-local h16  = C(HEXDIG^1)
-           / function(c)
-               local n = tonumber(c,16)
-               if n < 65536 then
-                 local q = floor(n/256)
-                 local r = n % 256
-                 return string.char(q) .. string.char(r)
-               end
-             end
-             
+local h16 = Cmt(HEXDIG^1,function(_,position,capture)
+  local n = tonumber(capture,16)
+  if n < 65536 then
+    local q = floor(n/256)
+    local r = n % 256
+    return position,string.char(q) .. string.char(r)
+  end
+end)
+
 local h16c = h16 * P":" * #HEXDIG
 local ls32 = IPv4 + h16c * h16
 
