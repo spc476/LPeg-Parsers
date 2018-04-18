@@ -117,11 +117,10 @@ IPv6 = Cf(Cc"" *                    mh16c(6) * ls32,acc)        -- a
      + Cf(Cc"" * mh16(5) * mcc(2)            * h16 ,acc)
      + Cf(Cc"" * mh16(6) * mcc(1)            * h16 ,acc)
      + Cf(Cc"" *           mcc(8)                  ,acc)        -- i
-     + Cf(Cc"" * mh16(1) * mcc(7)                  ,acc)
+     + Cf(Cc"" * h16     * mcc(7)                  ,acc)
      + Cf(Cc"" * mh16(2) * mcc(6)                  ,acc)
      + Cf(Cc"" * mh16(3) * mcc(5)                  ,acc)
      + Cf(Cc"" * mh16(4) * mcc(4)                  ,acc)
      + Cf(Cc"" * mh16(5) * mcc(3)                  ,acc)
      + Cf(Cc"" * mh16(6) * mcc(2)                  ,acc)
      + Cf(Cc"" * mh16(7) * mcc(1)                  ,acc)
-     
