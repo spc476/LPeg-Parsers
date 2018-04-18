@@ -26,9 +26,10 @@ local string   = string
 local tonumber = tonumber
 local lpeg     = require "lpeg"
 
-local Cf = lpeg.Cf
-local C  = lpeg.C
-local P  = lpeg.P
+local Cmt = lpeg.Cmt
+local Cf  = lpeg.Cf
+local C   = lpeg.C
+local P   = lpeg.P
 
 module(...)
 
@@ -39,14 +40,13 @@ local function acc(a,v) return a .. v end
 local DIGIT  = lpeg.locale().digit
 local HEXDIG = lpeg.locale().xdigit
 
-local dec_octet = C(DIGIT^1)
-                / function(c)
-                    local n = tonumber(c)
-                    if n < 256 then
-                      return string.char(n)
-                    end
-                  end
-                  
+local dec_octet = Cmt(DIGIT^1,function(_,position,capture)
+  local n = tonumber(capture)
+  if n < 256 then
+    return position,string.char(n)
+  end
+end)
+
 IPv4 = Cf(
         dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet,
         acc
