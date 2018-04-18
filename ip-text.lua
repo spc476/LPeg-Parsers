@@ -20,8 +20,8 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local tonumber = tonumber
 local lpeg     = require "lpeg"
+local tonumber = tonumber
 
 local Cmt = lpeg.Cmt
 local Cc  = lpeg.Cc
