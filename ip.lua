@@ -27,7 +27,6 @@ local tonumber = tonumber
 local lpeg     = require "lpeg"
 
 local Cf = lpeg.Cf
-local Cc = lpeg.Cc
 local C  = lpeg.C
 local P  = lpeg.P
 
@@ -49,7 +48,7 @@ local dec_octet = C(DIGIT^1)
                   end
                   
 IPv4 = Cf(
-        Cc"" * dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet,
+        dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet,
         acc
 )
 
@@ -87,40 +86,40 @@ local function mh16c(n)
   return accum
 end
 
-IPv6 = Cf(Cc"" *                    mh16c(6) * ls32,acc)        -- a
-     + Cf(Cc"" *           mcc(1) * mh16c(5) * ls32,acc)        -- b
-     + Cf(Cc"" *           mcc(2) * mh16c(4) * ls32,acc)        -- c
-     + Cf(Cc"" * h16 *     mcc(1) * mh16c(4) * ls32,acc)
-     + Cf(Cc"" *           mcc(3) * mh16c(3) * ls32,acc)        -- d
-     + Cf(Cc"" * h16 *     mcc(2) * mh16c(3) * ls32,acc)
-     + Cf(Cc"" * mh16(2) * mcc(1) * mh16c(3) * ls32,acc)
-     + Cf(Cc"" *           mcc(4) * mh16c(2) * ls32,acc)        -- e
-     + Cf(Cc"" * h16     * mcc(3) * mh16c(2) * ls32,acc)
-     + Cf(Cc"" * mh16(2) * mcc(2) * mh16c(2) * ls32,acc)
-     + Cf(Cc"" * mh16(3) * mcc(1) * mh16c(2) * ls32,acc)
-     + Cf(Cc"" *           mcc(5) * h16c     * ls32,acc)        -- f
-     + Cf(Cc"" * h16     * mcc(4) * h16c     * ls32,acc)
-     + Cf(Cc"" * mh16(2) * mcc(3) * h16c     * ls32,acc)
-     + Cf(Cc"" * mh16(3) * mcc(2) * h16c     * ls32,acc)
-     + Cf(Cc"" * mh16(4) * mcc(1) * h16c     * ls32,acc)
-     + Cf(Cc"" *           mcc(6)            * ls32,acc)        -- g
-     + Cf(Cc"" * h16 *     mcc(5)            * ls32,acc)
-     + Cf(Cc"" * mh16(2) * mcc(4)            * ls32,acc)
-     + Cf(Cc"" * mh16(3) * mcc(3)            * ls32,acc)
-     + Cf(Cc"" * mh16(4) * mcc(2)            * ls32,acc)
-     + Cf(Cc"" * mh16(5) * mcc(1)            * ls32,acc)
-     + Cf(Cc"" *           mcc(7)            * h16 ,acc)        -- h
-     + Cf(Cc"" * h16     * mcc(6)            * h16 ,acc)
-     + Cf(Cc"" * mh16(2) * mcc(5)            * h16 ,acc)
-     + Cf(Cc"" * mh16(3) * mcc(4)            * h16 ,acc)
-     + Cf(Cc"" * mh16(4) * mcc(3)            * h16 ,acc)
-     + Cf(Cc"" * mh16(5) * mcc(2)            * h16 ,acc)
-     + Cf(Cc"" * mh16(6) * mcc(1)            * h16 ,acc)
-     + Cf(Cc"" *           mcc(8)                  ,acc)        -- i
-     + Cf(Cc"" * h16     * mcc(7)                  ,acc)
-     + Cf(Cc"" * mh16(2) * mcc(6)                  ,acc)
-     + Cf(Cc"" * mh16(3) * mcc(5)                  ,acc)
-     + Cf(Cc"" * mh16(4) * mcc(4)                  ,acc)
-     + Cf(Cc"" * mh16(5) * mcc(3)                  ,acc)
-     + Cf(Cc"" * mh16(6) * mcc(2)                  ,acc)
-     + Cf(Cc"" * mh16(7) * mcc(1)                  ,acc)
+IPv6 = Cf(                   mh16c(6) * ls32,acc)        -- a
+     + Cf(          mcc(1) * mh16c(5) * ls32,acc)        -- b
+     + Cf(          mcc(2) * mh16c(4) * ls32,acc)        -- c
+     + Cf(h16 *     mcc(1) * mh16c(4) * ls32,acc)
+     + Cf(          mcc(3) * mh16c(3) * ls32,acc)        -- d
+     + Cf(h16 *     mcc(2) * mh16c(3) * ls32,acc)
+     + Cf(mh16(2) * mcc(1) * mh16c(3) * ls32,acc)
+     + Cf(          mcc(4) * mh16c(2) * ls32,acc)        -- e
+     + Cf(h16     * mcc(3) * mh16c(2) * ls32,acc)
+     + Cf(mh16(2) * mcc(2) * mh16c(2) * ls32,acc)
+     + Cf(mh16(3) * mcc(1) * mh16c(2) * ls32,acc)
+     + Cf(          mcc(5) * h16c     * ls32,acc)        -- f
+     + Cf(h16     * mcc(4) * h16c     * ls32,acc)
+     + Cf(mh16(2) * mcc(3) * h16c     * ls32,acc)
+     + Cf(mh16(3) * mcc(2) * h16c     * ls32,acc)
+     + Cf(mh16(4) * mcc(1) * h16c     * ls32,acc)
+     + Cf(          mcc(6)            * ls32,acc)        -- g
+     + Cf(h16 *     mcc(5)            * ls32,acc)
+     + Cf(mh16(2) * mcc(4)            * ls32,acc)
+     + Cf(mh16(3) * mcc(3)            * ls32,acc)
+     + Cf(mh16(4) * mcc(2)            * ls32,acc)
+     + Cf(mh16(5) * mcc(1)            * ls32,acc)
+     + Cf(          mcc(7)            * h16 ,acc)        -- h
+     + Cf(h16     * mcc(6)            * h16 ,acc)
+     + Cf(mh16(2) * mcc(5)            * h16 ,acc)
+     + Cf(mh16(3) * mcc(4)            * h16 ,acc)
+     + Cf(mh16(4) * mcc(3)            * h16 ,acc)
+     + Cf(mh16(5) * mcc(2)            * h16 ,acc)
+     + Cf(mh16(6) * mcc(1)            * h16 ,acc)
+     + Cf(          mcc(8)                  ,acc)        -- i
+     + Cf(h16     * mcc(7)                  ,acc)
+     + Cf(mh16(2) * mcc(6)                  ,acc)
+     + Cf(mh16(3) * mcc(5)                  ,acc)
+     + Cf(mh16(4) * mcc(4)                  ,acc)
+     + Cf(mh16(5) * mcc(3)                  ,acc)
+     + Cf(mh16(6) * mcc(2)                  ,acc)
+     + Cf(mh16(7) * mcc(1)                  ,acc)
