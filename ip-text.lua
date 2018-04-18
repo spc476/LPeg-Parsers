@@ -102,7 +102,7 @@ local IPv6 = C(Cc"" *                   mh16c(6) * ls32) -- a
            + C(Cc"" * mh16(5) * mcc()            * h16 )
            + C(Cc"" * mh16(6) * mcc()            * h16 )
            + C(Cc"" *           mcc()                  ) -- i
-           + C(Cc"" * mh16(1) * mcc()                  )
+           + C(Cc"" * h16     * mcc()                  )
            + C(Cc"" * mh16(2) * mcc()                  )
            + C(Cc"" * mh16(3) * mcc()                  )
            + C(Cc"" * mh16(4) * mcc()                  )
