@@ -104,4 +104,4 @@ local IPv6 =                   mh16c(6) * ls32 -- a
            + mh16(5) * P'::'
            + mh16(6) * P'::'
 
-return { IPv4 = IPv4 , IPv6 = IPv6 }
+return { IPv4 = lpeg.C(IPv4) , IPv6 = lpeg.C(IPv6) }
