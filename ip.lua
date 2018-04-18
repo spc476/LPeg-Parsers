@@ -18,7 +18,6 @@
 -- Comments, questions and criticisms can be sent to: sean@conman.org
 --
 -- ********************************************************************
--- luacheck: globals IPv4 IPv6
 -- luacheck: ignore 611
 
 local floor    = math.floor
@@ -28,7 +27,6 @@ local lpeg     = require "lpeg"
 
 local Cmt = lpeg.Cmt
 local Cf  = lpeg.Cf
-local C   = lpeg.C
 local P   = lpeg.P
 
 -- *********************************************************************
