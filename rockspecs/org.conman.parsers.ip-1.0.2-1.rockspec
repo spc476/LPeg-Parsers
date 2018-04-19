@@ -1,9 +1,9 @@
 package = "org.conman.parsers.ip"
-version = "1.0.1-1"
+version = "1.0.2-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/ip-1.0.1/ip.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/ip-1.0.2/ip.lua"
 }
 
 description =
