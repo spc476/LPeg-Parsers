@@ -177,6 +177,11 @@ ip
 	Provides two LPeg patterns, IPv4 and IPv6 which parse and convert
 	said addresses directly into their network-order binary formats.
 
+ip-text
+
+	Provides two LPeg patterns, IPv4 and IPv6 which parse and return said
+	addresses as text, unlike the ip module above.
+
 ini
 
 	Provides a INI file parser that returns a Lua table from a INI
