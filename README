@@ -330,6 +330,33 @@ url.url
 
 	which may require more parsing than provided here.
 
+url.gopher
+
+	Parses "gopher:" URLs per RFC-4266.  Given this URL:
+
+		gopher://gopher.conman.org/0foobar%09search%20String%09plus
+
+	it will be broken down as:
+
+		{
+		  host     = "gopher.conman.org",
+		  type     = "0",
+		  search   = "search String",
+		  scheme   = "gopher",
+		  plus     = "plus",
+		  port     = 70.000000,
+		  selector = "foobar",
+		}
+
+	If you need to parse other URLs in addition to "gopher:" types,
+	you can do:
+
+		gopher = require "org.conman.parsers.url.url"
+		url    = require "org.conman.parsers.url.url"
+		
+		url  = gopher + url
+		info = url:match(my_url)	
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg
