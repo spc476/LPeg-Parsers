@@ -357,6 +357,38 @@ url.gopher
 		url  = gopher + url
 		info = url:match(my_url)	
 
+url.tel
+
+	Parses "tel:" URIs per RFC-3966.  Example:
+
+		tel = require "org.conman.parsers.url.tel"
+
+		u = tel:match "tel:+1-(555)-555-1212;ext=1234"
+
+	results in:
+
+		{
+		  scheme = "tel",
+		  number = "15555551212",
+		  global = true,
+		  parameters =
+		  {
+		    ext = "1234",
+		  },
+		}
+
+	If you need to parse other URLs in addition to "tel:" types,
+	you can do:
+
+		tel = require "org.conman.parsers.url.tel"
+		url = require "org.conman.parsers.url.url"
+
+		url  = tel.tel + url
+		info = url:match(my_url)
+
+	NOTE:   Unlike the other modules, this one returns a table instead
+		of an LPeg expression, due to some other requirements.
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg
