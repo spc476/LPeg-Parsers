@@ -254,6 +254,82 @@ ini
 		  },
 		}
 
+url.url
+
+	Parses URLs per RFC-3986.  By default, it will handle the following
+	URL types:
+
+		http:
+		https:
+		file:
+		ftp:
+
+	Given the following URL:
+
+		http://www.conman.org/people/spc/index.cgi?one=1%3F&two=2&three=3#target1
+
+	It will be broken down into a Lua table as follows:
+
+		{
+		  host = "www.conman.org",
+		  path =
+		  {
+		    [1] = "people",
+		    [2] = "spc",
+		    [3] = "index.cgi",
+		    root = true,
+		  },
+		  query =
+		  {
+		    one = "1?",
+		    three = "3",
+		    two = "2",
+		  },
+		  scheme = "http",
+		  fragment = "target1",
+		  port = 80.000000,
+		}
+
+	The path is broken down by default.  No normalization is done, so a
+	path like:
+
+		/foo/../bar/baz/../../snafu/./fubar
+
+	will be returned as:
+
+		{
+		  [1] = "foo",
+		  [2] = "..",
+		  [3] = "bar",
+		  [4] = "baz",
+		  [5] = "..",
+		  [6] = "..",
+		  [7] = "snafu",
+		  [8] = ".",
+		  [9] = "fubar"
+		}
+
+	Other URLs can be parsed, but a URL like:
+
+		mailto:sean@conman.org?cc=fred@example.com,velma@example.net&subject=Current%20Mystery
+
+	will be broken down as:
+
+		{
+		  scheme = "mailto",
+		  path   =
+		  {
+		    [1] = "sean@conman.org",
+		  },
+		  query =
+		  {
+		    cc      = "fred@example.com,velma@example.net;subject",
+		    subject = "Current Mystery",
+		  },
+		}
+
+	which may require more parsing than provided here.
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg

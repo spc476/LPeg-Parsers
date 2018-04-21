@@ -31,7 +31,9 @@ LUADIR := $(dataroot)/lua/$(shell $(LUA) -e "print(_VERSION:match '^Lua (.*)')")
 
 install :
 	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers
-	$(INSTALL_DATA) *.lua $(DESTDIR)$(LUADIR)/org/conman/parsers/
+	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers/url
+	$(INSTALL_DATA) *.lua     $(DESTDIR)$(LUADIR)/org/conman/parsers/
+	$(INSTALL_DATA) url/*.lua $(DESTDIR)$(LUADIR)/org/conman/parsers/url
 
 uninstall :
 	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/*.lua
