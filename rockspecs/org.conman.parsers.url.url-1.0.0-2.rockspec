@@ -1,5 +1,5 @@
 package = "org.conman.parsers.url.url"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source =
 {
@@ -23,6 +23,8 @@ dependencies =
 {
   "lua",
   "lpeg >= 1.0.1",
+  "org.conman.parsers.abnf >= 1.0.0",
+  "org.conman.parsers.ip-text >= 1.0.0",
 }
 
 build =
