@@ -39,4 +39,4 @@ uninstall :
 	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/*.lua
 
 clean:
-	$(RM) *~
+	$(RM) $(shell find . -name '*~')
