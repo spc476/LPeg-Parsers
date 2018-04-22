@@ -357,6 +357,62 @@ url.gopher
 		url  = gopher + url
 		info = url:match(my_url)	
 
+url.sip
+
+	Parses "sip:" URIs per RFC-3261.  Examples:
+
+		sip = require "org.conman.parsers.url.sip"
+
+		u = sip:match [[sip:annc@example.com;play=file://fs.example.net//clips/my-intro.dvi;content-type=video/mpeg%3bencode%d3314M-25/625-50]]
+
+	results in:
+
+		{
+		  host       = "example.com",
+		  port       = 5060.000000,
+		  user       = "annc",
+		  scheme     = "sip",
+		  parameters =
+		  {
+		    play             = "file://fs.example.net//clips/my-intro.dvi",
+		    ["content-type"] = "video/mpeg%3bencode%d3314M-25/625-50",
+		  },
+		}
+	
+	and 
+
+		u = sip:match [[sip:+1-(555)-555-1212;ext=1234@example.net;user=phone]]
+
+	results in:
+
+		{
+		  host = "example.net",
+		  port = 5060.000000,
+		  user =
+		  {
+		    number     = "15555551212",
+		    global     = true,
+		    parameters =
+		    {
+		      ext = "1234",
+		    },
+		  },
+		  scheme     = "sip",
+		  parameters =
+		  {
+		    user = "phone",
+		  },
+		}
+
+	If you need to parse other URLs in addition to "sip:" types,
+	you can do:
+
+		sip = require "org.conman.parsers.url.sip"
+		url = require "org.conman.parsers.url.url"
+
+		url  = sip + url
+		info = url:match(my_url)
+
 url.tel
 
 	Parses "tel:" URIs per RFC-3966.  Example:
