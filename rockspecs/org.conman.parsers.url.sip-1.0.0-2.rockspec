@@ -1,5 +1,5 @@
 package = "org.conman.parsers.url.sip"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source =
 {
