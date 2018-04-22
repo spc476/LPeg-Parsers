@@ -22,7 +22,7 @@
 
 local abnf = require "org.conman.parsers.abnf"
 local ip   = require "org.conman.parsers.ip-text"
-local tel  = require "tel"
+local tel  = require "org.conman.parsers.url.tel"
 local lpeg = require "lpeg"
 
 -- ************************************************************************
