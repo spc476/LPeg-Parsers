@@ -106,10 +106,11 @@ local pct_encoded = (lpeg.P"%" * abnf.HEXDIG * abnf.HEXDIG)
                       local n = tonumber(capture:sub(2,-1),16)
                       return string.char(n)
                     end
+local unreserved  = abnf.ALPHA + abnf.DIGIT  + lpeg.S"-._~"
+local pchar       = unreserved + pct_encoded + lpeg.S":@"
 
-local char  = pct_encoded + (lpeg.P(1) - lpeg.S"=&#")
-local name  = lpeg.Cs(char^1)
-local value = lpeg.Cs(char^1)
+local name  = lpeg.Cs(pchar^1)
+local value = lpeg.Cs(pchar^1)
 local pair  = name * (lpeg.P"=" * value)^-1 * lpeg.S"&"^-1
 
 local R =
