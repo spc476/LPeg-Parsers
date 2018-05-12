@@ -44,12 +44,29 @@ local Cs = lpeg.Cs
 local Ct = lpeg.Ct
 local C  = lpeg.C
 local P  = lpeg.P
+local R  = lpeg.R
 local S  = lpeg.S
 
 -- ************************************************************************
 
-local alphanum    = abnf.ALPHA + abnf.DIGIT
+local function I(text)
+  local mkUl = Cf(
+                   (
+                     R("AZ","az")
+                     / function(c)
+                         return P(c:lower()) + P(c:upper())
+                       end
+                     + P(1)
+                     / function(c) return P(c) end
+                   )^1,
+                   function(a,b) return a * b end
+                 )
+  return mkUl:match(text) * Cc(text)
+end
 
+-- ************************************************************************
+
+local alphanum    = abnf.ALPHA + abnf.DIGIT
 local pct_encoded = (P"%" * abnf.HEXDIG * abnf.HEXDIG)
                   / function(capture)
                       local n = tonumber(capture:sub(2,-1),16)
@@ -59,17 +76,15 @@ local pct_encoded = (P"%" * abnf.HEXDIG * abnf.HEXDIG)
 local visual_separator     = lpeg.S"-.()" / ""
 local phonedigit           = abnf.DIGIT  + visual_separator
 local phonedigit_hex       = abnf.HEXDIG + visual_separator + P"*" + P"#"
-
 local local_number_digits  = Cg(Cs(phonedigit_hex^1),'number')
 local global_number_digits = Cg(P"+" * Cc(true),'global')
                            * Cg(Cs(phonedigit^1),'number')
-
-local domainlabel     = alphanum * (alphanum + (P"-" * #alphanum))^0
-local domainname      = (domainlabel * P"."^-1)^0
-local descriptor      = global_number_digits
-                      + Cg(domainname,"domain")
-local phone_context   = C"phone-context" * P"=" * Ct(descriptor)
-
+                           
+local domainlabel   = alphanum * (alphanum + (P"-" * #alphanum))^0
+local domainname    = (domainlabel * P"."^-1)^0
+local descriptor    = global_number_digits
+                    + Cg(domainname,"domain")
+local phone_context = I"phone-context" * P"=" * Ct(descriptor)
 
 local mark             = S"-_.!~*'()"
 local unreserved       = alphanum + mark
@@ -84,7 +99,7 @@ local par              = Cf(
                              Ct"" * Cg(P";" * parameter)^0,
                              function(a,i,v) a[i] = v return a end
                            )
-
+                           
 local local_number         = local_number_digits  * Cg(par,"parameters") - P";"
 local global_number        = global_number_digits * Cg(par,"parameters") - P";"
 
@@ -114,5 +129,5 @@ local sip_scheme = Cg(P"sip",'scheme')  * Cg(Cc(5060),'port') * P':'
                  + Cg(P"sips",'scheme') * Cg(Cc(5061),'port') * P':'
 local sip        = Ct(sip_scheme * userinfo^-1 * hostport * uri_parameters)
                  + Ct(tel_scheme * telephone_subscriber)
-
+                 
 return sip
