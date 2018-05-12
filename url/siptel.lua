@@ -56,6 +56,14 @@ local pct_encoded = (P"%" * abnf.HEXDIG * abnf.HEXDIG)
                       return n
                     end
                     
+local visual_separator     = lpeg.S"-.()" / ""
+local phonedigit           = abnf.DIGIT  + visual_separator
+local phonedigit_hex       = abnf.HEXDIG + visual_separator + P"*" + P"#"
+
+local local_number_digits  = Cg(Cs(phonedigit_hex^1),'number')
+local global_number_digits = Cg(P"+" * Cc(true),'global')
+                           * Cg(Cs(phonedigit^1),'number')
+
 local mark             = S"-_.!~*'()"
 local unreserved       = alphanum + mark
 local param_unreserved = S"[]/:&+$"
@@ -68,15 +76,8 @@ local par              = Cf(
                              Ct"" * Cg(P";" * parameter)^0,
                              function(a,i,v) a[i] = v return a end
                            )
-                               
-local visual_separator     = lpeg.S"-.()" / ""
-local phonedigit           = abnf.DIGIT  + visual_separator
-local phonedigit_hex       = abnf.HEXDIG + visual_separator + P"*" + P"#"
 
-local local_number_digits  = Cg(Cs(phonedigit_hex^1),'number')
 local local_number         = local_number_digits  * Cg(par,"parameters") - P";"
-local global_number_digits = Cg(P"+" * Cc(true),'global')
-                           * Cg(Cs(phonedigit^1),'number')
 local global_number        = global_number_digits * Cg(par,"parameters") - P";"
 
 local telephone_subscriber = (global_number + local_number)
