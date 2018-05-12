@@ -64,6 +64,13 @@ local local_number_digits  = Cg(Cs(phonedigit_hex^1),'number')
 local global_number_digits = Cg(P"+" * Cc(true),'global')
                            * Cg(Cs(phonedigit^1),'number')
 
+local domainlabel     = alphanum * (alphanum + (P"-" * #alphanum))^0
+local domainname      = (domainlabel * P"."^-1)^0
+local descriptor      = Cg(domainname,"domain")
+                      + global_number_digits
+local phone_context   = C"phone-context" * P"=" * Ct(descriptor)
+
+
 local mark             = S"-_.!~*'()"
 local unreserved       = alphanum + mark
 local param_unreserved = S"[]/:&+$"
