@@ -37,6 +37,7 @@ install :
 
 uninstall :
 	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/*.lua
+	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/url/*.lua
 
 clean:
 	$(RM) $(shell find . -name '*~')
