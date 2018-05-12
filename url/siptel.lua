@@ -62,11 +62,10 @@ local param_unreserved = S"[]/:&+$"
 local paramchar        = param_unreserved + unreserved + pct_encoded
 local pvalue           = Cs(paramchar^1)
 local pname            = (alphanum + P"-")^1
-local parameter        = P";"
-                       * (pname / function(c) return c:lower() end)
+local parameter        = (pname / function(c) return c:lower() end)
                        * ((P"=" * C(pvalue)) + Cc(true))
 local par              = Cf(
-                             Ct"" * Cg(parameter)^0,
+                             Ct"" * Cg(P";" * parameter)^0,
                              function(a,i,v) a[i] = v return a end
                            )
                                
