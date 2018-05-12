@@ -66,8 +66,8 @@ local global_number_digits = Cg(P"+" * Cc(true),'global')
 
 local domainlabel     = alphanum * (alphanum + (P"-" * #alphanum))^0
 local domainname      = (domainlabel * P"."^-1)^0
-local descriptor      = Cg(domainname,"domain")
-                      + global_number_digits
+local descriptor      = global_number_digits
+                      + Cg(domainname,"domain")
 local phone_context   = C"phone-context" * P"=" * Ct(descriptor)
 
 
@@ -77,7 +77,8 @@ local param_unreserved = S"[]/:&+$"
 local paramchar        = param_unreserved + unreserved + pct_encoded
 local pvalue           = Cs(paramchar^1)
 local pname            = (alphanum + P"-")^1
-local parameter        = (pname / function(c) return c:lower() end)
+local parameter        = phone_context
+                       + (pname / function(c) return c:lower() end)
                        * ((P"=" * C(pvalue)) + Cc(true))
 local par              = Cf(
                              Ct"" * Cg(P";" * parameter)^0,
