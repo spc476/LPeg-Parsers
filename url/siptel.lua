@@ -85,6 +85,7 @@ local domainname    = (domainlabel * P"."^-1)^0
 local descriptor    = global_number_digits
                     + Cg(domainname,"domain")
 local phone_context = I"phone-context" * P"=" * Ct(descriptor)
+local ext           = I"ext"           * P"=" * Cs(phonedigit^1)
 
 local mark             = S"-_.!~*'()"
 local unreserved       = alphanum + mark
@@ -93,6 +94,7 @@ local paramchar        = param_unreserved + unreserved + pct_encoded
 local pvalue           = Cs(paramchar^1)
 local pname            = (alphanum + P"-")^1
 local parameter        = phone_context
+                       + ext
                        + (pname / function(c) return c:lower() end)
                        * ((P"=" * C(pvalue)) + Cc(true))
 local par              = Cf(
