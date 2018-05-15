@@ -112,21 +112,17 @@ local tel_scheme           = Cg(lpeg.P"tel",'scheme') * P":"
 -- ************************************************************************
 
 local uri_parameters  = Cg(par,'parameters')
+local user            = unreserved + pct_encoded + S"&=+$,;?/"
+local password        = unreserved + pct_encoded + S"&=+$,"
+local userinfo        = Cg(Ct(telephone_subscriber),'user') * P'@'
+                      + Cg(Cs(user^1),'user')
+                      * (P':' * Cg(Cs(password^1),'password'))^-1
+                      * P'@'
+local host            = Cg(ip.IPv4 + ip.IPv6 + domainname,'host')
+local port            = Cg(abnf.DIGIT^1 / tonumber,'port')
+local hostport        = host * (P':' * port)^-1
+local sip_scheme      = Cg(P"sip",'scheme')  * Cg(Cc(5060),'port') * P':'
+                      + Cg(P"sips",'scheme') * Cg(Cc(5061),'port') * P':'
 
-local user     = unreserved + pct_encoded + S"&=+$,;?/"
-local password = unreserved + pct_encoded + S"&=+$,"
-local userinfo = Cg(Ct(telephone_subscriber),'user') * P'@'
-               + Cg(Cs(user^1),'user')
-               * (P':' * Cg(Cs(password^1),'password'))^-1
-               * P'@'
-               
-local host        = Cg(ip.IPv4 + ip.IPv6 + domainname,'host')
-local port        = Cg(abnf.DIGIT^1 / tonumber,'port')
-local hostport    = host * (P':' * port)^-1
-
-local sip_scheme = Cg(P"sip",'scheme')  * Cg(Cc(5060),'port') * P':'
-                 + Cg(P"sips",'scheme') * Cg(Cc(5061),'port') * P':'
-local sip        = Ct(sip_scheme * userinfo^-1 * hostport * uri_parameters)
-                 + Ct(tel_scheme * telephone_subscriber)
-                 
-return sip
+return Ct(sip_scheme * userinfo^-1 * hostport * uri_parameters)
+     + Ct(tel_scheme * telephone_subscriber)
