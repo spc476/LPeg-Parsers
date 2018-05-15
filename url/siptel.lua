@@ -120,10 +120,7 @@ local userinfo = Cg(Ct(telephone_subscriber),'user') * P'@'
                * (P':' * Cg(Cs(password^1),'password'))^-1
                * P'@'
                
-local domainlabel = alphanum * (alphanum + ('-' * #alphanum))^0
-local hostname    = (domainlabel * P'.'^-1)^1
-
-local host        = Cg(ip.IPv4 + ip.IPv6 + hostname,'host')
+local host        = Cg(ip.IPv4 + ip.IPv6 + domainname,'host')
 local port        = Cg(abnf.DIGIT^1 / tonumber,'port')
 local hostport    = host * (P':' * port)^-1
 
