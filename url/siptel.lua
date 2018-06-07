@@ -118,7 +118,7 @@ local userinfo        = Cg(Ct(telephone_subscriber),'user') * P'@'
                       + Cg(Cs(user^1),'user')
                       * (P':' * Cg(Cs(password^1),'password'))^-1
                       * P'@'
-local host            = Cg(ip.IPv4 + ip.IPv6 + domainname,'host')
+local host            = Cg(ip.IPv4 + P"[" * ip.IPv6 * P"]" + domainname,'host')
 local port            = Cg(abnf.DIGIT^1 / tonumber,'port')
 local hostport        = host * (P':' * port)^-1
 local sip_scheme      = Cg(P"sip",'scheme')  * Cg(Cc(5060),'port') * P':'
