@@ -37,11 +37,6 @@ local P    = lpeg.P
 local S    = lpeg.S
 local R    = lpeg.R
 
-local USE_C99  = true	-- formats defined by C99
-local USE_UNIX = true	-- formats commonly found on Unix systems
-local USE_TZ   = true	-- more formats found on Unix systems
-local USE_GNU  = true	-- GNU extensions
-
 -- ***********************************************************************
 -- The following could be done easier and simpler with nl_langinfo(),
 -- but that isn't portable (being a GNU extension).  This *is* portable,
@@ -78,17 +73,13 @@ do
   key        = os.date("%p", os.time(now))
   am_pm[key] = 0
   
-  if USE_GNU then
-    am_pm[key:lower()] = 0
-  end
+  am_pm[key:lower()] = 0 -- GNU extension
 
   now.hour   = 12
   key        = os.date("%p", os.time(now))
   am_pm[key] = 12
 
-  if USE_GNU then
-    am_pm[key:lower()] = 12
-  end
+  am_pm[key:lower()] = 12 -- GNU extension
 
 end
 
@@ -250,130 +241,126 @@ local directives = P"a" / function()
                     end
 
 -- -------------------------------------------------------------------
-
-if USE_C99 then
-  directives = directives
-              + P"F" / function()
-                         return Cg(d4year,"year")  * P"-"
-                              * Cg(dmonth,"month") * P"-"
-                              * Cg(dday,"day")
-                       end
-end
-
+-- C99 extensions
 -- -------------------------------------------------------------------
 
-if USE_UNIX then
-  directives = directives
-             + P"C" / function()
-                        return Cg(d2year,"year")
-                      end
+           + P"F" / function()
+                      return Cg(d4year,"year")  * P"-"
+                           * Cg(dmonth,"month") * P"-"
+                           * Cg(dday,"day")
+                    end
 
-             + P"D" / function()
-                        return Cg(dmonth,"month") * P"/"
-                             * Cg(dday,"day")     * P"/"
-                             * Cg(d2year,"year")
-                      end
+-- -------------------------------------------------------------------
+-- General UNIX extensions
+-- -------------------------------------------------------------------
 
-             + P"e" / function()
-                        return P" "^-1
-                             * Cg(Cmt(digit^1,chkrange(1,31)),"day")
-                      end
+           + P"C" / function()
+                      return Cg(d2year,"year")
+                    end
 
-             + P"E" / function()
-                        error("%E format modifier not supported")
-                      end
+           + P"D" / function()
+                      return Cg(dmonth,"month") * P"/"
+                           * Cg(dday,"day")     * P"/"
+                           * Cg(d2year,"year")
+                    end
 
-             + P"h" / function()
-                        return Cg(char^1 / short_months,"month")
-                      end
+           + P"e" / function()
+                      return P" "^-1
+                           * Cg(Cmt(digit^1,chkrange(1,31)),"day")
+                    end
 
-             + P"n" / function()
-                        return P"\n"
-                      end
+           + P"E" / function()
+                      error("%E format modifier not supported")
+                    end
 
-             + P"O" / function()
-                        error("%O format modifier not supported")
-                      end
+           + P"h" / function()
+                      return Cg(char^1 / short_months,"month")
+                    end
 
-             + P"r" / function()
-                        return Cg(d12hour,"hour") * P":"
-                             * Cg(dminute,"min")  * P":"
-                             * Cg(dsecond,"sec")  * P" "
-                             * Cg(char^1 / am_pm,"pm")
-                      end
+           + P"n" / function()
+                      return P"\n"
+                    end
+
+           + P"O" / function()
+                      error("%O format modifier not supported")
+                    end
+
+           + P"r" / function()
+                      return Cg(d12hour,"hour") * P":"
+                           * Cg(dminute,"min")  * P":"
+                           * Cg(dsecond,"sec")  * P" "
+                           * Cg(char^1 / am_pm,"pm")
+                    end
              
-             + P"R" / function()
-                        return Cg(d24hour,"hour") * P":"
-                             * Cg(dminute,"min")
-                      end
+           + P"R" / function()
+                      return Cg(d24hour,"hour") * P":"
+                           * Cg(dminute,"min")
+                    end
 
-             + P"t" / function()
-                        return P"\t"
-                      end
+           + P"t" / function()
+                      return P"\t"
+                    end
 
-             + P"T" / function()
-                        return Cg(d24hour,"hour") * P":"
-                             * Cg(dminute,"min")  * P":"
-                             * Cg(dsecond,"sec")
-                      end
+           + P"T" / function()
+                      return Cg(d24hour,"hour") * P":"
+                           * Cg(dminute,"min")  * P":"
+                           * Cg(dsecond,"sec")
+                    end
 
-             + P"u" / function()
-                        return Cg(dweek1,"wday")
-                      end
+           + P"u" / function()
+                      return Cg(dweek1,"wday")
+                    end
 
-             + P"V" / function()
-                        return Cg(dweeknum,"weeknumm4")
-                      end
-
-end
+           + P"V" / function()
+                      return Cg(dweeknum,"weeknumm4")
+                    end
 
 -- -------------------------------------------------------------------
-
-if USE_TZ then
-  directives = directives
-             + P"g" / function()
-                        return Cg(d2year,"year")
-                      end
-
-             + P"G" / function()
-                        return Cg(d4year,"year")
-                      end
-
-             + P"k" / function()
-                        return P" "^-1
-                             * Cg(Cmt(digit^1,chkrange(1,23)),"hour")
-                        end
-
-             + P"l" / function()
-                        return P" "^-1
-                             * Cg(Cmt(digit^1,chkrange(1,12)),"hour")
-                        end
-
-             + P"s" / function()
-                        return Cg(digit^1 / tonumber,"epoch")
-                      end
-
-             + P"+" / function()
-                        error("%+ format specifier not supported")
-                      end
-end
-
+-- TZ (Time Zone) extensions
 -- -------------------------------------------------------------------
 
-if USE_GNU then
-  directives = directives
-             + P"P" / function()
-                        return Cg(char^1 / am_pm,"pm")
+           + P"g" / function()
+                      return Cg(d2year,"year")
+                    end
+
+           + P"G" / function()
+                      return Cg(d4year,"year")
+                    end
+
+           + P"k" / function()
+                      return P" "^-1
+                           * Cg(Cmt(digit^1,chkrange(1,23)),"hour")
                       end
+
+           + P"l" / function()
+                      return P" "^-1
+                           * Cg(Cmt(digit^1,chkrange(1,12)),"hour")
+                      end
+
+           + P"s" / function()
+                      return Cg(digit^1 / tonumber,"epoch")
+                    end
+
+           + P"+" / function()
+                      error("%+ format specifier not supported")
+                    end
+
+-- -------------------------------------------------------------------
+-- GNU extensions
+-- -------------------------------------------------------------------
+
+           + P"P" / function()
+                      return Cg(char^1 / am_pm,"pm")
+                    end
                       
-             + P"z" / function()
-                        return Cg(number,"zone")
-                      end
-end
+           + P"z" / function()
+                      return Cg(number,"zone")
+                    end
 
 -- -------------------------------------------------------------------
+-- Catch all
+-- -------------------------------------------------------------------
 
-directives = directives
            + P(1) / function(c)
                       error(string.format("%%%s format specifier not supported",c))
                     end
