@@ -254,6 +254,44 @@ ini
 		  },
 		}
 
+strftime
+	Parses the format string for strftime() (or os.date() for Lua) and
+	returns an LPeg expression that can parse that format, with the
+	exceptions of "%c", "%x" and "%X" (all system specific formats).
+	For example, the format, "%A, %d %B %Y @ %H:%M:%S" will return the
+	LPeg expression to parse this:
+
+		Monday, 02 July 2018 @ 16:02:48
+
+	into
+
+		{
+		  min = 2.000000,
+		  wday = 2.000000,
+		  day = 2.000000,
+		  month = 7.000000,
+		  sec = 48.000000,
+		  hour = 16.000000,
+		  year = 2018.000000,
+		}
+
+	This will even work with other locales, such as "se_NO.UTF-8",
+	which will allow LPeg to parse:
+
+		vuossárga, 02 suoidnemánu 2018 @ 16:02:48
+
+	into
+
+		{
+		  min = 2,000000,
+		  wday = 2,000000,
+		  day = 2,000000,
+		  month = 7,000000,
+		  sec = 48,000000,
+		  hour = 16,000000,
+		  year = 2018,000000,
+		}
+
 url.url
 
 	Parses URLs per RFC-3986.  By default, it will handle the following
