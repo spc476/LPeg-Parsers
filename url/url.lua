@@ -72,8 +72,8 @@ path_abempty    <- {| {:root: %istrue :} ( '/' segment)* |}
 path_absolute   <- {| {:root: %istrue :}   '/' (segment_nz ('/' segment)* )? |}
 path_noscheme   <- {| segment_nz_nc ('/' segment)* |}
 path_rootless   <- {| segment_nz    ('/' segment)* |}
-path_empty      <- ! . {| |}
-segment         <- ! . / {~ pchar+ ~}
+path_empty      <- {| |}
+segment         <- {~ pchar* ~}
 segment_nz      <- {~ pchar+ ~}
 segment_nz_nc   <- {~ (unreserved / pct_encoded / sub_delims / ';' / '@')+ ~}
 pchar           <-  unreserved / pct_encoded / sub_delims / ':' / '@'

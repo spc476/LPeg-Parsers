@@ -1,9 +1,9 @@
 package = "org.conman.parsers.url.url"
-version = "1.0.1-1"
+version = "1.0.2-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/urlurl-1.0.1/url/url.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/urlurl-1.0.2/url/url.lua"
 }
 
 description =
