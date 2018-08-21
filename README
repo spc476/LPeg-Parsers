@@ -483,6 +483,10 @@ url.tel
 	NOTE:   Unlike the other modules, this one returns a table instead
 		of an LPeg expression, due to some other requirements.
 
+soundex.lua
+
+	Implements the Soundex algorithm.
+
 [1]	http://www.inf.puc-rio.br/~roberto/lpeg/
 
 [2]	https://github.com/spc476/lua-conmanorg
