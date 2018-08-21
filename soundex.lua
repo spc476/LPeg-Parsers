@@ -42,4 +42,3 @@ local keep    = cs1 * (skip * cs1)^-1 * lpeg.Cc "1"
 local use     = ignore * keep
 
 return lpeg.Cf(initial * use * use * use,function(a,c) return a..c end)
-     * lpeg.Cp()
