@@ -20,7 +20,6 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local dump     = require "org.flummux.dump"
 local abnf     = require "org.conman.parsers.abnf"
 local strftime = require "org.conman.parsers.strftime"
 local url      = require "org.conman.parsers.url.url"
