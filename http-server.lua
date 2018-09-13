@@ -24,6 +24,7 @@ local abnf     = require "org.conman.parsers.abnf"
 local strftime = require "org.conman.parsers.strftime"
 local url      = require "org.conman.parsers.url.url"
 local lpeg     = require "lpeg"
+local typeof   = type
 
 local Cb = lpeg.Cb
 local Cc = lpeg.Cc
@@ -128,12 +129,12 @@ local headers = Cf(Ct"" * Cg(header)^1 * abnf.CRLF,function(t,k,v)
   if t[k] == nil then
     t[k] = v
   else
-    if k == 'Accept' then
+    if k == 'Accept' and typeof(v) == 'table' then
       for _,item in ipairs(v) do
         table.insert(t[k],item)
       end
     else
-      if type(t[k]) ~= 'table' then
+      if typeof(t[k]) ~= 'table' then
         t[k] = { t[k] , v }
       else
         table.insert(t[k],v)
