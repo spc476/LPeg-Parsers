@@ -61,7 +61,7 @@ if _VERSION < "Lua 5.3" then
   }
   
   if _VERSION == "Lua 5.1" then
-    up = unpack
+    up = unpack -- luacheck: ignore
   else
     up = table.unpack -- luacheck: ignore
   end
