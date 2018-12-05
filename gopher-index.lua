@@ -23,7 +23,7 @@
 
 
 local abnf  = require "org.conman.parsers.abnf"
-local types = require "org.conman.parsers.gopher-types"
+local types = require "org.conman.const.gopher-types"
 local lpeg  = require "lpeg"
 
 local Cc = lpeg.Cc

@@ -19,10 +19,10 @@
 --
 -- ********************************************************************
 
-local abnf  = require "org.conman.parsers.abnf"
-local ip    = require "org.conman.parsers.ip-text"
-local lpeg  = require "lpeg"
-local re    = require "re"
+local abnf = require "org.conman.parsers.abnf"
+local ip   = require "org.conman.parsers.ip-text"
+local lpeg = require "lpeg"
+local re   = require "re"
 
 local tonumber = tonumber
 
@@ -42,7 +42,7 @@ local tonumber = tonumber
 --        scheme   = 'gopher',
 --        host     = "conman.org",
 --        port     = 70,
---        type     = '1',
+--        type     = 'dir',
 --        selector = "string",
 --        search   = "string",          -- optional
 --        plus     = "string",          -- optional
@@ -63,7 +63,7 @@ gopher_path     <- '/'
                        '%09' {:search: {~ gopher_char* ~} :}
                      ( '%09' {:plus:   {~ gopher_char* ~} :} )?
                    )?
-gopher_type     <- gopher_char
+gopher_type     <- gopher_char -> gtypes
 gopher_char     <- ! '%09' (%pct_encoded / .)
 host            <- {:host: IP_literal / %IPv4address / reg_name :}
 port            <- {:port: %DIGIT* -> tonumber :}
@@ -83,8 +83,9 @@ local R =
   HEXDIG      = abnf.HEXDIG,
   ALPHA       = abnf.ALPHA,
   p70         = lpeg.Cc(70),
-  type        = lpeg.Cc('1'),
+  type        = lpeg.Cc('dir'),
   tonumber    = tonumber,
+  gtypes      = require "org.conman.const.gopher-types",
   IPv6address = ip.IPv6,
   IPv4address = ip.IPv4,
   pct_encoded = (lpeg.P"%" * abnf.HEXDIG * abnf.HEXDIG)
