@@ -33,7 +33,7 @@ local P  = lpeg.P
 local R  = lpeg.R
 
 local type        = P(1) / types
-local display     = R" \255"^0
+local display     = R("\r\r"," \255")^0 -- XXX work around one site
 local selector    = R" \255"^0
 local host        = R" \255"^0
 local port        = R"09"^1 / tonumber
@@ -47,4 +47,5 @@ local line        = Ct(
                         * R("\9\9"," \255")^0 -- slurp up rest of line
                         * abnf.CRLF
                       )
+                  * (P"." * abnf.CRLF)^-1
 return Ct(line^1)
