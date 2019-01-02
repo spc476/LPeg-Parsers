@@ -33,7 +33,7 @@ local P  = lpeg.P
 local R  = lpeg.R
 
 local type        = P(1) / types
-local display     = R("\r\r"," \255")^0 -- XXX work around one site
+local display     = R" \255"^0
 local selector    = R" \255"^0
 local host        = R" \255"^0
 local port        = R"09"^1 / tonumber
