@@ -378,7 +378,7 @@ url.gopher
 
 		{
 		  host     = "gopher.conman.org",
-		  type     = "0",
+		  type     = "file",
 		  search   = "search String",
 		  scheme   = "gopher",
 		  plus     = "plus",
