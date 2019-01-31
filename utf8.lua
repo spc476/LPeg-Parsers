@@ -19,22 +19,19 @@
 --
 -- ====================================================================
 --
--- Validate UTF-8 characters via LPeg.  This will *exclude* all C0
--- and C1 control characters.
+-- Validate UTF-8 characters via LPeg.
 --
 -- ********************************************************************
 -- luacheck: ignore 611
 -- RFC-3629
 --
--- NOTE: This excludes the C0 and C1 control sets.
---
---       Characters 192-193 and 245-255 will never appear in proper UTF-8
---       encoding.
+-- Characters 192-193 and 245-255 will never appear in proper UTF-8
+-- encoding.
 
 local lpeg = require "lpeg"
 
-return lpeg.R" ~"
-     + lpeg.P"\194"     * lpeg.R"\160\191"
+return lpeg.R"\0\127"
+     + lpeg.P"\194"     * lpeg.R"\128\191"
      + lpeg.R"\195\223" * lpeg.R"\128\191"
      + lpeg.P"\224"     * lpeg.R"\160\191" * lpeg.R"\128\191"
      + lpeg.R"\225\236" * lpeg.R"\128\191" * lpeg.R"\128\191"
@@ -43,4 +40,3 @@ return lpeg.R" ~"
      + lpeg.P"\240"     * lpeg.R"\144\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
      + lpeg.R"\241\243" * lpeg.R"\128\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
      + lpeg.P"\244"     * lpeg.R"\128\143" * lpeg.R"\128\191" * lpeg.R"\128\191"
-     
