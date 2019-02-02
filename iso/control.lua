@@ -19,14 +19,25 @@
 --
 -- ====================================================================
 --
--- Validate a valid UTF-8 character.
+-- Parse a valid ISO control character.
 --
 -- ********************************************************************
 -- luacheck: ignore 611
--- RFC-3629
---
--- Characters 192-193 and 245-255 will never appear in proper UTF-8
--- encoding.
 
-return require "org.conman.parsers.utf8.control"
-     + require "org.conman.parsers.utf8.text"
+local lpeg = require "lpeg"
+local C0   = require "org.flummux.text.ascii.control"
+local iso  = require "org.flummux.text.iso.text"
+
+local SCI = lpeg.P"\154" + lpeg.P"\27Z"
+local CSI = lpeg.P"\155" + lpeg.P"\27["
+local ST  = lpeg.P"\156" + lpeg.P"\27\\"
+local str = lpeg.S"\144\152\157\158\159"
+          + lpeg.P"\27" * lpeg.S"PX]^_"
+
+return CSI * lpeg.R"0?"^0 * lpeg.R" /"^0 * lpeg.R"@~"
+     + SCI * lpeg.P(1)
+     + str * iso^0 * ST
+     + lpeg.P"\27" * lpeg.R"`~" -- 7-bit of C1
+     + lpeg.R"\128\159"         -- rest of C1
+     + lpeg.P"\27" * lpeg.R"@_" -- rest of C1 (7-bits)
+     + C0

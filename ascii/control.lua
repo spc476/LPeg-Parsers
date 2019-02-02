@@ -19,14 +19,11 @@
 --
 -- ====================================================================
 --
--- Validate a valid UTF-8 character.
+-- Parse a valid ASCII control character.
 --
 -- ********************************************************************
 -- luacheck: ignore 611
--- RFC-3629
---
--- Characters 192-193 and 245-255 will never appear in proper UTF-8
--- encoding.
 
-return require "org.conman.parsers.utf8.control"
-     + require "org.conman.parsers.utf8.text"
+local lpeg  = require "lpeg"
+return lpeg.P"\16" * lpeg.P(1)    -- DLE
+     + lpeg.R("\0\31","\127\127") -- rest of C0

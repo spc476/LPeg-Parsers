@@ -32,12 +32,21 @@ LUADIR := $(dataroot)/lua/$(shell $(LUA) -e "print(_VERSION:match '^Lua (.*)')")
 install :
 	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers
 	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers/url
-	$(INSTALL_DATA) *.lua     $(DESTDIR)$(LUADIR)/org/conman/parsers/
-	$(INSTALL_DATA) url/*.lua $(DESTDIR)$(LUADIR)/org/conman/parsers/url
+	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers/ascii
+	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers/iso
+	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers/utf8
+	$(INSTALL_DATA) *.lua       $(DESTDIR)$(LUADIR)/org/conman/parsers/
+	$(INSTALL_DATA) url/*.lua   $(DESTDIR)$(LUADIR)/org/conman/parsers/url
+	$(INSTALL_DATA) ascii/*.lua $(DESTDIR)$(LUADIR)/org/conman/parsers/ascii
+	$(INSTALL_DATA) iso/*.lua   $(DESTDIR)$(LUADIR)/org/conman/parsers/iso
+	$(INSTALL_DATA) utf8/*.lua  $(DESTDIR)$(LUADIR)/org/conman/parsers/utf8
 
 uninstall :
 	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/*.lua
 	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/url/*.lua
+	$(RM) $(DESTDIR)$(LUADIR)/org.conman/parsers/ascii/*.lua
+	$(RM) $(DESTIDR)$(LUADIR)/org.conman/parsers/iso/*.lua
+	$(RM) $(DESTDIR)$(LUADIR)/org.conman/parsers/utf8/*.lua
 
 clean:
 	$(RM) $(shell find . -name '*~')
