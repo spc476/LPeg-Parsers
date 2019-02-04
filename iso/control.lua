@@ -25,8 +25,8 @@
 -- luacheck: ignore 611
 
 local lpeg = require "lpeg"
-local C0   = require "org.flummux.text.ascii.control"
-local iso  = require "org.flummux.text.iso.text"
+local C0   = require "org.conman.parsers.ascii.control"
+local iso  = require "org.conman.parsers.iso.text"
 
 local SCI = lpeg.P"\154" + lpeg.P"\27Z"
 local CSI = lpeg.P"\155" + lpeg.P"\27["
