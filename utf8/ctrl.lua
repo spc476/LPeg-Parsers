@@ -24,10 +24,9 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local lpeg = require "lpeg"
-local utf8 = require "org.conman.parsers.utf8.text"
-local C0   = require "org.conman.parsers.ascii.ctrl"
-
+local lpeg  = require "lpeg"
+local utf8  = require "org.conman.parsers.utf8.char"
+local ascii = require "org.conman.parsers.ascii.char"
 local Cb = lpeg.Cb
 local Cc = lpeg.Cc
 local Cf = lpeg.Cf
@@ -114,7 +113,7 @@ local codes =
   ['\27~'] = 'LSR1' , -- LOCKING-SHIFT ONE RIGHT
 }
 
-local cstr = R"\8\13" + utf8
+local cstr = R"\8\13" + ascii + utf8
 
 local ST  = P"\27\\" + P"\194\156"
 local DCS = (P'\27P' + P'\194\144') * Cc'DCS' * C(cstr^0) * ST
@@ -325,4 +324,3 @@ end
 return CSI + DCS + SOS + OSC+ PM + APC
      + (P"\194" * R"\128\159") / codes
      + (P"\27" * R("@_","`~")) / codes
-     + C0

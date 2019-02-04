@@ -24,16 +24,14 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local lpeg  = require "lpeg"
-local ascii = require "org.conman.parsers.ascii.text"
+local lpeg = require "lpeg"
 
-return ascii
-    + lpeg.P"\194"     * lpeg.R"\160\191"
-    + lpeg.R"\195\223" * lpeg.R"\128\191"
-    + lpeg.P"\224"     * lpeg.R"\160\191" * lpeg.R"\128\191"
-    + lpeg.R"\225\236" * lpeg.R"\128\191" * lpeg.R"\128\191"
-    + lpeg.P"\237"     * lpeg.R"\128\159" * lpeg.R"\128\191"
-    + lpeg.R"\238\239" * lpeg.R"\128\191" * lpeg.R"\128\191"
-    + lpeg.P"\240"     * lpeg.R"\144\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
-    + lpeg.R"\241\243" * lpeg.R"\128\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
-    + lpeg.P"\244"     * lpeg.R"\128\143" * lpeg.R"\128\191" * lpeg.R"\128\191"
+return lpeg.P"\194"     * lpeg.R"\160\191"
+     + lpeg.R"\195\223" * lpeg.R"\128\191"
+     + lpeg.P"\224"     * lpeg.R"\160\191" * lpeg.R"\128\191"
+     + lpeg.R"\225\236" * lpeg.R"\128\191" * lpeg.R"\128\191"
+     + lpeg.P"\237"     * lpeg.R"\128\159" * lpeg.R"\128\191"
+     + lpeg.R"\238\239" * lpeg.R"\128\191" * lpeg.R"\128\191"
+     + lpeg.P"\240"     * lpeg.R"\144\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
+     + lpeg.R"\241\243" * lpeg.R"\128\191" * lpeg.R"\128\191" * lpeg.R"\128\191"
+     + lpeg.P"\244"     * lpeg.R"\128\143" * lpeg.R"\128\191" * lpeg.R"\128\191"

@@ -28,5 +28,7 @@
 -- Characters 192-193 and 245-255 will never appear in proper UTF-8
 -- encoding.
 
-return require "org.conman.parsers.utf8.control"
-     + require "org.conman.parsers.utf8.text"
+return require "org.conman.parsers.utf8.char"
+     + require "org.conman.parsers.ascii.char"
+     + require "org.conman.parsers.utf8.control"
+     + require "org.conman.parsers.ascii.control"
