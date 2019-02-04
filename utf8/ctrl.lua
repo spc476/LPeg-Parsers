@@ -257,6 +257,7 @@ local CSI do
   local csi     = P"\27[" + P"\194\155"
   local param   = R"09"^1 / tonumber
   local params  = Ct(param * (P';' * param)^0)
+                + C(R"<?" * R"0?"^0)
                 + Ct""
                 
   local letter  = R"@~"
