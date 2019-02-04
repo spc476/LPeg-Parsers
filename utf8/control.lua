@@ -28,13 +28,14 @@ local lpeg = require "lpeg"
 local C0   = require "org.conman.parsers.ascii.control"
 local utf8 = require "org.conman.parsers.utf8.text"
 
-local SCI = lpeg.P"\194\154" + lpeg.P"\27Z"
 local CSI = lpeg.P"\194\155" + lpeg.P"\27["
+local OSC = lpeg.P"\194\157" + lpeg.P"\27]"
 local ST  = lpeg.P"\194\156" + lpeg.P"\27\\"
-local str = lpeg.P"\194" * lpeg.S"\144\152\157\158\159"
-          + lpeg.P"\27"  * lpeg.S"PX]^_"
+local str = lpeg.P"\194" * lpeg.S"\144\152\158\159"
+          + lpeg.P"\27"  * lpeg.S"PX^_"
 
 return CSI * lpeg.R"0?"^0 * lpeg.R" /"^0 * lpeg.R"@~"
+     + OSC * (lpeg.R"\8\13" * utf8)^0 * (ST + lpeg.P"\7") -- xterm uses BEL
      + str * (lpeg.R"\8\13" * utf8)^0 * ST
      + lpeg.P"\27"  * lpeg.R"`~"       -- 7-bit of C1
      + lpeg.P"\194" * lpeg.R"\128\159" -- rest of C1
