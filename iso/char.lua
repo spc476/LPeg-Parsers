@@ -24,6 +24,5 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local lpeg  = require "lpeg"
-local ascii = require "org.conman.parsers.ascii.text"
-return ascii + lpeg.R"\160\255"
+local lpeg = require "lpeg"
+return lpeg.R"\160\255"

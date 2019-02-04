@@ -24,9 +24,9 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-local lpeg = require "lpeg"
-local C0   = require "org.conman.parsers.ascii.control"
-local iso  = require "org.conman.parsers.iso.text"
+local lpeg  = require "lpeg"
+local iso   = require "org.conman.parsers.iso.char"
+local ascii = require "org.conman.parsers.ascii.char"
 
 local CSI = lpeg.P"\155" + lpeg.P"\27["
 local OSC = lpeg.P"\157" + lpeg.P"\27]"
@@ -35,9 +35,9 @@ local str = lpeg.S"\144\152\158\159"
           + lpeg.P"\27" * lpeg.S"PX^_"
 
 return CSI * lpeg.R"0?"^0 * lpeg.R" /"^0 * lpeg.R"@~"
-     + OSC * (lpeg.R"\8\13" * iso)^0 * (ST + lpeg.P"\7") -- xterm uses BEL
-     + str * (lpeg.R"\8\13" * iso)^0 * ST
+     + OSC * (lpeg.R"\8\13" + ascii + iso)^0 * (ST + lpeg.P"\7") -- xterm uses BEL
+     + str * (lpeg.R"\8\13" + ascii + iso)^0 * ST
      + lpeg.P"\27" * lpeg.R"`~" -- 7-bit of C1
      + lpeg.R"\128\159"         -- rest of C1
      + lpeg.P"\27" * lpeg.R"@_" -- rest of C1 (7-bits)
-     + C0
+
