@@ -45,11 +45,7 @@ install :
 	$(INSTALL_DATA) utf8/*.lua  $(DESTDIR)$(LUADIR)/org/conman/parsers/utf8
 
 uninstall :
-	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/*.lua
-	$(RM) $(DESTDIR)$(LUADIR)/org/conman/parsers/url/*.lua
-	$(RM) $(DESTDIR)$(LUADIR)/org.conman/parsers/ascii/*.lua
-	$(RM) $(DESTIDR)$(LUADIR)/org.conman/parsers/iso/*.lua
-	$(RM) $(DESTDIR)$(LUADIR)/org.conman/parsers/utf8/*.lua
+	$(RM) -r $(DESTDIR)$(LUADIR)/org/conman/parsers
 
 clean:
 	$(RM) $(shell find . -name '*~')
