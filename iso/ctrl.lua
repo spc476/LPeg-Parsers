@@ -321,7 +321,7 @@ local CSI do
         )
 end
 
-return CSI + SCI + DCS + SOS + OSC+ PM + APC
+return CSI + DCS + SOS + OSC+ PM + APC
      + R"\128\159" / codes
      + (P"\27" * R("@_","`~")) / codes
      + C0
