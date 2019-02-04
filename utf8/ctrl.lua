@@ -70,7 +70,7 @@ local codes =
   ['\27W']  = 'EPA'      , ['\194\151'] = 'EPA'      , -- END OF GUARDED AREA
   -- SOS - handled below                                  START OF STRING
   ['\27Y']  = '\194\153' , ['\194\153'] = '\194\153' ,
-  ['\27Z']  = 'SCI'      , ['\194\143'] = 'SCI'      , -- SINGLE CHARACTER INTRODUCER
+  ['\27Z']  = 'SCI'      , ['\194\154'] = 'SCI'      , -- SINGLE CHARACTER INTRODUCER
   -- CSI - handled below                                  CONTROL SEQUENCE INTRODUCER
   -- ST  - handled below                                  STRING TERMINATOR
   -- OSC - handled below                                  OPERATING SYSTEM COMMAND
