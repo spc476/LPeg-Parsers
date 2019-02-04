@@ -35,8 +35,7 @@ local str = lpeg.P"\194" * lpeg.S"\144\152\157\158\159"
           + lpeg.P"\27"  * lpeg.S"PX]^_"
 
 return CSI * lpeg.R"0?"^0 * lpeg.R" /"^0 * lpeg.R"@~"
-     + SCI * lpeg.P(1)
-     + str * utf8^0 * ST
+     + str * (lpeg.R"\8\13" * utf8)^0 * ST
      + lpeg.P"\27"  * lpeg.R"`~"       -- 7-bit of C1
      + lpeg.P"\194" * lpeg.R"\128\159" -- rest of C1
      + lpeg.P"\27"  * lpeg.R"@_"       -- rest of C1 (7-bits)
