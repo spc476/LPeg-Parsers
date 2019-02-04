@@ -47,7 +47,7 @@ local codes =
   ['\27A']  = '\129' , ['\129'] = '\129' ,
   ['\27B']  = 'BPH'  , ['\130'] = 'BPH'  , -- BREAK PERMITTED HERE
   ['\27C']  = 'NBH'  , ['\131'] = 'NBH'  , -- NO BREAK HERE
-  ['\27D']  = 'IND'  , ['\132'] = 'IND'  , -- INDEX
+  ['\27D']  = '\132' , ['\132'] = '\132' ,
   ['\27E']  = 'NEL'  , ['\133'] = 'NEL'  , -- NEXT LINE
   ['\27F']  = 'SSA'  , ['\134'] = 'SSA'  , -- START OF SELECTED AREA
   ['\27G']  = 'ESA'  , ['\135'] = 'ESA'  , -- END OF SELECTED AREA
@@ -69,7 +69,7 @@ local codes =
   ['\27W']  = 'EPA'  , ['\151'] = 'EPA'  , -- END OF GUARDED AREA
   -- SOS - handled below                      START OF STRING
   ['\27Y']  = '\153' , ['\153'] = '\153' ,
-  -- SCI - handled below                      SINGLE CHARACTER INTRODUCER
+  ['\27Z']  = 'SCI'  , ['\154'] = 'SCI'  , -- SINGLE CHARACTER INTRODUCER
   -- CSI - handled below                      CONTROL SEQUENCE INTRODUCER
   -- ST  - handled below                      STRING TERMINATOR
   -- OSC - handled below                      OPERATING SYSTEM COMMAND
@@ -113,7 +113,6 @@ local codes =
   ['\27~'] = 'LSR1' , -- LOCKING-SHIFT ONE RIGHT
 }
 
-local SCI = (P'\27Z' + P'\154') * Cc'SCI' * C(1)
 local DCS = (P'\27P' + P'\144') * Cc'DCS' * C(iso^0) * (P'\27\\' + P'\156')
 local SOS = (P'\27X' + P'\152') * Cc'SOS' * C(iso^0) * (P'\27\\' + P'\156')
 local OSC = (P'\27]' + P'\157') * Cc'OSC' * C(iso^0) * (P'\27\\' + P'\156')
