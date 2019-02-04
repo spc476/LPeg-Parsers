@@ -22,12 +22,15 @@
 INSTALL      = /usr/bin/install
 INSTALL_DATA = $(INSTALL) -m 644
 LUA          = lua
+LUACHECK     = luacheck
 
 prefix       = /usr/local
 datarootdir  = $(prefix)/share
 dataroot     = $(datarootdir)
 
 LUADIR := $(dataroot)/lua/$(shell $(LUA) -e "print(_VERSION:match '^Lua (.*)')")
+
+.PHONY: install uninstall clean luacheck
 
 install :
 	$(INSTALL) -d $(DESTDIR)$(LUADIR)/org/conman/parsers
@@ -50,3 +53,6 @@ uninstall :
 
 clean:
 	$(RM) $(shell find . -name '*~')
+
+luacheck:
+	$(LUACHECK) *.lua ascii/*.lua iso/*.lua utf8/*.lua url/*.lua
