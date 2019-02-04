@@ -32,6 +32,7 @@ local Cb = lpeg.Cb
 local Cc = lpeg.Cc
 local Cf = lpeg.Cf
 local Cg = lpeg.Cg
+local Cs = lpeg.Cs
 local Ct = lpeg.Ct
 local C  = lpeg.C
 local P  = lpeg.P
@@ -255,7 +256,7 @@ local CSI_space_codes = [[
 local CSI do
 
   local csi     = P"\27[" + P"\155"
-  local param   = R"09"^1 / tonumber
+  local param   = Cs((R"09" + P":" / ".")^1) / tonumber
   local params  = Ct(param * (P';' * param)^0)
                 + C(R"<?" * R"0?"^0)
                 + Ct""
