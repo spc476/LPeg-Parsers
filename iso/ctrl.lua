@@ -114,11 +114,13 @@ local codes =
   ['\27~'] = 'LSR1' , -- LOCKING-SHIFT ONE RIGHT
 }
 
-local DCS = (P'\27P' + P'\144') * Cc'DCS' * C(iso^0) * (P'\27\\' + P'\156')
-local SOS = (P'\27X' + P'\152') * Cc'SOS' * C(iso^0) * (P'\27\\' + P'\156')
-local OSC = (P'\27]' + P'\157') * Cc'OSC' * C(iso^0) * (P'\27\\' + P'\156')
-local PM  = (P'\27^' + P'\158') * Cc'PM'  * C(iso^0) * (P'\27\\' + P'\156')
-local APC = (P'\27_' + P'\159') * Cc'APC' * C(iso^0) * (P'\27\\' + P'\156')
+local cstr = R"\8\13" + iso
+
+local DCS = (P'\27P' + P'\144') * Cc'DCS' * C(cstr^0) * (P'\27\\' + P'\156')
+local SOS = (P'\27X' + P'\152') * Cc'SOS' * C(cstr^0) * (P'\27\\' + P'\156')
+local OSC = (P'\27]' + P'\157') * Cc'OSC' * C(cstr^0) * (P'\27\\' + P'\156')
+local PM  = (P'\27^' + P'\158') * Cc'PM'  * C(cstr^0) * (P'\27\\' + P'\156')
+local APC = (P'\27_' + P'\159') * Cc'APC' * C(cstr^0) * (P'\27\\' + P'\156')
 
 local CSI_codes = [[
   @	ICH	INSERT CHARACTER

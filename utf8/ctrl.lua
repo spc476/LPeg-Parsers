@@ -114,11 +114,13 @@ local codes =
   ['\27~'] = 'LSR1' , -- LOCKING-SHIFT ONE RIGHT
 }
 
-local DCS = (P'\27P' + P'\194\144') * Cc'DCS' * C(utf8^0) * (P'\27\\' + P'\194\156')
-local SOS = (P'\27X' + P'\194\152') * Cc'SOS' * C(utf8^0) * (P'\27\\' + P'\194\156')
-local OSC = (P'\27]' + P'\194\157') * Cc'OSC' * C(utf8^0) * (P'\27\\' + P'\194\156')
-local PM  = (P'\27^' + P'\194\158') * Cc'PM'  * C(utf8^0) * (P'\27\\' + P'\194\156')
-local APC = (P'\27_' + P'\194\159') * Cc'APC' * C(utf8^0) * (P'\27\\' + P'\194\156')
+local cstr = R"\8\13" + utf8
+
+local DCS = (P'\27P' + P'\194\144') * Cc'DCS' * C(cstr^0) * (P'\27\\' + P'\194\156')
+local SOS = (P'\27X' + P'\194\152') * Cc'SOS' * C(cstr^0) * (P'\27\\' + P'\194\156')
+local OSC = (P'\27]' + P'\194\157') * Cc'OSC' * C(cstr^0) * (P'\27\\' + P'\194\156')
+local PM  = (P'\27^' + P'\194\158') * Cc'PM'  * C(cstr^0) * (P'\27\\' + P'\194\156')
+local APC = (P'\27_' + P'\194\159') * Cc'APC' * C(cstr^0) * (P'\27\\' + P'\194\156')
 
 local CSI_codes = [[
   @	ICH	INSERT CHARACTER
