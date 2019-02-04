@@ -25,5 +25,4 @@
 -- luacheck: ignore 611
 
 local lpeg  = require "lpeg"
-return lpeg.P"\16" * lpeg.P(1)    -- DLE
-     + lpeg.R("\0\31","\127\127") -- rest of C0
+return lpeg.R("\0\31","\127\127")

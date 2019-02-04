@@ -29,40 +29,39 @@ local lpeg = require "lpeg"
 
 local convert =
 {
-  ['\00'] = 'NUL' , -- NULL
-  ['\01'] = 'SOH' , -- START OF HEADING
-  ['\02'] = 'STX' , -- START OF TEXT
-  ['\03'] = 'ETX' , -- END OF TEXT
-  ['\04'] = 'EOT' , -- END OF TRANSMISSION
-  ['\05'] = 'ENQ' , -- ENQUIRY
-  ['\06'] = 'ACK' , -- ACKNOWLEDGE
-  ['\07'] = 'BEL' , -- BELL
-  ['\08'] = 'BS'  , -- BACKSPACE
-  ['\09'] = 'HT'  , -- CHARACTER TABULATION
-  ['\10'] = 'LF'  , -- LINE FEED
-  ['\11'] = 'VT'  , -- LINE TABULATION
-  ['\12'] = 'FF'  , -- FORM FEED
-  ['\13'] = 'CR'  , -- CARRIAGE RETURN
-  ['\14'] = 'SI'  , -- SHIFT-OUT
-  ['\15'] = 'SO'  , -- SHIFT-IN
-                    -- DATA LINK ESCAPE (handled below)
-  ['\17'] = 'DC1' , -- DEVICE CONTROL ONE (XON)
-  ['\18'] = 'DC2' , -- DEVICE CONTROL TWO
-  ['\19'] = 'DC3' , -- DEVICE CONTROL THREE (XOFF)
-  ['\20'] = 'DC4' , -- DEVICE CONTROL FOUR
-  ['\21'] = 'NAK' , -- NEGATIVE ACKNOWLEDGE
-  ['\22'] = 'SYN' , -- SYNCHRONOUS IDLE
-  ['\23'] = 'ETB' , -- END OF TRANSMISSION BLOCK
-  ['\24'] = 'CAN' , -- CANCEL
-  ['\25'] = 'EM'  , -- END OF MEDIUM
-  ['\26'] = 'SUB' , -- SUBSTITUTE
-  ['\27'] = 'ESC' , -- ESCAPE
-  ['\28'] = 'FS'  , -- FILE SEPARATOR
-  ['\29'] = 'GS'  , -- GROUP SEPATATOR
-  ['\30'] = 'RS'  , -- RECORD SEPARATOR
-  ['\31'] = 'US'  , -- UNIT SEPARATOR
+  ['\000'] = 'NUL' , -- NULL
+  ['\001'] = 'SOH' , -- START OF HEADING
+  ['\002'] = 'STX' , -- START OF TEXT
+  ['\003'] = 'ETX' , -- END OF TEXT
+  ['\004'] = 'EOT' , -- END OF TRANSMISSION
+  ['\005'] = 'ENQ' , -- ENQUIRY
+  ['\006'] = 'ACK' , -- ACKNOWLEDGE
+  ['\007'] = 'BEL' , -- BELL
+  ['\008'] = 'BS'  , -- BACKSPACE
+  ['\009'] = 'HT'  , -- CHARACTER TABULATION
+  ['\010'] = 'LF'  , -- LINE FEED
+  ['\011'] = 'VT'  , -- LINE TABULATION
+  ['\012'] = 'FF'  , -- FORM FEED
+  ['\013'] = 'CR'  , -- CARRIAGE RETURN
+  ['\014'] = 'SI'  , -- SHIFT-OUT
+  ['\015'] = 'SO'  , -- SHIFT-IN
+  ['\016'] = 'DLE' , -- DATA LINK ESCAPE
+  ['\017'] = 'DC1' , -- DEVICE CONTROL ONE (XON)
+  ['\018'] = 'DC2' , -- DEVICE CONTROL TWO
+  ['\019'] = 'DC3' , -- DEVICE CONTROL THREE (XOFF)
+  ['\020'] = 'DC4' , -- DEVICE CONTROL FOUR
+  ['\021'] = 'NAK' , -- NEGATIVE ACKNOWLEDGE
+  ['\022'] = 'SYN' , -- SYNCHRONOUS IDLE
+  ['\023'] = 'ETB' , -- END OF TRANSMISSION BLOCK
+  ['\024'] = 'CAN' , -- CANCEL
+  ['\025'] = 'EM'  , -- END OF MEDIUM
+  ['\026'] = 'SUB' , -- SUBSTITUTE
+  ['\027'] = 'ESC' , -- ESCAPE
+  ['\028'] = 'FS'  , -- FILE SEPARATOR
+  ['\029'] = 'GS'  , -- GROUP SEPATATOR
+  ['\030'] = 'RS'  , -- RECORD SEPARATOR
+  ['\031'] = 'US'  , -- UNIT SEPARATOR
+  ['\127'] = 'DEL' , -- DELETE
 }
 
-return lpeg.P"\16"   * lpeg.Cc'DLE' * lpeg.C(1)^-1
-     + lpeg.R"\0\31" / convert
-     + lpeg.P"\127"  * lpeg.Cc'DEL'
+return lpeg.R("\0\31","\127\127") / convert
