@@ -24,5 +24,5 @@
 -- ********************************************************************
 -- luacheck: ignore 611
 
-return require "org.conman.parsers.ascii.control"
-     + require "org.conman.parsers.ascii.text"
+return require "org.conman.parsers.ascii.char"
+     + require "org.conman.parsers.ascii.control"
