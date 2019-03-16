@@ -1,9 +1,9 @@
-package = "org.conman.parsers.url.url"
-version = "1.0.2-1"
+package = "org.conman.parsers.url"
+version = "1.0.0-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/urlurl-1.0.2/url/url.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/url-1.0.0/url.lua"
 }
 
 description =
@@ -35,7 +35,7 @@ build =
   {
     lua =
     {
-      ['org.conman.parsers.url.url'] = "url.lua"
+      ['org.conman.parsers.url'] = "url.lua"
     }
   }
 }
