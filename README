@@ -6,6 +6,42 @@ abnf
 
 	The core ruleset from RFC-5234.  These rules are used often in RFCs.
 
+ascii
+ascii.char
+ascii.control
+ascii.ctrl
+
+	Match a single ASCII character.  The top level module will match
+	both graphical charaters and control characters.  The "ascii.char"
+	module only matches the graphical characters; the "ascii.control"
+	module only matches the control codes.  The "ascii.ctrl" will return
+	the name of a control character, or nil if not a control character.
+
+iso
+iso.char
+iso.control
+iso.ctrl
+
+	Match a single ISO character.  The top level module will match both
+	graphical, control characters and control sequences.  The "iso.char"
+	only matches the ISO graphical characters; the iso.control" module
+	mathces only control characters (for example, <ESC>E or \133).  The
+	"iso.ctrl" will return the name of the control character, plus any
+	associated data as appropriate.  For example:
+
+		<ESC>[32;40m
+
+	will return a name of "SGR" and a two element array containing 32
+	and 40.
+
+	NOTE:  These modules only deal with the ISO defined characters, and
+	will NOT match those defined by ASCII.  To match a graphical character
+	that matches both ASCII and ISO:
+
+		char = require "org.conman.parsers.ascii.char
+		     + require "org.conman.parsers.iso.char
+
+
 email
 
 	Parses email headers as defined in:
@@ -292,7 +328,7 @@ strftime
 		  year = 2018,000000,
 		}
 
-url.url
+url
 
 	Parses URLs per RFC-3986.  By default, it will handle the following
 	URL types:
@@ -390,17 +426,19 @@ url.gopher
 	you can do:
 
 		gopher = require "org.conman.parsers.url.url"
-		url    = require "org.conman.parsers.url.url"
+		url    = require "org.conman.parsers.url"
 		
 		url  = gopher + url
 		info = url:match(my_url)	
 
-url.sip
+url.siptel
 
-	Parses "sip:" URIs per RFC-3261.  Examples:
+	Parses "sip:" and "sips:" URIs per RFC-3261.  
+	Parses "tel:" URIs per RFC-3966.
+
+	Examples:
 
 		sip = require "org.conman.parsers.url.sip"
-
 		u = sip:match [[sip:annc@example.com;play=file://fs.example.net//clips/my-intro.dvi;content-type=video/mpeg%3bencode%d3314M-25/625-50]]
 
 	results in:
@@ -442,21 +480,9 @@ url.sip
 		  },
 		}
 
-	If you need to parse other URLs in addition to "sip:" types,
-	you can do:
-
-		sip = require "org.conman.parsers.url.sip"
-		url = require "org.conman.parsers.url.url"
-
-		url  = sip + url
-		info = url:match(my_url)
-
-url.tel
-
-	Parses "tel:" URIs per RFC-3966.  Example:
+	and
 
 		tel = require "org.conman.parsers.url.tel"
-
 		u = tel:match "tel:+1-(555)-555-1212;ext=1234"
 
 	results in:
@@ -471,17 +497,14 @@ url.tel
 		  },
 		}
 
-	If you need to parse other URLs in addition to "tel:" types,
+	If you need to parse other URLs in addition to these types,
 	you can do:
 
-		tel = require "org.conman.parsers.url.tel"
-		url = require "org.conman.parsers.url.url"
+		siptel = require "org.conman.parsers.url.sip"
+		url    = require "org.conman.parsers.url"
 
-		url  = tel.tel + url
+		url  = siptel + url
 		info = url:match(my_url)
-
-	NOTE:   Unlike the other modules, this one returns a table instead
-		of an LPeg expression, due to some other requirements.
 
 soundex.lua
 
