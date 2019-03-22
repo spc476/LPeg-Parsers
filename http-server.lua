@@ -22,7 +22,7 @@
 
 local abnf     = require "org.conman.parsers.abnf"
 local strftime = require "org.conman.parsers.strftime"
-local url      = require "org.conman.parsers.url.url"
+local url      = require "org.conman.parsers.url"
 local lpeg     = require "lpeg"
 local typeof   = type
 
