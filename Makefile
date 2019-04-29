@@ -19,10 +19,10 @@
 #
 ########################################################################
 
-INSTALL      = /usr/bin/install
-INSTALL_DATA = $(INSTALL) -m 644
-LUA          = lua
-LUACHECK     = luacheck
+INSTALL       = /usr/bin/install
+INSTALL_DATA  = $(INSTALL) -m 644
+LUA          ?= lua
+LUACHECK      = luacheck
 
 prefix       = /usr/local
 datarootdir  = $(prefix)/share
