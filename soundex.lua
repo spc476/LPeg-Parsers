@@ -18,19 +18,21 @@
 -- Comments, questions and criticisms can be sent to: sean@conman.org
 --
 -- ********************************************************************
+-- https://www.archives.gov/research/census/soundex.html
+--
 -- luacheck: ignore 611
 
 local lpeg = require "lpeg"
 
 local ignore  = lpeg.S"AEIOUWYHaeiouwyh"^0
-local skip    = lpeg.S"HWhw"
+local skip    = lpeg.S"HWhw"^1
 local cs1     = lpeg.S"BFPVbfpv"^1
 local cs2     = lpeg.S"CGJKQSXZcgjkqsxz"^1
 local cs3     = lpeg.S"DTdt"^1
 local cs4     = lpeg.S"Ll"^1
 local cs5     = lpeg.S"MNmn"^1
 local cs6     = lpeg.S"Rr"^1
-local initial = (lpeg.P(1) * (cs1 + cs2 + cs3 + cs4 + cs5 + cs6)^-1)
+local initial = ((cs1 + cs2 + cs3 + cs4 + cs5 + cs6) + lpeg.P(1))
               / function(c) return c:sub(1,1):upper() end
 local keep    = cs1 * (skip * cs1)^-1 * lpeg.Cc "1"
               + cs2 * (skip * cs2)^-1 * lpeg.Cc "2"
