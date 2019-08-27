@@ -345,42 +345,12 @@ url
 	It will be broken down into a Lua table as follows:
 
 		{
-		  host = "www.conman.org",
-		  path =
-		  {
-		    [1] = "people",
-		    [2] = "spc",
-		    [3] = "index.cgi",
-		    root = true,
-		  },
-		  query =
-		  {
-		    one = "1?",
-		    three = "3",
-		    two = "2",
-		  },
-		  scheme = "http",
+                  scheme   = "http",
+		  host     = "www.conman.org",
+                  port     = 80,
+		  path     = "/people/spc/index.cgi",
+		  query    = "one=1%3F&two=2&three=3",
 		  fragment = "target1",
-		  port = 80.000000,
-		}
-
-	The path is broken down by default.  No normalization is done, so a
-	path like:
-
-		/foo/../bar/baz/../../snafu/./fubar
-
-	will be returned as:
-
-		{
-		  [1] = "foo",
-		  [2] = "..",
-		  [3] = "bar",
-		  [4] = "baz",
-		  [5] = "..",
-		  [6] = "..",
-		  [7] = "snafu",
-		  [8] = ".",
-		  [9] = "fubar"
 		}
 
 	Other URLs can be parsed, but a URL like:
@@ -391,16 +361,9 @@ url
 
 		{
 		  scheme = "mailto",
-		  path   =
-		  {
-		    [1] = "sean@conman.org",
-		  },
-		  query =
-		  {
-		    cc      = "fred@example.com,velma@example.net;subject",
-		    subject = "Current Mystery",
-		  },
-		}
+		  path   = "sean@conman.org",
+	          query  = "cc=fred@example.com,velma@example.net&subject=Current%20Mystery",
+                }
 
 	which may require more parsing than provided here.
 
@@ -413,19 +376,19 @@ url.gopher
 	it will be broken down as:
 
 		{
+                  scheme   = "gopher",
 		  host     = "gopher.conman.org",
+                  port     = 70.000000,
 		  type     = "file",
+                  selector = "foobar",
 		  search   = "search String",
-		  scheme   = "gopher",
 		  plus     = "plus",
-		  port     = 70.000000,
-		  selector = "foobar",
 		}
 
 	If you need to parse other URLs in addition to "gopher:" types,
 	you can do:
 
-		gopher = require "org.conman.parsers.url.url"
+		gopher = require "org.conman.parsers.url.gopher"
 		url    = require "org.conman.parsers.url"
 		
 		url  = gopher + url
