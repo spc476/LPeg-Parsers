@@ -23,7 +23,7 @@ dependencies =
   "lpeg >= 1.0.0",
 }
 
-bulid =
+build =
 {
   type = "none",
   copy_directory = {},
