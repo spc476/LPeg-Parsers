@@ -47,20 +47,19 @@ local S  = lpeg.S
 -- as "case insensitive".
 -- ********************************************************************
 
-local tspecials     = S[[()<>@,;:\"/[]?=]]
-local mitoken_char  = R"AZ" / string.lower + (R"!~" - tspecials)
-local itoken        = Cs(mitoken_char^1)
-local mtoken        = Cs(mitoken_char^1 * P"/" * mitoken_char^1)
+local tspecials     = S[=["(),/:;<=>?@[\]]=]
+local ichar         = R"AZ" / string.lower + (R"!~" - tspecials)
+local itoken        = Cs(ichar^1)
 local token         = C((R" ~" - tspecials)^1)
 local quoted_string = P'"' * C(R(" !","#~")^0) * P'"'
-local type          = mtoken
-local value         = token + quoted_string
+local value         = quoted_string + token
 local parameters    = Cf(
-                          Ct"" * (P";" * P" "^0 * Cg(itoken * P"=" * value))^0,
-                          function(acc,name,val)
-                            acc[name] = val
-                            return acc
-                          end
-                        )
-                        
-return Ct(Cg(type,'type') * Cg(parameters,'parameters'))
+                        Ct"" * (P";" * P" "^0 * Cg(itoken * P"=" * value))^0,
+                        function(acc,name,val)
+                          acc[name] = val
+                          return acc
+                        end
+                      )
+local mimetype      = Cs(ichar^1 * P"/" * ichar^1)
+
+return Ct(Cg(mimetype,'mimetype') * Cg(parameters,'parameters'))
