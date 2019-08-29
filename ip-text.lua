@@ -39,14 +39,7 @@ local dec_octet = Cmt(DIGIT^1,function(_,position,capture)
 end)
 
 local IPv4 = dec_octet * "." * dec_octet * "." * dec_octet * "." * dec_octet
-
-local h16 = Cmt(HEXDIG^1,function(_,position,capture)
-  local n = tonumber(capture,16)
-  if n < 65536 then
-    return position
-  end
-end)
-
+local h16  = HEXDIG^-4
 local h16c = h16 * P":" * #HEXDIG
 local ls32 = IPv4 + h16c * h16
 
