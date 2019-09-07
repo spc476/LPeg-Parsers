@@ -62,4 +62,4 @@ local parameters    = Cf(
                       )
 local mimetype      = Cs(ichar^1 * P"/" * ichar^1)
 
-return Ct(Cg(mimetype,'mimetype') * Cg(parameters,'parameters'))
+return Ct(Cg(mimetype,'type') * Cg(parameters,'parameters'))
