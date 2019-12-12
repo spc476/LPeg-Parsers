@@ -62,7 +62,7 @@ relative_part   <- '//' authority {:path: path_abempty  :}
 authority       <- (userinfo '@')? host (':' port)?
 userinfo        <- {:user: {~ (unreserved / %pct_encoded / sub_delims / ':')* ~} :}
 host            <- {:host: IP_literal / %IPv4address / reg_name :}
-port            <- {:port: %DIGIT* -> tonumber :}
+port            <- {:port: %DIGIT+ -> tonumber :}
 
 IP_literal      <- '[' ( IPv6addrz / %IPv6address / IPvFuture) ']' -- RFC-6874
 IPvFuture       <- { 'v' %HEXDIG+ '.' (unreserved / sub_delims / ':')+ }
