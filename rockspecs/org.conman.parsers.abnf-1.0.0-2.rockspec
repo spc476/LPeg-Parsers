@@ -1,5 +1,6 @@
 package = "org.conman.parsers.abnf"
 version = "1.0.0-2"
+rockspec_format = "3.0"
 
 source =
 {
