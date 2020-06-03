@@ -57,7 +57,7 @@ local authorityName = Cg(emailAddress + DNSname,'authority')
 local year          = Cg(abnf.DIGIT * abnf.DIGIT * abnf.DIGIT * abnf.DIGIT,'year')
 local month         = Cg(abnf.DIGIT * abnf.DIGIT,'month')
 local day           = Cg(abnf.DIGIT * abnf.DIGIT,'day')
-local date          = Cg(Ct(year * (P"-" * month * (P"-" * day)^-1)^-1))
+local date          = Cg(Ct(year * (P"-" * month * (P"-" * day)^-1)^-1),'date')
 
 local taggingEntity = authorityName * P"," * date
 
