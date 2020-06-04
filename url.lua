@@ -35,11 +35,11 @@ URI_reference   <- {| URI / relative_ref |}
 URI             <- scheme ':' hier_part ('?' query)? ('#' fragment)?
 
 
-scheme          <- {:scheme: 'https'  :} {:port: %p443  :}
-                /  {:scheme: 'http'   :} {:port: %p80   :}
-                /  {:scheme: 'ftp'    :} {:port: %p21   :}
-                /  {:scheme: 'gemini' :} {:port: %p1965 :}
-                /  {:scheme: 'file'   :}
+scheme          <- {:scheme: 'https'  & ':' :} {:port: %p443  :}
+                /  {:scheme: 'http'   & ':' :} {:port: %p80   :}
+                /  {:scheme: 'ftp'    & ':' :} {:port: %p21   :}
+                /  {:scheme: 'gemini' & ':' :} {:port: %p1965 :}
+                /  {:scheme: 'file'   & ':' :}
                 /  {:scheme: %ALPHA (%ALPHA / %DIGIT / '+' / '-' / '.')* :}
                 
 hier_part       <- '//' authority {:path: path_abempty  :}
