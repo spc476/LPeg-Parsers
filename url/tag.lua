@@ -25,6 +25,7 @@ local abnf = require "org.conman.parsers.abnf"
 local lpeg = require "lpeg"
 
 local Cg = lpeg.Cg
+local Cs = lpeg.Cs
 local Ct = lpeg.Ct
 local P  = lpeg.P
 local S  = lpeg.S
@@ -41,8 +42,8 @@ local pct_encoded = (lpeg.P"%" * abnf.HEXDIG * abnf.HEXDIG)
                     end
 local sub_delims  = S"!$&'()*+,;="
 local pchar       = unreserved + sub_delims + S"@:" + pct_encoded
-local specific    = S"/?" + pchar
-local fragment    = S"/?" + pchar
+local specific    = Cs((S"/?" + pchar)^0)
+local fragment    = Cs((S"/?" + pchar)^0)
 
 	-- -------------------------------
 	-- We resume our regular RFC
@@ -63,7 +64,7 @@ local taggingEntity = authorityName * P"," * date
 
 local tag = Cg(P"tag:" / "tag",'scheme')
           * taggingEntity * P":"
-          * Cg(specific^0,'specific')
-          * (P"#" * Cg(fragment^0,'fragment'))^-1
+          * Cg(specific,'specific')
+          * (P"#" * Cg(fragment,'fragment'))^-1
 
 return Ct(tag)
