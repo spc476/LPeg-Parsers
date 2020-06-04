@@ -23,6 +23,7 @@
 local abnf     = require "org.conman.parsers.abnf"
 local strftime = require "org.conman.parsers.strftime"
 local url      = require "org.conman.parsers.url"
+local ih       = require "org.conman.parsers.ih"
 local lpeg     = require "lpeg"
 
 local Cc = lpeg.Cc
@@ -35,11 +36,6 @@ local R  = lpeg.R
 local S  = lpeg.S
 local V  = lpeg.V
 
-local function H(t)
-  return C(t)
-end
-
-local COLON         = P":" * abnf.LWSP
 local TEXT          = R("\1\8","\10\31"," \255")
 local separators    = S[[()<>@,;:\<>/[]?={}]]
 local token         = (R"!~" - separators)^1
@@ -71,7 +67,7 @@ local media_type     = Ct(
                              'params'
                            )^-1
                        )
-local HTTP_date = strftime:match "%a, %d %b %Y %H:%M:%S"
+local HTTP_date = strftime:match "%a, %d %b %Y %H:%M:%S %Z"
 
 local cache_response_directive = Cf(Ct"" * (
                   Cg(C'public'           * Cc(true))
@@ -106,22 +102,21 @@ local response   = Ct(
                        * Cg(status,    'status')  * abnf.WSP
                        * Cg(msg,       'msg')
                      )
-                       
-local header = H"Date"             * COLON *  HTTP_date                    * abnf.CRLF
-             + H"Content-Length"   * COLON * (R"09"^1 / tonumber)     * abnf.CRLF
-             + H"Content-Location" * COLON * url * abnf.CRLF               * abnf.CRLF
-             + H"Content-Type"     * COLON * media_type                    * abnf.CRLF
-             + H"Location"         * COLON * url                           * abnf.CRLF
-             + H"ETag"             * COLON * P"W/"^-1 * quoted_string * abnf.CRLF
-             + H"Connection"       * COLON * token                         * abnf.CRLF
-             + H"Expires"          * COLON * HTTP_date                     * abnf.CRLF
-             + H"Cache-Control"    * COLON * cache_response_directive      * abnf.CRLF
-             
-local headers = Cf(Ct"" * Cg(header)^1 * abnf.CRLF,function(t,k,v) t[k] = v return t end)
+                     
+local header  = ih.Hc"Date"             * ih.COLON * HTTP_date                * abnf.CRLF
+              + ih.Hc"Content-Length"   * ih.COLON * (R"09"^1 / tonumber)     * abnf.CRLF
+              + ih.Hc"Content-Location" * ih.COLON * url                      * abnf.CRLF
+              + ih.Hc"Content-Type"     * ih.COLON * media_type               * abnf.CRLF
+              + ih.Hc"Location"         * ih.COLON * url                      * abnf.CRLF
+              + ih.Hc"ETag"             * ih.COLON * P"W/"^-1 * quoted_string * abnf.CRLF
+              + ih.Hc"Connection"       * ih.COLON * token                    * abnf.CRLF
+              + ih.Hc"Expires"          * ih.COLON * HTTP_date                * abnf.CRLF
+              + ih.Hc"Cache-Control"    * ih.COLON * cache_response_directive * abnf.CRLF
+              + ih.generic
 
 return {
   response = response,
-  headers  = headers,
+  headers  = ih.headers(header),
 }
 
 --[[

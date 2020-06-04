@@ -23,8 +23,8 @@
 local abnf     = require "org.conman.parsers.abnf"
 local strftime = require "org.conman.parsers.strftime"
 local url      = require "org.conman.parsers.url"
+local ih       = require "org.conman.parsers.ih"
 local lpeg     = require "lpeg"
-local typeof   = type
 
 local Cb = lpeg.Cb
 local Cc = lpeg.Cc
@@ -37,14 +37,6 @@ local R  = lpeg.R
 local S  = lpeg.S
 local V  = lpeg.V
 
-local function H(t)
-  return C(t)
-end
-
-local header_name  = (P(1) - P":")^1
-local header_value = R" ~"^0
-
-local COLON         = P":" * abnf.LWSP
 local TEXT          = R("\1\8","\10\31"," \255")
 local separators    = S[[()<>@,;:\<>/[]?={}]]
 local token         = (R"!~" - separators)^1
@@ -116,37 +108,18 @@ local request = Ct(
                      * Cg(url,    'location') * abnf.WSP
                      * Cg(version,'version')
                   )
-local header  = H"Date"           * COLON *  HTTP_date           * abnf.CRLF
-              + H"Content-Length" * COLON * (R"09"^1 / tonumber) * abnf.CRLF
-              + H"Content-Type"   * COLON * media_type           * abnf.CRLF
-              + H"Connection"     * COLON * C(token)             * abnf.CRLF
-              + H"Cache-Control"  * COLON * cache_directive      * abnf.CRLF
-              + H"User-Agent"     * COLON * C(R" ~"^0)           * abnf.CRLF
-              + H"Accept"         * COLON * media_type_list      * abnf.CRLF
-              + C(header_name)    * COLON * C(header_value)      * abnf.CRLF
+local header  = ih.Hc"Date"           * ih.COLON *  HTTP_date           * abnf.CRLF
+              + ih.Hc"Content-Length" * ih.COLON * (R"09"^1 / tonumber) * abnf.CRLF
+              + ih.Hc"Content-Type"   * ih.COLON * media_type           * abnf.CRLF
+              + ih.Hc"Connection"     * ih.COLON * C(token)             * abnf.CRLF
+              + ih.Hc"Cache-Control"  * ih.COLON * cache_directive      * abnf.CRLF
+              + ih.Hc"User-Agent"     * ih.COLON * C(R" ~"^0)           * abnf.CRLF
+              + ih.Hc"Accept"         * ih.COLON * media_type_list      * abnf.CRLF
+              + ih.generic
               
-local headers = Cf(Ct"" * Cg(header)^1 * abnf.CRLF,function(t,k,v)
-  if t[k] == nil then
-    t[k] = v
-  else
-    if k == 'Accept' and typeof(v) == 'table' then
-      for _,item in ipairs(v) do
-        table.insert(t[k],item)
-      end
-    else
-      if typeof(t[k]) ~= 'table' then
-        t[k] = { t[k] , v }
-      else
-        table.insert(t[k],v)
-      end
-    end
-  end
-  return t
-end)
-
 return {
   request = request,
-  headers = headers,
+  headers = ih.headers(header)
 }
 
 --[[
