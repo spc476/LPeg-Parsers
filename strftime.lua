@@ -356,7 +356,11 @@ local directives = P"a" / function()
            + P"z" / function()
                       return Cg(number,"zone")
                     end
-
+                    
+           + P"Z" / function()
+                      return Cg(char * char * char,"zone")
+                    end
+                    
 -- -------------------------------------------------------------------
 -- Catch all
 -- -------------------------------------------------------------------
