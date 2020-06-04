@@ -19,11 +19,6 @@
 --
 -- ********************************************************************
 -- luacheck: ignore 611
---
--- NOTE:        This is temporary as I test this version of URL parsing.
---              This file may become the org.comman.parsers.url module
---              at one point, but for now, I'm doing some testing.
--- ********************************************************************
 
 local ip   = require "org.conman.parsers.ip-text"
 local abnf = require "org.conman.parsers.abnf"
