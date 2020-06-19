@@ -69,11 +69,11 @@ path            <- path_abempty  -- begins with '/' or is empty
                 /  path_noscheme -- begins with a non-colon segment
                 /  path_rootless -- begins with a segment
                 /  path_empty
-path_abempty    <- {~ ( '/' segment)*                     ~}
+path_abempty    <- {~ ( '/' segment)+                     ~} /  '' -> '/'
 path_absolute   <- {~   '/' (segment_nz ('/' segment)* )? ~}
 path_noscheme   <- {~ segment_nz_nc ('/' segment)*        ~}
 path_rootless   <- {~ segment_nz    ('/' segment)*        ~}
-path_empty      <- { }
+path_empty      <- '' -> '/'
 segment         <- pchar*
 segment_nz      <- pchar+
 segment_nz_nc   <- (unreserved / %pct_encoded / sub_delims / '@')+
