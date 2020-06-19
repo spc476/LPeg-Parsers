@@ -61,7 +61,7 @@ port            <- {:port: %DIGIT+ -> tonumber :}
 
 IP_literal      <- '[' ( IPv6addrz / %IPv6address / IPvFuture) ']' -- RFC-6874
 IPvFuture       <- { 'v' %HEXDIG+ '.' (unreserved / sub_delims / ':')+ }
-ZoneID          <- {~ (unreserved / %pct_encoded)+ ~}       -- RFC-6874
+ZoneID          <- {~ (unreserved / %pct_encoded)+ ~}      -- RFC-6874
 IPv6addrz       <- {~ %IPv6address '%25' -> '%%' ZoneID ~} -- RFC-6874
 reg_name        <- {~ (unreserved / %pct_encoded / sub_delims)* ~}
 path            <- path_abempty  -- begins with '/' or is empty
