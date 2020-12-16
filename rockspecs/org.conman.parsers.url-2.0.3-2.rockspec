@@ -1,9 +1,10 @@
 package = "org.conman.parsers.url"
-version = "2.0.3-1"
+version = "2.0.3-2"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/url-2.0.3/url.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/url-2.0.3/url.lua",
+  md5 = "e34da71c02b01331854804c7f5558e91",
 }
 
 description =
@@ -21,8 +22,8 @@ description =
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 1.0.1",
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0",
   "org.conman.parsers.abnf >= 1.0.0",
   "org.conman.parsers.ip-text >= 1.0.0",
 }

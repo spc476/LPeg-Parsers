@@ -1,9 +1,10 @@
 package = "org.conman.parsers.ini"
-version = "1.0.1-1"
+version = "1.0.1-2"
 
 source =
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/ini-1.0.1/ini.lua",
+  md5 = "73b83b44c6a64d932f344d0a6670229a",
 }
 
 description =
@@ -20,8 +21,8 @@ description =
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 0.10"
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0"
 }
 
 build =

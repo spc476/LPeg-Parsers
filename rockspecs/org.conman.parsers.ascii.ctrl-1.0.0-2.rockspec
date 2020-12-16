@@ -1,9 +1,10 @@
 package = "org.conman.parsers.ascii.ctrl"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/asciiC0-1.0.0/ascii/ctrl.lua",
+  md5 = "7ee603a8d96973119c3176f1689a1b1d",
 }
 
 description =
@@ -19,7 +20,7 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
 }
 

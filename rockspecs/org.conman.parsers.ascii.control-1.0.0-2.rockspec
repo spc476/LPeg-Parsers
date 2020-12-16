@@ -1,9 +1,10 @@
 package = "org.conman.parsers.ascii.control"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/asciic-1.0.0/ascii/control.lua",
+  md5 = "42e13275aefe9fb19bcba95a295c3207",
 }
 
 description =
@@ -20,7 +21,7 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
 }
 

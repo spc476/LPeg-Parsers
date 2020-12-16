@@ -1,9 +1,9 @@
-package = "org.conman.parsers.ip"
-version = "1.0.2-1"
+package = "org.conman.parsers.ip-text"
+version = "1.0.0-2"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/ip-1.0.2/ip.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/ip-text-1.0.0/ip-text.lua",
 }
 
 description =
@@ -13,15 +13,15 @@ description =
   license    = "LGPL",
   summary    = "Parse IPv4/IPv6 addresses",
   detailed   = [[
-	Parse an IPv4 or IPv6 address.  The address is returned as binary in
-	network byte order.
+	Parse an IPv4 or IPv6 address.  The address is returned as text,
+	unlike the org.conman.parsers.ip module.
   ]]
 }
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 0.12",
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0",
 }
 
 build =
@@ -32,7 +32,7 @@ build =
   {
     lua = 
     {
-      ['org.conman.parsers.ip'] = "ip.lua"
+      ['org.conman.parsers.ip-text'] = "ip-text.lua"
     }
   }
 }

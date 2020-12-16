@@ -1,9 +1,10 @@
 package = "org.conman.parsers.iso.ctrl"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/isoC1-1.0.0/iso/ctrl.lua",
+  md5 = "c3a02b260477491a8004821697956aa3",
 }
 
 description =
@@ -25,8 +26,10 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
+  "org.conman.parsers.iso.char >= 1.0.0",
+  "org.conman.parsers.ascii.char >= 1.0.0",
 }
 
 build =

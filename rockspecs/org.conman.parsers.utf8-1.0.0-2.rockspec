@@ -1,9 +1,10 @@
 package = "org.conman.parsers.utf8"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/utf8-1.0.0/utf8.lua",
+  md5 = "2fcf92d0bf98b2d3c2337fafdc191126",
 }
 
 description =
@@ -28,10 +29,12 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
   "org.conman.parsers.utf8.char >= 1.0.0",
   "org.conman.parsers.utf8.control >= 1.0.0",
+  "org.conman.parsers.ascii.char >= 1.0.0",
+  "org.conman.parsers.ascii.control >= 1.0.0",
 }
 
 build =

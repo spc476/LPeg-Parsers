@@ -1,10 +1,11 @@
 package = "org.conman.parsers.abnf"
-version = "1.0.0-2"
+version = "1.0.0-3"
 rockspec_format = "3.0"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/abnf-1.0.0/abnf.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/abnf-1.0.0/abnf.lua",
+  md5 = "ea644703ca9b2b5b2ac87d71e4d552b0"
 }
 
 description =
@@ -23,8 +24,8 @@ description =
 
 dependencies =
 {
-  "lua  >= 5.1, <= 5.3",
-  "lpeg >= 0.12",
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0",
 }
 
 build =

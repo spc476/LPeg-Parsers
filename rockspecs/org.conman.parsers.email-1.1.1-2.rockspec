@@ -1,9 +1,10 @@
 package = "org.conman.parsers.email"
-version = "1.1.1-1"
+version = "1.1.1-2"
 
 source =
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/email-1.1.1/email.lua",
+  md5 = "38c50ad78dd56435d8bdd96383e3332f",
 }
 
 description =
@@ -25,8 +26,8 @@ description =
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 1.0.1"
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0"
 }
 
 build =

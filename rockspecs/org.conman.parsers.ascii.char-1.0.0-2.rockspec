@@ -1,9 +1,10 @@
 package = "org.conman.parsers.ascii.char"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/asciig-1.0.0/ascii/char.lua",
+  md5 = "c483ba9c0da62184f9f29e56fbae7dd4",
 }
 
 description =
@@ -20,7 +21,7 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
 }
 

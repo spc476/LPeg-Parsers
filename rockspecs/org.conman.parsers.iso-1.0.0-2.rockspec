@@ -1,9 +1,10 @@
 package = "org.conman.parsers.iso"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/iso-1.0.0/iso.lua",
+  md5 = "6806dbbc83dee708c42720081785bacd",
 }
 
 description =
@@ -29,10 +30,12 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5,1, <= 5.4",
   "lpeg >= 1.0.0",
   "org.conman.parsers.iso.char >= 1.0.0",
   "org.conman.parsers.iso.control >= 1.0.0",
+  "org.conman.parsers.ascii.char >= 1.0.0",
+  "org.conman.parsers.ascii.control >= 1.0.0",
 }
 
 build =

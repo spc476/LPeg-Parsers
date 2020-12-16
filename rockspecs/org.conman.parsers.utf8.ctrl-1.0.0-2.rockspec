@@ -1,9 +1,10 @@
 package = "org.conman.parsers.utf8.ctrl"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/utf8C1-1.0.0/utf8/ctrl.lua",
+  md5 = "bf977b1fafd0fe7a48defd3f08f7dbcc",
 }
 
 description =
@@ -25,8 +26,10 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
+  "org.conman.parsers.utf8.char >= 1.0.0",
+  "org.conman.parsers.ascii.char >= 1.0.0",
 }
 
 build =

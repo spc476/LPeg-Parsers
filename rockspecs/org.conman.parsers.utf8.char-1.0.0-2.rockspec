@@ -1,9 +1,10 @@
 package = "org.conman.parsers.utf8.char"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source = 
 {
   url = "https://raw.github.com/spc476/LPeg-Parsers/utf8g-1.0.0/utf8/char.lua",
+  md5 = "b10ba6dd8ec9f711958960c102050743",
 }
 
 description =
@@ -24,7 +25,7 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
 }
 

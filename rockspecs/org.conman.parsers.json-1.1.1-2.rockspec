@@ -1,9 +1,9 @@
 package = "org.conman.parsers.json"
-version = "1.1.1-1"
+version = "1.1.1-2"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/json-1.1.1/json.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/json-1.1.1/json.lua",
 }
 
 description =
@@ -20,8 +20,8 @@ description =
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 0.10",
+  "lua >= 5.1, <= 5.4",
+  "lpeg >= 1.0.0",
 }
 
 build =

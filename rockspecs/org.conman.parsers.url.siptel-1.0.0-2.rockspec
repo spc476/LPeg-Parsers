@@ -1,9 +1,10 @@
 package = "org.conman.parsers.url.siptel"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/urlsiptel-1.0.0/url/siptel.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/urlsiptel-1.0.0/url/siptel.lua",
+  md5 = "4ef7aa192765be6d33b8af08bbfc3205",
 }
 
 description =
@@ -20,8 +21,8 @@ description =
 
 dependencies =
 {
-  "lua",
-  "lpeg >= 1.0.1",
+  "lua >= 5,1, <= 5.4",
+  "lpeg >= 1.0.0",
   "org.conman.parsers.abnf    >= 1.0.0",
   "org.conman.parsers.ip-text >= 1.0.0",
 }

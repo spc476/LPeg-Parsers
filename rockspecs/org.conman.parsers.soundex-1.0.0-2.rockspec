@@ -1,9 +1,9 @@
 package = "org.conman.parsers.soundex"
-version = "1.0.0-1"
+version = "1.0.0-2"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/soundex-1.0.0/soundex.lua"
+  url = "https://raw.github.com/spc476/LPeg-Parsers/soundex-1.0.0/soundex.lua",
 }
 
 description =
@@ -19,7 +19,7 @@ description =
 
 dependencies =
 {
-  "lua",
+  "lua >= 5.1, <= 5.4",
   "lpeg >= 1.0.0",
 }
 
