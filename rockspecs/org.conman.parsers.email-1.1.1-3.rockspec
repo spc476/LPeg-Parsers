@@ -1,5 +1,5 @@
 package = "org.conman.parsers.email"
-version = "1.1.1-2"
+version = "1.1.1-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "Parse RFC-5322 based email messages",
   detailed   = [[
 	Return a Lua table with the email headers parsed into individual

@@ -1,5 +1,5 @@
 package = "org.conman.parsers.url"
-version = "2.0.3-2"
+version = "2.0.3-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license = "LGPL",
+  license = "LGPL3+",
   summary = [[Parse "http:", "https:", "file:" and "ftp:" URLs]],
   detailed = [[
   	Parse "http:", "https:", "file:" and "ftp:" URLs into a Lua table. 

@@ -1,5 +1,5 @@
 package = "org.conman.parsers.url.gopher"
-version = "2.0.0-2"
+version = "2.0.0-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license = "LGPL",
+  license = "LGPL3+",
   summary = [[Parse "gopher:" URLs]],
   detailed = [[
 	Parse "gopher:" URLs into a Lua table.  This can only handle

@@ -1,5 +1,5 @@
 package = "org.conman.parsers.ip"
-version = "1.0.2-2"
+version = "1.0.2-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "Parse IPv4/IPv6 addresses",
   detailed   = [[
 	Parse an IPv4 or IPv6 address.  The address is returned as binary in

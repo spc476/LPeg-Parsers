@@ -1,5 +1,5 @@
 package = "org.conman.parsers.url.siptel"
-version = "1.0.0-2"
+version = "1.0.0-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license = "LGPL",
+  license = "LGPL3+",
   summary = [[Parse sip:, sips: and tel: URIs]],
   detailed = [[
 	Parse sip:, sips: and tel: URIs into a Lua table.  Given that the

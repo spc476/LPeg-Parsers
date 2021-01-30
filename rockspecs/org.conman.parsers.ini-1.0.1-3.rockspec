@@ -1,5 +1,5 @@
 package = "org.conman.parsers.ini"
-version = "1.0.1-2"
+version = "1.0.1-3"
 
 source =
 {
@@ -11,7 +11,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "Parse INI files into a Lua table",
   detailed   = [[
 	Provides a INI file parser that returns a Lua table from a INI

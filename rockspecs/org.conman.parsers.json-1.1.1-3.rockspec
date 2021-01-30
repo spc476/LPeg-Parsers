@@ -1,5 +1,5 @@
 package = "org.conman.parsers.json"
-version = "1.1.1-2"
+version = "1.1.1-3"
 
 source =
 {
@@ -10,7 +10,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "Parse JSON files",
   detailed   = [[
 	Parse a JSON file into a Lua table.  This supports UTF-8 encoded

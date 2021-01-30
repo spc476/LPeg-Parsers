@@ -1,5 +1,5 @@
 package = "org.conman.parsers.abnf"
-version = "1.0.0-3"
+version = "1.0.0-4"
 rockspec_format = "3.0"
 
 source =
@@ -13,7 +13,7 @@ description =
   homepage   = "https://github.com/spc476/LPeg-Parsers",
   issues_url = "https://github.com/spc476/LPeg-Parsers/issues",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "The core BNF ruleset from RFC-5234",
   labels     = { 'lpeg' },
   detailed   = [[

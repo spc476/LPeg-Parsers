@@ -1,5 +1,5 @@
 package = "org.conman.parsers.strftime"
-version = "1.0.0-2"
+version = "1.0.0-3"
 
 source =
 {
@@ -10,7 +10,7 @@ description =
 {
   homepage = "https://github.com/spc476/LPeg-Parsers",
   maintainer = "Sean Conner <sean@conman.org>",
-  license    = "LGPL",
+  license    = "LGPL3+",
   summary    = "Generate LPeg to parse strftime() format strings",
   detailed   = [[
 	Given a format string for strftime() (or os.date() in Lua), generate
