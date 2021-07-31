@@ -244,19 +244,10 @@ local directives = P"a" / function()
 -- C99 extensions
 -- -------------------------------------------------------------------
 
-           + P"F" / function()
-                      return Cg(d4year,"year")  * P"-"
-                           * Cg(dmonth,"month") * P"-"
-                           * Cg(dday,"day")
-                    end
-
--- -------------------------------------------------------------------
--- General UNIX extensions
--- -------------------------------------------------------------------
-
            + P"C" / function()
                       return Cg(d2year,"year")
                     end
+
 
            + P"D" / function()
                       return Cg(dmonth,"month") * P"/"
@@ -269,8 +260,18 @@ local directives = P"a" / function()
                            * Cg(Cmt(digit^1,chkrange(1,31)),"day")
                     end
 
-           + P"E" / function()
-                      error("%E format modifier not supported")
+           + P"F" / function()
+                      return Cg(d4year,"year")  * P"-"
+                           * Cg(dmonth,"month") * P"-"
+                           * Cg(dday,"day")
+                    end
+
+           + P"g" / function()
+                      return Cg(d2year,"year")
+                    end
+
+           + P"G" / function()
+                      return Cg(d4year,"year")
                     end
 
            + P"h" / function()
@@ -279,10 +280,6 @@ local directives = P"a" / function()
 
            + P"n" / function()
                       return P"\n"
-                    end
-
-           + P"O" / function()
-                      error("%O format modifier not supported")
                     end
 
            + P"r" / function()
@@ -315,17 +312,21 @@ local directives = P"a" / function()
                       return Cg(dweeknum,"weeknumm4")
                     end
 
--- -------------------------------------------------------------------
--- TZ (Time Zone) extensions
--- -------------------------------------------------------------------
-
-           + P"g" / function()
-                      return Cg(d2year,"year")
+           + P"z" / function()
+                      return Cg(number,"zone")
                     end
 
-           + P"G" / function()
-                      return Cg(d4year,"year")
+           + P"E" / function()
+                      error("%E format modifier not supported")
                     end
+
+           + P"O" / function()
+                      error("%O format modifier not supported")
+                    end
+
+-- -------------------------------------------------------------------
+-- others
+-- -------------------------------------------------------------------
 
            + P"k" / function()
                       return P" "^-1
@@ -337,6 +338,10 @@ local directives = P"a" / function()
                            * Cg(Cmt(digit^1,chkrange(1,12)),"hour")
                       end
 
+           + P"P" / function()
+                      return Cg(char^1 / am_pm,"pm")
+                    end
+
            + P"s" / function()
                       return Cg(digit^1 / tonumber,"epoch")
                     end
@@ -344,23 +349,7 @@ local directives = P"a" / function()
            + P"+" / function()
                       error("%+ format specifier not supported")
                     end
-
--- -------------------------------------------------------------------
--- GNU extensions
--- -------------------------------------------------------------------
-
-           + P"P" / function()
-                      return Cg(char^1 / am_pm,"pm")
-                    end
                       
-           + P"z" / function()
-                      return Cg(number,"zone")
-                    end
-                    
-           + P"Z" / function()
-                      return Cg(char * char * char,"zone")
-                    end
-                    
 -- -------------------------------------------------------------------
 -- Catch all
 -- -------------------------------------------------------------------

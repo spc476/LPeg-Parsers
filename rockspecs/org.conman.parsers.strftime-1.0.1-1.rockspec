@@ -1,9 +1,9 @@
 package = "org.conman.parsers.strftime"
-version = "1.0.0-3"
+version = "1.0.1-1"
 
 source =
 {
-  url = "https://raw.github.com/spc476/LPeg-Parsers/strf-1.0.0/strftime.lua",
+  url = "https://raw.github.com/spc476/LPeg-Parsers/strf-1.0.1/strftime.lua",
 }
 
 description =
