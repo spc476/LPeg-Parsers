@@ -32,14 +32,12 @@ local Ct = lpeg.Ct
 local P  = lpeg.P
 local R  = lpeg.R
 
-local type     = Cg(P(1) / types,'type')
+local type     = Cg(R" ~" * #-abnf.CRLF / types,'type')
 local display  = Cg(R" \255"^0,'display')
 local selector = abnf.HTAB * Cg(R" \255"^0,'selector')             + Cg(Cc"",'selector')
 local host     = abnf.HTAB * Cg(R" \255"^0,'host')                 + Cg(Cc"example.com",'host')
 local port     = abnf.HTAB * Cg(R"09"^1 / tonumber + Cc(0),'port') + Cg(Cc(0),'port')
 local gplus    = abnf.HTAB * Cg(R" \255"^0,'gplus')
-
-local line     = Ct(type * display * selector * host * port * gplus^-1 * abnf.CRLF)
-               * (P"." * abnf.CRLF)^-1
-
-return Ct(line^1)
+local line     = Ct(type * display * selector * host * port * gplus^-1) * (abnf.CRLF + P(-1))
+               + abnf.CRLF
+return Ct(line^1) * (P"." * abnf.CRLF)^-1
