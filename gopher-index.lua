@@ -22,18 +22,23 @@
 -- luacheck: ignore 611
 
 
-local abnf  = require "org.conman.parsers.abnf"
-local types = require "org.conman.const.gopher-types"
-local lpeg  = require "lpeg"
+local abnf    = require "org.conman.parsers.abnf"
+local types   = require "org.conman.const.gopher-types"
+local control = require "org.conman.parsers.utf8.control"
+              + require "org.conman.parsers.iso.control"
+              + require "org.conman.parsers.ascii.control"
+local lpeg    = require "lpeg"
 
 local Cc = lpeg.Cc
 local Cg = lpeg.Cg
+local Cs = lpeg.Cs
 local Ct = lpeg.Ct
 local P  = lpeg.P
 local R  = lpeg.R
 
+local text     = Cs((#-(abnf.CRLF + abnf.HTAB) * control / "" + R" \255")^0)
 local type     = Cg(R" ~" * #-abnf.CRLF / types,'type')
-local display  = Cg(R" \255"^0,'display')
+local display  = Cg(text,'display')
 local selector = abnf.HTAB * Cg(R" \255"^0,'selector')             + Cg(Cc"",'selector')
 local host     = abnf.HTAB * Cg(R" \255"^0,'host')                 + Cg(Cc"example.com",'host')
 local port     = abnf.HTAB * Cg(R"09"^1 / tonumber + Cc(0),'port') + Cg(Cc(0),'port')
