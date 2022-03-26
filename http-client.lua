@@ -89,8 +89,8 @@ local cache_response_directive = Cf(Ct"" * (
 local version    = P"HTTP/1.1" * Cc "1.1"
                  + P"HTTP/1.0" * Cc "1.0"
                  +               Cc "0.9"
-local indication = #P"1" * Cc'continue'
-                 + #P"2" * Cc'okay'
+local indication = #P"1" * Cc'info'
+                 + #P"2" * Cc'success'
                  + #P"3" * Cc'redirect'
                  + #P"4" * Cc'clienterr'
                  + #P"5" * Cc'servererr'
