@@ -347,7 +347,7 @@ MODERATED       <- [Mm][Oo][Dd][Ee][Rr][Aa][Tt][Ee][Dd]
         -- Mailing list specific headers
         -- ----------------------------------------------
         
-list_id         <- {:name: phrase? :} "<" {:id: list_label :} ">"
+list_id         <- {:name: { phrase? } :} "<" {:id: list_label :} ">"
 list_label      <- dot_atom_text
 list_locs       <- list_loc ("," list_loc)*
 list_loc        <- CFWS? "<" { [^>]+ } ">" CFWS?
