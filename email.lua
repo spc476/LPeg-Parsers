@@ -196,17 +196,19 @@ headers         <-
                 /  {:content_length:            content_lenhdr  :} -> {}
                 
                 -- --------------------------------------------------------
-                -- fields defined in RFC-2919 (List-ID:) and RFC-2369
-                -- these fields relate to mailing lists
+                -- fields defined in RFC-2919 (List-ID:), RFC-2369 and
+                -- RFC-8058 (List-Unsubscribe-Post) these fields relate to
+                -- mailing lists
                 -- --------------------------------------------------------
                 
-                /  {:list_id:                   list_idhdr      :} -> {}
+                /  {:list_id:                   list_idhdr      :} -> {} -- RFC-2919
                 /  {:list_help:                 list_helphdr    :} -> {}
                 /  {:list_unsubscribe:          list_unsubhdr   :} -> {}
                 /  {:list_subscribe:            list_subhdr     :} -> {}
                 /  {:list_post:                 list_posthdr    :} -> {}
                 /  {:list_owner:                list_ownerhdr   :} -> {}
                 /  {:list_archive:              list_archivehdr :} -> {}
+                /  {:list_unsubscribe_post:     list_unsubpost  :} -> {} -- RFC-8058
                 
                 -- --------------------------------------------------------
                 -- fields defined in RFC-1036 (Usenet).  There is some
@@ -278,6 +280,7 @@ list_subhdr     <- %LIST_SUBSCRIBE   ':' FWS           list_locs  -> {} %CRLF
 list_posthdr    <- %LIST_POST        ':' FWS (list_no? list_locs) -> {} %CRLF
 list_ownerhdr   <- %LIST_OWNER       ':' FWS           list_locs  -> {} %CRLF
 list_archivehdr <- %LIST_ARCHIVE     ':' FWS           list_locs  -> {} %CRLF
+list_unsubpost  <- %LIST_UNSUB_POST  ':' FWS { "List-Unsubscribe=One-Click" } %CRLF
 
 newsgrouphdr    <- %NEWSGROUPS       ':' FWS newsgroups           -> {} %CRLF
 pathhdr         <- %PATH             ':' FWS newspath?            -> {} %CRLF
@@ -576,6 +579,7 @@ local Rules =
   LIST_POST        = H "List-Post",
   LIST_OWNER       = H "List-Owner",
   LIST_ARCHIVE     = H "List-Archive",
+  LIST_UNSUB_POST  = H "List-Unsubscribe-Post",
   
   NEWSGROUPS   = H "Newsgroups",
   PATH         = H "Path",
