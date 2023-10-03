@@ -24,23 +24,25 @@
 
 local lpeg = require "lpeg"
 
-local ignore  = lpeg.S"AEIOUWYHaeiouwyh"^0
-local skip    = lpeg.S"HWhw"^1
-local cs1     = lpeg.S"BFPVbfpv"^1
-local cs2     = lpeg.S"CGJKQSXZcgjkqsxz"^1
-local cs3     = lpeg.S"DTdt"^1
-local cs4     = lpeg.S"Ll"^1
-local cs5     = lpeg.S"MNmn"^1
-local cs6     = lpeg.S"Rr"^1
-local initial = ((cs1 + cs2 + cs3 + cs4 + cs5 + cs6) + lpeg.P(1))
-              / function(c) return c:sub(1,1):upper() end
-local keep    = cs1 * (skip * cs1)^-1 * lpeg.Cc "1"
-              + cs2 * (skip * cs2)^-1 * lpeg.Cc "2"
-              + cs3 * (skip * cs3)^-1 * lpeg.Cc "3"
-              + cs4 * (skip * cs4)^-1 * lpeg.Cc "4"
-              + cs5 * (skip * cs5)^-1 * lpeg.Cc "5"
-              + cs6 * (skip * cs6)^-1 * lpeg.Cc "6"
-              +                         lpeg.Cc "0"
-local use     = ignore * keep
-
-return lpeg.Cf(initial * use * use * use,function(a,c) return a..c end)
+return lpeg.P {
+  'soundex',
+  ignore  = lpeg.S"AEIOUWYHaeiouwyh'"^0,
+  skip    = lpeg.S"HWhw"^1,
+  cs1     = lpeg.S"BFPVbfpv"^1,
+  cs2     = lpeg.S"CGJKQSXZcgjkqsxz"^1,
+  cs3     = lpeg.S"DTdt"^1,
+  cs4     = lpeg.S"Ll"^1,
+  cs5     = lpeg.S"MNmn"^1,
+  cs6     = lpeg.S"Rr"^1,
+  initial = (lpeg.V"cs1" + lpeg.V"cs2" + lpeg.V"cs3" + lpeg.V"cs4" + lpeg.V"cs5" + lpeg.V"cs6" + lpeg.P(1))
+          / function(c) return c:sub(1,1):upper() end,
+  keep    = lpeg.V"cs1" * (lpeg.V"skip" * lpeg.V"cs1")^-1 * lpeg.Cc "1"
+          + lpeg.V"cs2" * (lpeg.V"skip" * lpeg.V"cs2")^-1 * lpeg.Cc "2"
+          + lpeg.V"cs3" * (lpeg.V"skip" * lpeg.V"cs3")^-1 * lpeg.Cc "3"
+          + lpeg.V"cs4" * (lpeg.V"skip" * lpeg.V"cs4")^-1 * lpeg.Cc "4"
+          + lpeg.V"cs5" * (lpeg.V"skip" * lpeg.V"cs5")^-1 * lpeg.Cc "5"
+          + lpeg.V"cs6" * (lpeg.V"skip" * lpeg.V"cs6")^-1 * lpeg.Cc "6"
+          +                                         lpeg.Cc "0",
+  use     = lpeg.V"ignore" * lpeg.V"keep",
+  soundex = lpeg.Cf(lpeg.V"initial" * lpeg.V"use" * lpeg.V"use" * lpeg.V"use",function(a,c) return a..c end),
+}
