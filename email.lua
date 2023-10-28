@@ -468,7 +468,7 @@ time_of_day     <- hour ":" min (":" second)?
 hour            <- {:hour: %d%d -> tonumber :}
 min             <- {:min:  %d%d -> tonumber :}
 second          <- {:sec:  %d%d -> tonumber :}
-zone            <- FWS {:zone: (("+" / "-") %d^4) -> tozone:}
+zone            <- FWS {:zone: ((("+" / "-") %d^4) / "GMT") -> tozone:}
 
         -- ----------------------------------------------------
         -- various tokens and pieces used to build up a larger
@@ -642,6 +642,9 @@ local Rules =
   end,
   
   tozone = function(cap)
+    if cap == 'GMT' then
+      return 0
+    end
     local hour = tonumber(cap:sub(2,3)) * 3600
     local min  = tonumber(cap:sub(4,5)) *   60
     local sec  = hour + min
