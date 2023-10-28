@@ -111,6 +111,7 @@ local header  = ih.Hc"Date"             * ih.COLON * HTTP_date                * 
               + ih.Hc"ETag"             * ih.COLON * P"W/"^-1 * quoted_string * abnf.CRLF
               + ih.Hc"Connection"       * ih.COLON * token                    * abnf.CRLF
               + ih.Hc"Expires"          * ih.COLON * HTTP_date                * abnf.CRLF
+              + ih.Hc"Last-Modified"    * ih.COLON * HTTP_date                * abnf.CRLF
               + ih.Hc"Cache-Control"    * ih.COLON * cache_response_directive * abnf.CRLF
               + ih.generic
 
