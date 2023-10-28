@@ -465,9 +465,9 @@ month           <- {:month:
 year            <- FWS {:year: %d^4 -> tonumber :} FWS
 time            <- time_of_day zone
 time_of_day     <- hour ":" min (":" second)?
-hour            <- {:hour: %d%d -> tonumber :}
-min             <- {:min:  %d%d -> tonumber :}
-second          <- {:sec:  %d%d -> tonumber :}
+hour            <- {:hour: %d^2 -> tonumber :}
+min             <- {:min:  %d^2 -> tonumber :}
+second          <- {:sec:  %d^2 -> tonumber :}
 zone            <- FWS {:zone: ((("+" / "-") %d^4) / "GMT") -> tozone:}
 
         -- ----------------------------------------------------
