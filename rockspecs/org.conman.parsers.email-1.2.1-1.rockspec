@@ -1,8 +1,8 @@
 package = "org.conman.parsers.email"
-version = "1.2.0-1"
+version = "1.2.1-1"
 source = {
-   url = "https://raw.github.com/spc476/LPeg-Parsers/email-1.2.0/email.lua",
-   md5 = "c0cc5fdfc6b2db661e4b02f28bb438fa"
+   url = "https://raw.github.com/spc476/LPeg-Parsers/email-1.2.1/email.lua",
+   md5 = "2d0fb801171f57e7ce2443b0cfcf0964"
 }
 description = {
    summary = "Parse RFC-5322 based email messages",
