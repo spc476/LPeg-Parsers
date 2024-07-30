@@ -43,6 +43,7 @@ local selector = abnf.HTAB * Cg(R" \255"^0,'selector')             + Cg(Cc"",'se
 local host     = abnf.HTAB * Cg(R" \255"^0,'host')                 + Cg(Cc"example.com",'host')
 local port     = abnf.HTAB * Cg(R"09"^1 / tonumber + Cc(0),'port') + Cg(Cc(0),'port')
 local gplus    = abnf.HTAB * Cg(R" \255"^0,'gplus')
-local line     = Ct(type * display * selector * host * port * gplus^-1) * (abnf.CRLF + P(-1))
-               + abnf.CRLF
-return Ct(line^1) * (P"." * abnf.CRLF)^-1
+local line     = (P"." * abnf.CRLF) * Cc(nil)
+               + abnf.CRLF          * Cc(nil)
+	       + Ct(type * display * selector * host * port * gplus^-1) * (abnf.CRLF + P(-1))
+return Ct(line^1)
